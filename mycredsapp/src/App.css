@@ -1,0 +1,103 @@
+.App {
+  text-align: center;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	font-family: 'SFProDisplay-Regular'!important;
+	background: #f9fafe!important;
+}
+
+@font-face {
+	font-family: 'SFProDisplay-Regular';
+	font-style: normal;
+	font-weight: normal;
+	src: local('SF Pro Display Regular'), url('../fonts/SFPRODISPLAYREGULAR.woff') format('woff');
+}
+
+@font-face {
+	font-family: 'SFProDisplay-Medium';
+	font-style: normal;
+	font-weight: normal;
+	src: local('SF Pro Display Medium'), url('../fonts/SFPRODISPLAYMEDIUM.woff') format('woff');
+}
+
+@font-face {
+	font-family: 'SFProDisplay-Bold';
+	font-style: normal;
+	font-weight: normal;
+	src: local('SF Pro Display Bold'), url('../fonts/SFPRODISPLAYBOLD.woff') format('woff');
+}
+
+p {
+	font-size: 16px;
+	font-family: 'SFProDisplay-Regular';
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 400;
+	line-height: 25px;
+	color: #333;
+	padding: 0;
+	margin: 0!important;
+}
+
+a, a:hover {
+	transition: all 0.4s ease-in-out;
+	-moz-transition: all 0.4s ease-in-out;
+	-ms-transition: all 0.4s ease-in-out;
+	-o-transition: all 0.4s ease-in-out;
+	-webkit-transition: all 0.4s ease-in-out;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+a, a:focus, a:hover, button, button:focus, button:hover, checkbox, checkbox:focus, checkbox:hover, input, input:focus, input:hover, select, select:focus, select:hover {
+	outline: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: 'SFProDisplay-Regular';
+	letter-spacing: 1px;
+}
+
+button, button:hover {
+	transition: all 0.4s ease-in-out;
+	-moz-transition: all 0.4s ease-in-out;
+	-ms-transition: all 0.4s ease-in-out;
+	-o-transition: all 0.4s ease-in-out;
+	-webkit-transition: all 0.4s ease-in-out;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.fullscreen {
+	height: 100vh;
+	width: 100%;
+}
+
+.whitebg {
+	background: #fff;
+}
+
+.fullheight {
+	height: 100vh;
+}
+
+/***********common radio and checkbox css start******************/
+
+.common input[type=radio], .common input[type=checkbox] {
+	display: none;
+}
+
+.common input[type=radio] + label:before {
+	content: "";
+	display: inline-block;
+	width: 22px;
+	height: 22px;
+	vertical-align: middle;
+	margin-right: 8px;
+	background-color: #fff;
+	border: 1px solid #999;
+	 
+}
