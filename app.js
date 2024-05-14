@@ -76,51 +76,23 @@ app.post('/newcourses/store', (req, res) => {
 
 // This route will generate the badge to be issued to the student
 app.post('/createBadge', async (req, res) => {
-    const { email } = req.body; // Assuming the email is passed in the request body
+    const { email, issuer, badgeClass, assertion } = req.body;
 
-    const issuer = {
-        "id": "https://example.com/issuer/issuer-profile",
-        "type": "Issuer",
-        "name": "Example University",
-        "url": "https://example.com",
-        "email": "contact@example.com"
-    };
-
-    const badgeClass = {
-        "id": "https://example.com/badgeclass/123",
-        "type": "BadgeClass",
-        "name": "Certified PHP Developer",
-        "description": "Awarded to individuals who have demonstrated excellence in PHP development.",
-        "image": "https://example.com/badges/image.png",
-        "criteria": { "narrative": "Successfully pass the PHP Developer Examination." },
-        "issuer": "https://example.com/issuer/issuer-profile"
-    };
-
-    const assertion = {
-        "id": "https://example.com/assertion/456",
-        "type": "Assertion",
-        "recipient": {
-            "type": "email",
-            "hashed": true,
-            "salt": "deadsea",
-            "identity": "sha256$" + require('crypto').createHash('sha256').update(email + 'deadsea').digest('hex')
-        },
-        "image": "https://example.com/badges/assertion-image.png",
-        "evidence": "https://example.com/badges/evidence/456",
-        "issuedOn": new Date().toISOString(),
-        "badge": "https://example.com/badgeclass/123"
-    };
-
-    // Save JSON data to files in local storage
-    try {
-        await fs.outputJson(path.join(__dirname, 'storage', 'issuer.json'), issuer, { spaces: 2 });
-        await fs.outputJson(path.join(__dirname, 'storage', 'badgeClass.json'), badgeClass, { spaces: 2 });
-        await fs.outputJson(path.join(__dirname, 'storage', 'assertion.json'), assertion, { spaces: 2 });
-
-        res.json({ message: 'Badge created successfully!' });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Failed to create badge' });
+    // Since email hash might be required dynamically, we adjust the 'identity' field
+    if (assertion.recipient.hashed) {
+        assertion.recipient.identity = "sha256$" + require('crypto').createHash('sha256').update(email + assertion.recipient.salt).digest('hex');
     }
-});
 
+    // Optionally adjust 'issuedOn' date if you need to set it server-side
+    assertion.issuedOn = new Date().toISOString();
+
+    // Your logic here to handle the issuer, badgeClass, and assertion data
+    // For example, save to a database, create files, etc.
+
+    res.json({
+        message: "Badge created successfully!",
+        issuer,
+        badgeClass,
+        assertion
+    });
+});

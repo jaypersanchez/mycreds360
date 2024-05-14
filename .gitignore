@@ -1,0 +1,6 @@
+.env
+web3/.env
+mycredsapp/.env
+node_modules
+web3/node_modules
+mycredsapp/node_modules
