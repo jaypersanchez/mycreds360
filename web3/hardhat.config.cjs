@@ -11,11 +11,11 @@ module.exports = {
       chainId: 1337 // Local network chain ID
     },
     amoy: {
-      url: `https://polygon-amoy.g.alchemy.com/v2/${INFURA_PROJECT_ID}`,
+      url: "https://polygon-amoy.g.alchemy.com/v2/zNwC9QKnfrFM0NraJfhrBg8MuuJ3hABG", //`https://polygon-amoy.g.alchemy.com/v2/${INFURA_PROJECT_ID}`,
       accounts: [DEPLOYER_PRIVATE_KEY] // Do not commit this!
     },
     polygon: {
-      url: `https://polygon-amoy.g.alchemy.com/v2/${INFURA_PROJECT_ID}`,
+      url: "https://polygon-amoy.g.alchemy.com/v2/zNwC9QKnfrFM0NraJfhrBg8MuuJ3hABG", //`https://polygon-amoy.g.alchemy.com/v2/${INFURA_PROJECT_ID}`,
       accounts: [DEPLOYER_PRIVATE_KEY] // Do not commit this!
     }
   }
