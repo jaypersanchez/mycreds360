@@ -75,7 +75,10 @@ app.post('/signin', async (req, res) => {
                 if(!passwordMatch) {
                     return res.status(401).json({ error: 'Invalid email or password' });
                 }
-                return res.json(results[0]);
+                // Exclude password field and include only desired fields
+                const { id, email, remember_token, status } = results[0];
+                const user = { id, email, remember_token, status };
+                return res.json(user);
             })
         });
     })

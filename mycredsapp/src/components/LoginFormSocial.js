@@ -4,20 +4,53 @@ import '../App.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook, faInstagram, faGithub, faGoogle } from '@fortawesome/free-brands-svg-icons';
 
+
 const LoginFormSocial = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [csrf_token, setCsrfToken] = useState("");
   const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState(true);
+  const [email, setEmail] = useState()
+  const [password, setPassword] = useState()
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Implement form submission logic here
-  };
+    try {
+        // Make a POST request to the signin endpoint
+        const response = await fetch(`http://localhost:3000/signin`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password }),
+        });
+
+        // Check if the request was successful
+        if (!response.ok) {
+            // Handle error response
+            const errorData = await response.json();
+            throw new Error(errorData.error);
+        }
+
+        // Parse the JSON response
+        const user = await response.json();
+        console.log(user)
+        // Save the user object to state or localStorage
+        //saveUserToLocalStorage(user); // Implement this function to save the user object
+
+        // Redirect or perform any other actions after successful signin
+        // For example:
+        // history.push('/dashboard'); // Redirect to dashboard
+    } catch (error) {
+        // Handle error
+        console.error('Error signing in:', error.message);
+        // Display error message to the user
+    }
+};
 
   const handleSocialLogin = (provider) => {
     switch (provider) {
@@ -43,6 +76,15 @@ const LoginFormSocial = () => {
     }
   };
   
+  // Function to handle input change for email field
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+  };
+
+  // Function to handle input change for password field
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+  };
 
   return (
     <div className="fullscreen whitebg">
@@ -57,14 +99,29 @@ const LoginFormSocial = () => {
                 {success && <div className="alert alert-success">{success}</div>}
                 <div className="fl w-100">
                   <div className="form-group mb-4 relative limg"> <img src={require("../images/email.png")} alt="Email Icon" />
-                    <input className="input100" type="text" name="email" placeholder="Email" autoComplete="off" />
+                    <input 
+                        className="input100" 
+                        type="text" 
+                        name="email" 
+                        placeholder="Email" 
+                        autoComplete="off" 
+                        value={email}
+                        onChange={handleEmailChange}
+                    />
                   </div>
                   {/* Display validation error */}
                   {errors && errors.email && <p className="invalid-feedback d-block mt-10 validation-error">{errors.email}</p>}
                 </div>
                 <div className="fl w-100">
                   <div className="form-group mb-4 relative limg"> <img src={require("../images/password.png")} alt="Password Icon" />
-                    <input className="input100" type={showPassword ? "text" : "password"} name="password" placeholder="Password" />
+                    <input 
+                        className="input100" 
+                        type={showPassword ? "text" : "password"} 
+                        name="password" 
+                        placeholder="Password" 
+                        value={password}
+                        onChange={handlePasswordChange}
+                    />
                     <span onClick={togglePasswordVisibility} className={`fa fa-fw field-icon toggle-password ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`} id="passwordcheck"></span>
                   </div>
                   {/* Display validation error */}
