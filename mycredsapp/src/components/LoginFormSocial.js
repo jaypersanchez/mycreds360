@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, Redirect, Navigate, useNavigate } from 'react-router-dom';
 import '../App.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook, faInstagram, faGithub, faGoogle } from '@fortawesome/free-brands-svg-icons';
@@ -12,9 +12,38 @@ const LoginFormSocial = () => {
   const [errors, setErrors] = useState(true);
   const [email, setEmail] = useState()
   const [password, setPassword] = useState()
-
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const navigate = useNavigate();
+  
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = JSON.parse(localStorage.getItem('user'));
+      if (user) {
+        setIsAuthenticated(true);
+        navigate('/dashboard')
+      }
+    };
+  
+    fetchUser();
+  });
+
+  const saveUserToLocalStorage = async (user) => {
+    // Check if user object is provided
+    if (user) {
+      // Convert user object to a JSON string and store it in localStorage
+      localStorage.setItem('user', JSON.stringify(user));
+      setIsAuthenticated(true)
+      navigate('/dashboard');
+    } else {
+      // If user object is null, remove it from localStorage
+      localStorage.removeItem('user');
+      setIsAuthenticated(false)
+    }
+    
   };
 
   const handleSubmit = async (e) => {
@@ -39,12 +68,15 @@ const LoginFormSocial = () => {
         // Parse the JSON response
         const user = await response.json();
         console.log(user)
+        if(response.error) {
+            alert('Authentication Failed:', response.error)
+        }
+        
         // Save the user object to state or localStorage
-        //saveUserToLocalStorage(user); // Implement this function to save the user object
-
+        saveUserToLocalStorage(user)
         // Redirect or perform any other actions after successful signin
-        // For example:
-        // history.push('/dashboard'); // Redirect to dashboard
+        navigate('/dashboard'); // Redirect to dashboard
+        //return <Navigate to="/dashboard" />
     } catch (error) {
         // Handle error
         console.error('Error signing in:', error.message);

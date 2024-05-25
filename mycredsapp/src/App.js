@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import './App.css'
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Dashboard from './components/Dashboard'; // Import the Dashboard component
@@ -7,6 +7,17 @@ import LoginForm from './components/LoginFormSocial';
 function App() {
   // State to track authentication status
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = JSON.parse(localStorage.getItem('user'));
+      if (user) {
+        setIsAuthenticated(true);
+      }
+    };
+  
+    fetchUser();
+  }, []);
 
   return (
     <Router>
