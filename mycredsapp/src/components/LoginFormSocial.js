@@ -21,7 +21,7 @@ const LoginFormSocial = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const user = JSON.parse(localStorage.getItem('user'));
+      const user = JSON.parse(sessionStorage.getItem('user'));
       if (user) {
         setIsAuthenticated(true);
         navigate('/dashboard')
@@ -35,12 +35,12 @@ const LoginFormSocial = () => {
     // Check if user object is provided
     if (user) {
       // Convert user object to a JSON string and store it in localStorage
-      localStorage.setItem('user', JSON.stringify(user));
+      sessionStorage.setItem('user', JSON.stringify(user));
       setIsAuthenticated(true)
       navigate('/dashboard');
     } else {
       // If user object is null, remove it from localStorage
-      localStorage.removeItem('user');
+      sessionStorage.removeItem('user');
       setIsAuthenticated(false)
     }
     
