@@ -1,18 +1,24 @@
-import React from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
+import React, {useState} from 'react';
+import './App.css'
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Dashboard from './components/Dashboard'; // Import the Dashboard component
-import LoginForm from './components/LoginForm';
-
-
+import LoginForm from './components/LoginFormSocial';
 
 function App() {
+  // State to track authentication status
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
   return (
-    <Router> {/* Wrap your component tree with Router */}
+    <Router>
       <div className="fullscreen whitebg">
         <div className="container-fluid h-100">
           <div className="row h-100">
             <div className="col-lg-6 col-md-12 cc-left c-center h-100">
-              <LoginForm />
+              {/* Use Routes to handle multiple routes */}
+              <Routes>
+                <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <LoginForm setIsAuthenticated={setIsAuthenticated} />} />
+                <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/" />} />
+              </Routes>
             </div>
             <div className="col-lg-6 col-md-12 h-100 p-0">
               <div className="side-fullimg login">

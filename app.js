@@ -18,7 +18,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const fs = require('fs-extra');
 const path = require('path');
-
+const db = require('./db')
+const bcrypt = require('bcrypt')
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -31,9 +32,67 @@ app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
+app.get('/test-db-connect', async (req, res) => {
+    try {
+        const isConnected = db.testConnection();
+        res.json({connected: isConnected})
+    }
+    catch(error) {
+        console.error('Error signing in user:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+})
+
+app.post('/signin', async (req, res) => {
+    const { email, password } = req.body;
+    // Check if email and password are provided
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+    //pool = db.getPoolConnection()
+    //console.log(pool)
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        // Use the connection to execute a query
+        connection.query(`SELECT * FROM users where email = '${email}'`, (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+    
+            if (err) {
+            console.error('Error executing query:', err);
+            return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+    
+            // Return the query results
+            //console.log(results[0].password);
+            bcrypt.compare(password, results[0].password, (err, passwordMatch) => {
+                if(err) {
+                    return res.status(500).json({ error: `Authentication failed ${err}` });
+                }
+                if(!passwordMatch) {
+                    return res.status(401).json({ error: 'Invalid email or password' });
+                }
+                return res.json(results[0]);
+            })
+        });
+    })
+});
 
 // Redirect root to dashboard
 app.get('/', (req, res) => res.redirect('/dashboard'));
+
+app.get('/users', async (req, res) => {
+    try {
+      const users = await db.executeQuery('SELECT * FROM users');
+      res.json(users);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
 
 // Admin routes for images
 app.get('/admin/image_url/:id', (req, res) => {
