@@ -1,11 +1,9 @@
 import React from 'react';
 import '../App.css';
-import SideNavbar from './SideNavbar';
 
 function Dashboard({ isAuthenticated }) {
   return (
     <div className="dashboard">
-      <SideNavbar />
       <div className="welcome-text pt-2 mb-3">
         <div className="row">
           <div className="col-md-6">  

@@ -34,7 +34,8 @@ const LoginFormSocial = () => {
   const saveUserToLocalStorage = async (user) => {
     // Check if user object is provided
     if (user) {
-      // Convert user object to a JSON string and store it in localStorage
+      // Convert user object to a JSON string and store it in sessionStorage
+      //const expirationTime = new Date().getTime() + expirationHours * 60 * 60 * 1000;
       sessionStorage.setItem('user', JSON.stringify(user));
       setIsAuthenticated(true)
       navigate('/dashboard');
@@ -120,11 +121,13 @@ const LoginFormSocial = () => {
 
   return (
     <div className="fullscreen whitebg">
-      <div className="container-fluid h-100">
-        <div className="row h-100">
-          <div className="col-lg-6 col-md-12 cc-left c-center h-100">
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col-lg-6 col-md-12 cc-left c-center">
             <div className="login-form col-lg-8 col-md-8 col-sm-8">
-              <div className="form-group mb-4"> <img src={require("../images/logo.png")} alt="Logo" /> </div>
+              <div className="form-group mb-4"> 
+                <img src={require("../images/logo.png")} alt="Logo" className="small-log" /> 
+              </div>
               <form className="login100-form validate-form login-form" id="login" onSubmit={handleSubmit}>
                 {/* CSRF Token */}
                 <input type="hidden" name="_token" value={csrf_token} />
@@ -189,6 +192,7 @@ const LoginFormSocial = () => {
           <div className="col-lg-6 col-md-12 h-100 p-0">
             <div className="side-fullimg login">
               {/* Add any content for the right side */}
+              <img src={require("../images/login-bg.png")} alt="Logo" />
             </div>
           </div>
         </div>
