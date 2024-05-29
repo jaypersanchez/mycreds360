@@ -21,8 +21,10 @@ const path = require('path');
 const db = require('./db')
 const bcrypt = require('bcrypt')
 const app = express();
+const multer = require('multer')
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
 
 // Define routes here
 // Enable CORS for all routes
@@ -31,6 +33,9 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
+// Multer configuration for file uploads
+const upload = multer({ dest: 'uploads/' });
 
 app.get('/test-db-connect', async (req, res) => {
     try {
@@ -49,8 +54,7 @@ app.post('/signin', async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
     }
-    //pool = db.getPoolConnection()
-    //console.log(pool)
+    
     db.pool.getConnection((err, connection) => {
         if (err) {
             console.error('Error getting connection from pool:', err);
@@ -88,13 +92,24 @@ app.post('/signin', async (req, res) => {
 app.get('/', (req, res) => res.redirect('/dashboard'));
 
 app.get('/users', async (req, res) => {
-    try {
-      const users = await db.executeQuery('SELECT * FROM users');
-      res.json(users);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      res.status(500).json({ error: 'Internal server error' });
-    }
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        // Use the connection to execute a query
+        connection.query(`SELECT * FROM users`, (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+    
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            
+            return res.json(results);
+        });
+    })
   });
 
 // Admin routes for images
@@ -106,23 +121,140 @@ app.get('/admin/image_url/:id', (req, res) => {
 // Institution Routes
 app.get('/institution/index', (req, res) => {
     // Placeholder for actual institution index
-    res.send('List of Institutions');
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        // Use the connection to execute a query
+        connection.query(`SELECT * FROM institution`, (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+    
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            
+            return res.json(results);
+        });
+    })
 });
+
+/*
+*   Need to add capability to save institution's logo image
+*   and a signature image   
+*/
 app.get('/institution/create', (req, res) => {
-    // Form for creating an institution
-    res.send('Institution Create Form');
+    
+    const { institution_name } = req.body;
+    const logo = req.file ? req.file.path : null; // Assuming req.file contains the uploaded file information
+
+    if (!institution_name) {
+        return res.status(400).json({ error: 'Institution name is required' });
+    }
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        // Use the connection to execute a query
+        connection.query('INSERT INTO institution (institution_name, logo) VALUES (?, ?)', [institution_name, logo], (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+    
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            
+            return res.status(201).json({ message: 'Institution created successfully', institution_id: results.insertId });
+        });
+    });
 });
-app.post('/institution/store', (req, res) => {
+
+/*app.post('/institution/store', (req, res) => {
     // Store an institution
     res.send('Institution Stored');
-});
+});*/
+
+//get institution by ID
 app.get('/institution/edit/:id', (req, res) => {
-    // Edit form for institution
-    res.send('Edit Institution with ID ' + req.params.id);
+    const institutionId = req.params.id;
+
+    // Get a connection from the pool
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        // Execute SQL query to fetch institution record by ID
+        connection.query(
+            'SELECT * FROM institution WHERE id = ?',
+            [institutionId],
+            (err, results) => {
+                // Release the connection back to the pool
+                connection.release();
+
+                if (err) {
+                    console.error('Error executing query:', err);
+                    return res.status(500).json({ error: `Internal server error ${err}` });
+                }
+
+                // Check if institution record exists
+                if (results.length === 0) {
+                    return res.status(404).json({ error: 'Institution not found' });
+                }
+
+                // Return the institution record
+                return res.status(200).json(results[0]);
+            }
+        );
+    });
 });
+
+//update institution data by ID
 app.put('/institution/update/:id', (req, res) => {
-    // Update an institution
-    res.send('Institution Updated with ID ' + req.params.id);
+    const { institution_name, logo, signature } = req.body;
+    const institutionId = req.params.id;
+
+    // Check if institution name is provided
+    if (!institution_name) {
+        return res.status(400).json({ error: 'Institution name is required' });
+    }
+
+    // Get a connection from the pool
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        // Execute SQL query to update institution record
+        connection.query(
+            'UPDATE institution SET institution_name = ?, logo = ?, signature = ? WHERE id = ?',
+            [institution_name, logo, signature, institutionId],
+            (err, results) => {
+                // Release the connection back to the pool
+                connection.release();
+
+                if (err) {
+                    console.error('Error executing query:', err);
+                    return res.status(500).json({ error: `Internal server error ${err}` });
+                }
+
+                // Check if any rows were affected
+                if (results.affectedRows === 0) {
+                    return res.status(404).json({ error: 'Institution not found' });
+                }
+
+                // Return success message
+                return res.status(200).json({ message: 'Institution updated successfully' });
+            }
+        );
+    });
 });
 
 // Using app.get and app.post directly
