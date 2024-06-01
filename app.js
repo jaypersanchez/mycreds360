@@ -295,17 +295,18 @@ app.post('/account/new', (req, res) => {
     //const hashedPassword = await bcrypt.hash(password, 10);
     let hashedPassword
     bcrypt.hash(password, 10, (err, _hashedPassword) => {
+        
         hashedPassword = _hashedPassword
-    })
+    
 
-    console.log(hashedPassword)
+    
     if (!email || !role_user) {
         return res.status(400).json({ error: 'email and role is required' });
     }
     db.pool.getConnection((err, connection) => {
         // status default is 1 for active
         const createUserQuery = 'INSERT INTO users (email, password, status) VALUES (?, ?, ?)';
-        console.log(createUserQuery)
+        
         connection.query(createUserQuery, [email, hashedPassword, 1], (err, results) => {
             // Release the connection back to the pool
             connection.release();
@@ -330,6 +331,7 @@ app.post('/account/new', (req, res) => {
 
             return res.status(201).json({ message: 'Account created successfully', userId });
         });
+    })
     })
 })
 
