@@ -13,6 +13,8 @@ const CreateAccount = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(5);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
     // Fetch users from the endpoint
@@ -32,6 +34,23 @@ const CreateAccount = () => {
         setLoading(false);
       });
   }, []);
+
+  useEffect(() => {
+    // Filter institutions based on search term
+    if (searchTerm.trim() === '') {
+      setSearchResults([]);
+    } else {
+      // Filter users based on search term
+      const filteredUsers = users.filter(user =>
+        user.email.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setSearchResults(filteredUsers);
+      console.log(`search ${JSON.stringify(filteredUsers)}`);
+    }
+  }, [searchTerm, users]);
+  
+
+  
 
   // Get current users based on pagination
   const indexOfLastUser = currentPage * usersPerPage;
@@ -144,23 +163,30 @@ const CreateAccount = () => {
       </div>
 
           <div className="institution-list-section">
-          <ul>
-        {currentUsers.map(user => (
-          <li key={user.id}>
-            <div>ID: {user.id}</div>
-            <div>Email: {user.email}</div>
-            <div>Status: {user.status}</div>
-          </li>
-        ))}
-      </ul>
-      {/* Pagination */}
-      <ul className="pagination">
-        {Array.from({ length: Math.ceil(users.length / usersPerPage) }, (_, i) => (
-          <li key={i} className={currentPage === i + 1 ? 'active' : ''}>
-            <button onClick={() => paginate(i + 1)}>{i + 1}</button>
-          </li>
-        ))}
-      </ul>
+          <input
+            type="text"
+            className="form-control mb-2"
+            placeholder="Search by email"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+                <ul>
+              {searchResults.map(user => (
+                <li key={user.id}>
+                  <div>ID: {user.id}</div>
+                  <div>Email: {user.email}</div>
+                  <div>Status: {user.status}</div>
+                </li>
+              ))}
+            </ul>
+            {/* Pagination */}
+            <ul className="pagination">
+              {Array.from({ length: Math.ceil(users.length / usersPerPage) }, (_, i) => (
+                <li key={i} className={currentPage === i + 1 ? 'active' : ''}>
+                  <button onClick={() => paginate(i + 1)}>{i + 1}</button>
+                </li>
+              ))}
+            </ul>
             
           </div>
 
