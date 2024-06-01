@@ -145,11 +145,11 @@ app.get('/institution/index', (req, res) => {
 *   Need to add capability to save institution's logo image
 *   and a signature image   
 */
-app.get('/institution/create', (req, res) => {
+app.post('/institution/create', (req, res) => {
     
     const { institution_name } = req.body;
     const logo = req.file ? req.file.path : null; // Assuming req.file contains the uploaded file information
-
+    console.log(`New Instituion ${institution_name}`)
     if (!institution_name) {
         return res.status(400).json({ error: 'Institution name is required' });
     }
@@ -178,6 +178,37 @@ app.get('/institution/create', (req, res) => {
     // Store an institution
     res.send('Institution Stored');
 });*/
+
+app.get('/institution/search/:name', (req, res) => {
+    const partialName = `%${req.params.name}%`; // Wrap the search term with '%' to match partial names
+
+    // Get a connection from the pool
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        // Execute SQL query to search for institutions by partial name
+        connection.query(
+            'SELECT * FROM institution WHERE institution_name LIKE ?',
+            [partialName],
+            (err, results) => {
+                // Release the connection back to the pool
+                connection.release();
+
+                if (err) {
+                    console.error('Error executing query:', err);
+                    return res.status(500).json({ error: `Internal server error ${err}` });
+                }
+
+                // Return the search results
+                return res.status(200).json(results);
+            }
+        );
+    });
+});
+
 
 //get institution by ID
 app.get('/institution/edit/:id', (req, res) => {
