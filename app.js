@@ -288,6 +288,51 @@ app.put('/institution/update/:id', (req, res) => {
     });
 });
 
+// Account endpoints
+app.post('/account/new', (req, res) => {
+    const { email, password, role_user } = req.body;
+    // Hash the password
+    //const hashedPassword = await bcrypt.hash(password, 10);
+    let hashedPassword
+    bcrypt.hash(password, 10, (err, _hashedPassword) => {
+        hashedPassword = _hashedPassword
+    })
+
+    console.log(hashedPassword)
+    if (!email || !role_user) {
+        return res.status(400).json({ error: 'email and role is required' });
+    }
+    db.pool.getConnection((err, connection) => {
+        // status default is 1 for active
+        const createUserQuery = 'INSERT INTO users (email, password, status) VALUES (?, ?, ?)';
+        console.log(createUserQuery)
+        connection.query(createUserQuery, [email, hashedPassword, 1], (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+    
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            console.log(results)
+            // Step 2: Retrieve the automatically generated user_id
+            const userId = results.insertId;
+            // Step 3: Insert a record into the role_user table
+            const createRoleUserQuery = 'INSERT INTO role_user (user_id, role_id) VALUES (?, ?)';
+            connection.query(createRoleUserQuery, [userId, role_user], (err) => {
+                if (err) {
+                  console.error('Error assigning role to user:', err);
+                  return res.status(500).json({ error: 'Failed to assign role to user' });
+                }
+                // User created successfully
+                //res.status(201).json({ message: 'User created successfully' });
+            });
+
+            return res.status(201).json({ message: 'Account created successfully', userId });
+        });
+    })
+})
+
 // Using app.get and app.post directly
 app.get('/newcourses', (req, res) => {
     res.send('Listing new courses');

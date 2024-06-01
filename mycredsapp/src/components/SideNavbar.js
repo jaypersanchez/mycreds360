@@ -6,7 +6,7 @@ const SideNavbar = ({ isActive }) => {
   return (
     <nav className={isActive ? "side-navbar active-nav" : "side-navbar"}>
       <ul>
-      <li><Link to="/create-student-account">Create Student Account</Link></li>
+      <li><Link to="/create-account">Create Account</Link></li>
         <li><Link to="/create-institution">Create Institution</Link></li>
         <li><Link to="/create-certificate-template">Create Certificate Template</Link></li>
         <li><Link to="/create-course">Create Course</Link></li>

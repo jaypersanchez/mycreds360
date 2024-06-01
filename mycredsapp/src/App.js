@@ -3,7 +3,7 @@ import './App.css'
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Dashboard from './components/Dashboard'; // Import the Dashboard component
 import LoginForm from './components/LoginFormSocial';
-import CreateStudentAccount from './components/CreateStudentAccount';
+import CreateAccount from './components/CreateAccount';
 import CreateInstitution from './components/CreateInstitution';
 import CreateCertificateTemplate from './components/CreateCertificateTemplate';
 import CreateCourse from './components/CreateCourse';
@@ -34,7 +34,7 @@ function App() {
               <Routes>
                 <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <LoginForm setIsAuthenticated={setIsAuthenticated} />} />
                 <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/" />} />
-                <Route path="/create-student-account" element={<CreateStudentAccount />} />
+                <Route path="/create-account" element={<CreateAccount />} />
                 <Route path="/create-institution" element={<CreateInstitution />} />
                 <Route path="/create-certificate-template" element={<CreateCertificateTemplate />} />
                 <Route path="/create-course" element={<CreateCourse />} />
