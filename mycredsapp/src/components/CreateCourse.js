@@ -8,6 +8,8 @@ const CreateCourse = () => {
   const [error, setError] = useState('')
   const [currentPage, setCurrentPage] = useState(1);
   const [coursesPerPage] = useState(5);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
     fetch('http://localhost:3000/courses')
@@ -27,6 +29,20 @@ const CreateCourse = () => {
       });
   }, []);
   
+  useEffect(() => {
+    // Filter institutions based on search term
+    if (searchTerm.trim() === '') {
+      setSearchResults([]);
+    } else {
+      // Filter users based on search term
+      const filteredCourses = courses.filter(courses =>
+        courses.course_name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setSearchResults(filteredCourses);
+      console.log(`search ${JSON.stringify(filteredCourses)}`);
+    }
+  }, [searchTerm, courses]);
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -70,8 +86,15 @@ const CreateCourse = () => {
         </div>
       </div>
       <div className="course-list-section">
+      <input
+        type="text"
+        className="form-control mb-2"
+        placeholder="Search by course name"
+        value={searchTerm}
+        onChange={e => setSearchTerm(e.target.value)}
+      />
         <ul>
-          {currentCourses.map(course => (
+          {searchResults.map(course => (
             <li key={course.id}>
               <div>Course ID: {course.id}</div>
               <div>Course Name: {course.course_name}</div>
