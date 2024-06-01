@@ -3,6 +3,11 @@ import './App.css'
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Dashboard from './components/Dashboard'; // Import the Dashboard component
 import LoginForm from './components/LoginFormSocial';
+import CreateStudentAccount from './components/CreateStudentAccount';
+import CreateInstitution from './components/CreateInstitution';
+import CreateCertificateTemplate from './components/CreateCertificateTemplate';
+import CreateCourse from './components/CreateCourse';
+import BadgeCreation from './components/BadgeCreation';
 
 function App() {
   // State to track authentication status
@@ -29,6 +34,11 @@ function App() {
               <Routes>
                 <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <LoginForm setIsAuthenticated={setIsAuthenticated} />} />
                 <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/" />} />
+                <Route path="/create-student-account" element={<CreateStudentAccount />} />
+                <Route path="/create-institution" element={<CreateInstitution />} />
+                <Route path="/create-certificate-template" element={<CreateCertificateTemplate />} />
+                <Route path="/create-course" element={<CreateCourse />} />
+                <Route path="/badge-creation" element={<BadgeCreation />} />
               </Routes>
             </div>
             <div className="col-lg-6 col-md-12 h-100 p-0">

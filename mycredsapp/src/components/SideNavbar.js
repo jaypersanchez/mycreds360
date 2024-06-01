@@ -1,13 +1,16 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import '../App.css'; // Import your CSS file containing the styles
 
 const SideNavbar = ({ isActive }) => {
   return (
     <nav className={isActive ? "side-navbar active-nav" : "side-navbar"}>
       <ul>
-        <li><a href="#">Link 1</a></li>
-        <li><a href="#">Link 2</a></li>
-        <li><a href="#">Link 3</a></li>
+      <li><Link to="/create-student-account">Create Student Account</Link></li>
+        <li><Link to="/create-institution">Create Institution</Link></li>
+        <li><Link to="/create-certificate-template">Create Certificate Template</Link></li>
+        <li><Link to="/create-course">Create Course</Link></li>
+        <li><Link to="/badge-creation">Badge Creation</Link></li>
         {/* Add more links as needed */}
       </ul>
     </nav>

@@ -10,26 +10,33 @@ const LoginFormSocial = () => {
   const [csrf_token, setCsrfToken] = useState("");
   const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState(true);
-  const [email, setEmail] = useState()
-  const [password, setPassword] = useState()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const navigate = useNavigate();
+  // State to track whether navigation is needed
+const [shouldNavigate, setShouldNavigate] = useState(false);
   
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const user = JSON.parse(sessionStorage.getItem('user'));
-      if (user) {
-        setIsAuthenticated(true);
-        navigate('/dashboard')
-      }
-    };
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    if (user) {
+      setShouldNavigate(true); // Set flag to navigate
+    }
+  }, []);
   
-    fetchUser();
-  });
+  useEffect(() => {
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    if (user) {
+        console.log(`user exist ${user}`)
+        navigate('/dashboard')
+    }
+  },[shouldNavigate, navigate]);
+
+ 
 
   const saveUserToLocalStorage = async (user) => {
     // Check if user object is provided
@@ -38,7 +45,6 @@ const LoginFormSocial = () => {
       //const expirationTime = new Date().getTime() + expirationHours * 60 * 60 * 1000;
       sessionStorage.setItem('user', JSON.stringify(user));
       setIsAuthenticated(true)
-      navigate('/dashboard');
     } else {
       // If user object is null, remove it from localStorage
       sessionStorage.removeItem('user');
@@ -75,9 +81,7 @@ const LoginFormSocial = () => {
         
         // Save the user object to state or localStorage
         saveUserToLocalStorage(user)
-        // Redirect or perform any other actions after successful signin
-        navigate('/dashboard'); // Redirect to dashboard
-        //return <Navigate to="/dashboard" />
+        navigate("/dashboard")
     } catch (error) {
         // Handle error
         console.error('Error signing in:', error.message);
