@@ -107,10 +107,28 @@ const CreateInstitution = () => {
           <div className="institution-list-section">
             <h3>Institution List</h3>
             <ul>
-              {currentInstitutions.map(institution => (
-                <li key={institution.id}>{institution.institution_name}</li>
-              ))}
-            </ul>
+                {currentInstitutions.map(institution => (
+                  <li key={institution.id}>
+                    {institution.logo ? (
+                      <img
+                        src={`http://localhost:3000/uploads/${institution.logo}`}
+                        alt={institution.institution_name}
+                        style={{ width: '50px', height: '50px', marginRight: '10px' }}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          width: '50px',
+                          height: '50px',
+                          backgroundColor: 'lightgray',
+                          marginRight: '10px',
+                        }}
+                      />
+                    )}
+                    {institution.institution_name}
+                  </li>
+                ))}
+              </ul>
             {/* Pagination */}
             <ul className="pagination">
               {Array.from({ length: Math.ceil(institutions.length / institutionsPerPage) }, (_, i) => (
