@@ -9,6 +9,8 @@ const CreateInstitution = () => {
   const [institutionsPerPage] = useState(5);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
     // Fetch the list of institutions when the component mounts
@@ -28,6 +30,19 @@ const CreateInstitution = () => {
         setLoading(false);
       });
   }, []);
+
+  useEffect(() => {
+    // Filter institutions based on search term
+    if (searchTerm.trim() === '') {
+      setSearchResults([]);
+    } else {
+      const results = institutions.filter(institution =>
+        institution.institution_name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setSearchResults(results)
+      console.log(`search ${JSON.stringify(results)}`)
+    }
+  }, [searchTerm, institutions]);
 
     // Get current institutions
     const indexOfLastInstitution = currentPage * institutionsPerPage;
@@ -106,8 +121,15 @@ const CreateInstitution = () => {
 
           <div className="institution-list-section">
             <h3>Institution List</h3>
+            <input
+            type="text"
+            className="form-control mb-2"
+            placeholder="Search institution by name"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
             <ul>
-                {currentInstitutions.map(institution => (
+                {searchResults.map(institution => (
                   <li key={institution.id}>
                     {institution.logo ? (
                       <img
