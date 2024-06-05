@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Form, Button, Alert, ListGroup, Pagination } from 'react-bootstrap';
 import SideNavbar from './SideNavbar';
 
 
@@ -152,13 +153,14 @@ const CreateInstitution = () => {
                 ))}
               </ul>
             {/* Pagination */}
-            <ul className="pagination">
-              {Array.from({ length: Math.ceil(institutions.length / institutionsPerPage) }, (_, i) => (
-                <li key={i} className={currentPage === i + 1 ? 'active' : ''}>
-                  <button onClick={() => paginate(i + 1)}>{i + 1}</button>
-                </li>
-              ))}
-            </ul>
+            
+            <Pagination className="mt-3">
+          {Array.from({ length: Math.ceil(searchResults.length / institutionsPerPage) }, (_, i) => (
+            <Pagination.Item key={i} active={currentPage === i + 1} onClick={() => paginate(i + 1)}>
+              {i + 1}
+            </Pagination.Item>
+          ))}
+        </Pagination>
           </div>
         </div>
       </div>

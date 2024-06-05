@@ -12,6 +12,9 @@ const SideNavbar = ({ isActive }) => {
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />
       <Navbar.Collapse id="responsive-navbar-nav">
         <Nav className="flex-column">
+          <LinkContainer to="/dashboard">
+            <Nav.Link>Dashboard</Nav.Link>
+          </LinkContainer>
           <LinkContainer to="/create-account">
             <Nav.Link>Create Account</Nav.Link>
           </LinkContainer>

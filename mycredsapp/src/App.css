@@ -113,4 +113,56 @@ li {
 }
 /**** Dashboard end ****************************/
 
+/**************** Create Course ****************/
+/* App.css */
+.add-course-form {
+  padding: 20px;
+  background-color: #f4f4f4; /* Light gray background for form area */
+  border-radius: 8px; /* Rounded corners for the form */
+}
+
+.course-list-section {
+  padding: 20px;
+  background-color: #fff; /* White background for list */
+  border-radius: 8px; /* Rounded corners for the list */
+  margin-top: 20px; /* Space between form and list */
+}
+
+.list-group-item {
+  border: none; /* Optional: remove borders from list items for a cleaner look */
+}
+
+.pagination {
+  display: flex;
+  justify-content: center; /* Center pagination buttons */
+}
+/************** Create course end **********************/
+/****************** Add Account **********************/
+/* App.css */
+.add-account-section, .account-list-section {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  margin-bottom: 10px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+}
+
+/* General padding and margins for form controls */
+.form-control {
+  margin-bottom: 10px;
+}
+/************** Add Account end *******************/
 

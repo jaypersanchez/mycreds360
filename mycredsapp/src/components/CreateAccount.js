@@ -1,6 +1,7 @@
 /* This will create an account and designate as: student, Admin or Super Admin or Badge issuer */
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+//import { TextField, Button, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { Container, Row, Col, Form, Button, Alert, ListGroup, Pagination } from 'react-bootstrap';
 import '../App.css';
 import SideNavbar from './SideNavbar';
 
@@ -112,90 +113,81 @@ const CreateAccount = () => {
   
 
   return (
-    <div className="create-account">
-      <div className="row">
-        <div className="col-lg-3">
-          <SideNavbar />
-        </div>
-        <div className="col-lg-9">
-          <div className="add-account-section">
-            <h3>Add Account</h3>
-            <form onSubmit={handleSubmit}>
-              <TextField
-                type="email"
-                label="Email"
-                variant="outlined"
-                placeholder="Enter email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                type="password"
-                label="Password"
-                variant="outlined"
-                placeholder="Enter password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                fullWidth
-                margin="normal"
-              />
-              <FormControl fullWidth margin="normal">
-                <InputLabel>User Role</InputLabel>
-                <Select
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
-                  required
-                >
-                  <MenuItem value="">Select User Role</MenuItem>
-                  <MenuItem value="1">Super Admin</MenuItem>
-                  <MenuItem value="3">Admin</MenuItem>
-                  <MenuItem value="4">Badge User</MenuItem>
-                  <MenuItem value="7">User</MenuItem>
-                </Select>
-              </FormControl>
-              <Button type="submit" variant="contained" color="primary">
-                Add Account
-              </Button>
-            </form>
-          </div>
-
-          <div className="account-list-section">
-            <TextField
-              type="text"
-              label="Search by email"
-              variant="outlined"
-              placeholder="Search by email"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              fullWidth
-              margin="normal"
+    <Container fluid>
+  <Row>
+    <Col lg={3}>
+      <SideNavbar />
+    </Col>
+    <Col lg={9}>
+      <div className="add-account-section">
+        <h3>Add Account</h3>
+        <Form onSubmit={handleSubmit}>
+          <Form.Group className="mb-3">
+            <Form.Control
+              type="email"
+              placeholder="Enter email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
             />
-            <ul>
-              {searchResults.map(user => (
-                <li key={user.id}>
-                  <div>ID: {user.id}</div>
-                  <div>Email: {user.email}</div>
-                  <div>Status: {user.status}</div>
-                </li>
-              ))}
-            </ul>
-            {/* Pagination */}
-            <ul className="pagination">
-              {Array.from({ length: Math.ceil(users.length / usersPerPage) }, (_, i) => (
-                <li key={i} className={currentPage === i + 1 ? 'active' : ''}>
-                  <Button onClick={() => paginate(i + 1)}>{i + 1}</Button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Control
+              type="password"
+              placeholder="Enter password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>User Role</Form.Label>
+            <Form.Control as="select" value={role} onChange={(e) => setRole(e.target.value)} required>
+              <option value="">Select User Role</option>
+              <option value="1">Super Admin</option>
+              <option value="3">Admin</option>
+              <option value="4">Badge User</option>
+              <option value="7">User</option>
+            </Form.Control>
+          </Form.Group>
+          <Button variant="primary" type="submit">Add Account</Button>
+        </Form>
       </div>
-    </div>
+
+      <div className="account-list-section">
+        <Form.Group className="mb-3">
+          <Form.Control
+            type="text"
+            placeholder="Search by email"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </Form.Group>
+        <ul>
+          {searchResults.map(user => (
+            <li key={user.id}>
+              <div>ID: {user.id}</div>
+              <div>Email: {user.email}</div>
+              <div>Status: {user.status}</div>
+            </li>
+          ))}
+        </ul>
+        <Pagination className="mt-3">
+          {Array.from({ length: Math.ceil(searchResults.length / usersPerPage) }, (_, i) => (
+            <Pagination.Item key={i} active={currentPage === i + 1} onClick={() => paginate(i + 1)}>
+              {i + 1}
+            </Pagination.Item>
+          ))}
+        </Pagination>
+      </div>
+    </Col>
+  </Row>
+</Container>
+
   );
 }
+
+
+
 
 export default CreateAccount;

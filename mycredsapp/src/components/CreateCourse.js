@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Container, Row, Col, Form, Button, Alert, ListGroup, Pagination } from 'react-bootstrap';
 import SideNavbar from './SideNavbar';
 
 const CreateCourse = () => {
@@ -64,55 +65,54 @@ const CreateCourse = () => {
 
 
   return (
-    <div className="row">
-      <div className="col-lg-3">
-          <SideNavbar />
-        </div>
-        <div className="add-course">
-        <div className="add-course-form">
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Enter course name"
-                value={courseName}
-                onChange={(e) => setCourseName(e.target.value)}
-              />
-            </div>
-            {error && <div className="alert alert-danger">{error}</div>}
-            <button type="submit" className="btn btn-primary">Add Course</button>
-          </form>
-        </div>
+    <Container fluid>
+  <Row>
+    <Col lg={3}>
+      <SideNavbar />
+    </Col>
+    <Col lg={9}>
+      <div className="add-course-form">
+        <Form onSubmit={handleSubmit}>
+          <Form.Group className="mb-3">
+            <Form.Control
+              type="text"
+              placeholder="Enter course name"
+              value={courseName}
+              onChange={(e) => setCourseName(e.target.value)}
+            />
+          </Form.Group>
+          {error && <Alert variant="danger">{error}</Alert>}
+          <Button variant="primary" type="submit">Add Course</Button>
+        </Form>
       </div>
-      <div className="course-list-section">
-      <input
-        type="text"
-        className="form-control mb-2"
-        placeholder="Search by course name"
-        value={searchTerm}
-        onChange={e => setSearchTerm(e.target.value)}
-      />
-        <ul>
+      <div className="course-list-section mt-3">
+        <Form.Control
+          type="text"
+          className="mb-2"
+          placeholder="Search by course name"
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+        />
+        <ListGroup>
           {searchResults.map(course => (
-            <li key={course.id}>
+            <ListGroup.Item key={course.id}>
               <div>Course ID: {course.id}</div>
               <div>Course Name: {course.course_name}</div>
-              {/* Add additional course details as needed */}
-            </li>
+            </ListGroup.Item>
           ))}
-        </ul>
-        {/* Pagination */}
-        <ul className="pagination">
-          {Array.from({ length: Math.ceil(courses.length / coursesPerPage) }, (_, i) => (
-            <li key={i} className={currentPage === i + 1 ? 'active' : ''}>
-              <button onClick={() => paginate(i + 1)}>{i + 1}</button>
-            </li>
+        </ListGroup>
+        <Pagination className="mt-3">
+          {Array.from({ length: Math.ceil(searchResults.length / coursesPerPage) }, (_, i) => (
+            <Pagination.Item key={i} active={currentPage === i + 1} onClick={() => paginate(i + 1)}>
+              {i + 1}
+            </Pagination.Item>
           ))}
-        </ul>
+        </Pagination>
       </div>
+    </Col>
+  </Row>
+</Container>
 
-    </div>
   );
 }
 
