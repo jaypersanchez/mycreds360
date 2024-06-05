@@ -336,14 +336,29 @@ app.post('/account/new', (req, res) => {
 })
 
 // Using app.get and app.post directly
-app.get('/newcourses', (req, res) => {
-    res.send('Listing new courses');
+app.get('/courses', (req, res) => {
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        // Use the connection to execute a query
+        connection.query(`SELECT * FROM courses`, (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+    
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            
+            return res.json(results);
+        });
+    })
 });
-app.get('/newcourses/create', (req, res) => {
+
+app.get('/courses/create', (req, res) => {
     res.send('Form to create a new course');
-});
-app.post('/newcourses/store', (req, res) => {
-    res.send('Store new course');
 });
 
 // This route will generate the badge to be issued to the student

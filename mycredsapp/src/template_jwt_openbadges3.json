@@ -1,0 +1,33 @@
+{
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://w3id.org/openbadges/v3"
+    ],
+    "type": ["VerifiableCredential", "Assertion"],
+    "id": "https://example.org/badges/123",
+    "issuer": {
+      "id": "https://example.edu/issuers/456",
+      "type": "Profile",
+      "name": "Example University",
+      "url": "https://example.edu"
+    },
+    "issuanceDate": "2024-05-01T19:73:24Z",
+    "credentialSubject": {
+      "id": "did:example:abcdef123456",
+      "type": "RecipientProfile",
+      "name": "Jane Doe",
+      "hasCredential": {
+        "type": "BadgeClass",
+        "name" (based on mycreds360.badges.course_id): "Certified Data Analyst",
+        "description" (based on mycreds360.courses.course_name related to mycreds360.badges.course_id ): "This badge is awarded to individuals who have successfully completed the Certified Data Analyst program.",
+        "image" (mycreds360.certificates.image_url based on institution id): "https://example.org/badges/images/12345.png",
+        "criteria": "https://example.org/badges/criteria/123",
+        "tags": ["Data Analysis", "Certification", "Professional"]
+      }
+    },
+    "proof": {
+      "type": "JwtProof2020",
+      "jwt": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2V4YW1wbGUuZWR1L2lzc3VlcnMvNDU2Iiwic3ViIjoiZGlkOmV4YW1wbGU6YWJjZGVmMTIzNDU2IiwiYmFkZ2UiOnsiaWQiOiJodHRwczovL2V4YW1wbGUub3JnL2JhZGdlcy8xMjMiLCJuYW1lIjoiQ2VydGlmaWVkIERhdGEgQW5hbHlzdCIsImRlc2NyaXB0aW9uIjoiVGhpcyBiYWRnZSBpcyBhd2FyZGVkIHRvIGluZGl2aWR1YWxzIHdobyBoYXZlIHN1Y2Nlc3NmdWxseSBjb21wbGV0ZWQgdGhlIENlcnRpZmllZCBEYXRhIEFuYWx5c3QgcHJvZ3JhbS4ifSwiZXhwIjoxNzA1MDUzNDAwLCJpYXQiOjE2Mzc4NTM0MDB9.0hR3QJHPTk4S7il9rJHe2YqT5hOs-REzL8A9_2a9sFQ"
+    }
+  }
+  

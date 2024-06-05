@@ -1,0 +1,36 @@
+{
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://w3id.org/openbadges/v3"
+    ],
+    "type": ["VerifiableCredential", "Assertion"],
+    "id": "https://example.org/badges/123",
+    "issuer": {
+      "id": "https://example.edu/issuers/456",
+      "type": "Profile",
+      "name": "Example University",
+      "url": "https://example.edu"
+    },
+    "issuanceDate": "2024-05-01T19:73:24Z",
+    "credentialSubject": {
+      "id": "did:example:abcdef123456",
+      "type": "RecipientProfile",
+      "name": "Jane Doe",
+      "hasCredential": {
+        "type": "BadgeClass",
+        "name": "Certified Data Analyst",
+        "description": "This badge is awarded to individuals who have successfully completed the Certified Data Analyst program.",
+        "image": "https://example.org/badges/images/12345.png",
+        "criteria": "https://example.org/badges/criteria/123",
+        "tags": ["Data Analysis", "Certification", "Professional"]
+      }
+    },
+    "proof": {
+      "type": "LinkedDataSignature2015",
+      "created": "2024-05-02T11:52:35Z",
+      "proofPurpose": "assertionMethod",
+      "verificationMethod": "https://example.edu/keys/1",
+      "jws": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    }
+  }
+  

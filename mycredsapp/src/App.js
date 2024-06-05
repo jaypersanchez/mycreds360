@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import './App.css'
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import Dashboard from './components/Dashboard'; // Import the Dashboard component
 import LoginForm from './components/LoginFormSocial';
 import CreateAccount from './components/CreateAccount';
