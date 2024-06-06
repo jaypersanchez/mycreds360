@@ -73,13 +73,20 @@ const Students = (props) => {
                         {searchResults.map(student => (
                         <li key={student.id}>
                             {student.email}
+                            {student.first_name}
                         </li>
                         ))}
                     </ul>
                     <ul>
                         {students.map(student => (
                             <li key={student.id}>
+                            <div>Student ID: {student.id}</div>    
+                            <div>First Name: {student.first_name}</div>
+                            <div>Last Name: {student.last_name}</div>
                             <div>Email: {student.email}</div>
+                            <div>No. Badges: {student.no_of_badges}</div>
+                            <div>No. Certificates: {student.no_of_certificates}</div>
+                            <div>Mobile: {student.mobile_no}</div>
                             </li>
                         ))}
                     </ul>

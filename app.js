@@ -92,7 +92,7 @@ app.post('/signin', async (req, res) => {
 app.get('/', (req, res) => res.redirect('/dashboard'));
 
 app.get('/students', (req, res) => {
-    const { email} = req.body;
+    
     db.pool.getConnection((err, connection) => {
         if (err) {
             console.error('Error getting connection from pool:', err);
@@ -117,13 +117,11 @@ app.get('/students', (req, res) => {
                 mycreds360.badges b ON u.id = b.user_id
             LEFT JOIN 
                 mycreds360.assign_certificate ac ON u.id = ac.user_id 
-            WHERE 
-                u.email = ?
             GROUP BY 
                 u.id, u.email, up.first_name, up.last_name, up.mobile_no, up.user_photo;
         `;
         // Use the connection to execute a query
-        connection.query(query,[email], (err, results) => {
+        connection.query(query, (err, results) => {
             // Release the connection back to the pool
             connection.release();
     
