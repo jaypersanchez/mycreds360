@@ -152,8 +152,14 @@ const CreateInstitution = () => {
                   </li>
                 ))}
               </ul>
+              <ul>
+              {institutions.map(institution => (
+                <li key={institution.id}>
+                  <div>ID: {institution.institution_name}</div>
+                </li>
+              ))}
+          </ul>
             {/* Pagination */}
-            
             <Pagination className="mt-3">
           {Array.from({ length: Math.ceil(searchResults.length / institutionsPerPage) }, (_, i) => (
             <Pagination.Item key={i} active={currentPage === i + 1} onClick={() => paginate(i + 1)}>

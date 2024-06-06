@@ -101,6 +101,14 @@ const CreateCourse = () => {
             </ListGroup.Item>
           ))}
         </ListGroup>
+        <ul>
+          {currentCourses.map(course => (
+            <li key={course.id}>
+              <div>Course ID: {course.id}</div>
+              <div>Course Name: {course.course_name}</div>
+            </li>
+          ))}
+          </ul>
         <Pagination className="mt-3">
           {Array.from({ length: Math.ceil(searchResults.length / coursesPerPage) }, (_, i) => (
             <Pagination.Item key={i} active={currentPage === i + 1} onClick={() => paginate(i + 1)}>

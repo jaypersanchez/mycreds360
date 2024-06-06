@@ -172,6 +172,15 @@ const CreateAccount = () => {
             </li>
           ))}
         </ul>
+        <ul>
+          {currentUsers.map(user => (
+            <li key={user.id}>
+              <div>ID: {user.id}</div>
+              <div>Email: {user.email}</div>
+              <div>Status: {user.status}</div>
+            </li>
+          ))}
+          </ul>
         <Pagination className="mt-3">
           {Array.from({ length: Math.ceil(searchResults.length / usersPerPage) }, (_, i) => (
             <Pagination.Item key={i} active={currentPage === i + 1} onClick={() => paginate(i + 1)}>
