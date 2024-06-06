@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Form, Button, Alert, ListGroup, Pagination } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Alert, ListGroup, Pagination, Table } from 'react-bootstrap';
 import '../App.css';
 import SideNavbar from './SideNavbar';
 
@@ -69,35 +69,41 @@ const Students = (props) => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 </div>
-                    <ul>
-                        {searchResults.map(student => (
-                        <li key={student.id}>
-                            {student.email}
-                            {student.first_name}
-                        </li>
-                        ))}
-                    </ul>
-                    <ul>
-                        {students.map(student => (
-                            <li key={student.id}>
-                            <div>Student ID: {student.id}</div>    
-                            <div>First Name: {student.first_name}</div>
-                            <div>Last Name: {student.last_name}</div>
-                            <div>Email: {student.email}</div>
-                            <div>No. Badges: {student.no_of_badges}</div>
-                            <div>No. Certificates: {student.no_of_certificates}</div>
-                            <div>Mobile: {student.mobile_no}</div>
-                            </li>
-                        ))}
-                    </ul>
-                    {/* Pagination */}
-                    <Pagination className="mt-3">
-                        {Array.from({ length: Math.ceil(searchResults.length / studentsPerPage) }, (_, i) => (
-                            <Pagination.Item key={i} active={currentPage === i + 1} onClick={() => paginate(i + 1)}>
-                            {i + 1}
-                            </Pagination.Item>
-                        ))} 
-                    </Pagination>
+                <div style={{overflowX: 'auto'}}>
+            <Table striped bordered hover responsive>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>No. of Badges</th>
+                        <th>No. of Certificates</th>
+                        <th>Mobile No</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {students.map(student => (
+                        <tr key={student.id}>
+                            <td>{student.id}</td>
+                            <td>{student.first_name}</td>
+                            <td>{student.last_name}</td>
+                            <td>{student.email}</td>
+                            <td>{student.no_of_badges}</td>
+                            <td>{student.no_of_certificates}</td>
+                            <td>{student.mobile_no}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </Table>
+            <Pagination className="mt-3 justify-content-center">
+                {Array.from({ length: Math.ceil(students.length / studentsPerPage) }, (_, i) => (
+                    <Pagination.Item key={i} active={currentPage === i + 1} onClick={() => paginate(i + 1)}>
+                        {i + 1}
+                    </Pagination.Item>
+                ))}
+            </Pagination>
+        </div>
             </div>
         </div>
     );

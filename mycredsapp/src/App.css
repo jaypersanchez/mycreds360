@@ -157,9 +157,9 @@ li {
 
 .table th,
 .table td {
-  padding: 0.75rem; /* Adequate padding for table cells */
-  vertical-align: top;
-  border-top: 1px solid #dee2e6;
+  white-space: nowrap; /* Ensures content in each cell does not wrap */
+  overflow: hidden; /* Hides any content that overflows */
+  text-overflow: ellipsis; /* Adds ellipsis to overflowed content */
 }
 
 .table thead th {
@@ -175,6 +175,15 @@ li {
   background-color: rgba(0,0,0,.075); /* Hover effect for rows */
 }
 
+.table {
+  margin-top: 20px; /* Adjust the top margin of the table */
+}
+
+.table th.id, .table td.id { width: 50px; }
+.table th.email, .table td.email { min-width: 200px; }
+.table th.badges, .table td.badges,
+.table th.certificates, .table td.certificates,
+.table th.mobile, .table td.mobile { min-width: 130px; }
 
 /************** Create course end **********************/
 
@@ -213,8 +222,10 @@ li {
 
 /* Pagination centered at the bottom of the list */
 .pagination {
+  display: flex;
   justify-content: center; /* Center the pagination items */
   padding: 20px 0;         /* Padding top and bottom for separation */
+  margin-top: 20px;
 }
 
 /************** Add Account end *******************/
