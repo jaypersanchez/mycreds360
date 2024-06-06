@@ -143,6 +143,7 @@ li {
   background-color: #fff; /* White background for list */
   border-radius: 8px; /* Rounded corners for the list */
   margin-top: 20px; /* Space between form and list */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow for depth */
 }
 
 .list-group-item {
@@ -153,7 +154,30 @@ li {
   display: flex;
   justify-content: center; /* Center pagination buttons */
 }
+
+.table th,
+.table td {
+  padding: 0.75rem; /* Adequate padding for table cells */
+  vertical-align: top;
+  border-top: 1px solid #dee2e6;
+}
+
+.table thead th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0,0,0,.05); /* Zebra striping for rows */
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(0,0,0,.075); /* Hover effect for rows */
+}
+
+
 /************** Create course end **********************/
+
 /****************** Add Account **********************/
 /* App.css */
 .add-account-section, .account-list-section {

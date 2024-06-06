@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Form, Button, Alert, ListGroup, Pagination } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Alert, ListGroup, Pagination, Table } from 'react-bootstrap';
 import SideNavbar from './SideNavbar';
 
 const CreateCourse = () => {
@@ -142,32 +142,34 @@ const CreateCourse = () => {
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
         />
-        <ListGroup>
-          {searchResults.map(course => (
-            <ListGroup.Item key={course.id}>
-              <div>Course ID: {course.id}</div>
-              <div>Course Name: {course.course_name}</div>
-              <div>Badge: {course.badge}</div>
-            </ListGroup.Item>
-          ))}
-        </ListGroup>
-        <ul>
-          {currentCourses.map(course => (
-            <li key={course.id}>
-              <div>Course ID: {course.id}</div>
-              <div>Course Name: {course.course_name}</div>
-              <div>Description: {course.description}</div>
-              <div>Badge: {course.badge}</div>
-            </li>
-          ))}
-          </ul>
-        <Pagination className="mt-3">
-          {Array.from({ length: Math.ceil(searchResults.length / coursesPerPage) }, (_, i) => (
-            <Pagination.Item key={i} active={currentPage === i + 1} onClick={() => paginate(i + 1)}>
-              {i + 1}
-            </Pagination.Item>
-          ))}
-        </Pagination>
+          <Table striped bordered hover>
+    <thead>
+      <tr>
+        <th>Course ID</th>
+        <th>Course Name</th>
+        <th>Description</th>
+        <th>Badge</th>
+      </tr>
+    </thead>
+    <tbody>
+      {currentCourses.map(course => (
+        <tr key={course.id}>
+          <td>{course.id}</td>
+          <td>{course.course_name}</td>
+          <td>{course.description}</td>
+          <td>{course.badge}</td>
+        </tr>
+      ))}
+    </tbody>
+  </Table>
+
+  <Pagination className="mt-3">
+    {Array.from({ length: Math.ceil(searchResults.length / coursesPerPage) }, (_, i) => (
+      <Pagination.Item key={i} active={currentPage === i + 1} onClick={() => paginate(i + 1)}>
+        {i + 1}
+      </Pagination.Item>
+    ))}
+  </Pagination>
       </div>
     </div>
   </div>
