@@ -15,13 +15,44 @@ const Students = (props) => {
 
     // Use useEffect for lifecycle methods
     useEffect(() => {
-        // Code to run after the component is mounted
+        // Fetch the list of students when the component mounts
+        fetch('http://localhost:3000/students')
+        .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to fetch institutions.');
+        }
+        return response.json();
+        })
+        .then(data => {
+            console.log(data)
+            setStudents(data);
+            setLoading(false);
+        })
+        .catch(error => {
+        setError('Failed to fetch students list. Please try again later.');
+        setLoading(false);
+        });
     }, []); // Empty array means this runs once on mount and unmount
 
-    // Get current institutions
+    useEffect(() => {
+        // Filter students based on search term
+        if (searchTerm.trim() === '') {
+          setSearchResults([]);
+        } else {
+          const results = students.filter(student =>
+            student.email.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+          setSearchResults(results)
+          console.log(`search ${JSON.stringify(results)}`)
+        }
+    }, [searchTerm, students]);
+
+    // Get current students
     const indexOfLastStudents = currentPage * studentsPerPage;
     const indexOfFirstInstitution = indexOfLastStudents - studentsPerPage;
     const currentStudent = students.slice(indexOfFirstInstitution, indexOfLastStudents);
+    // Change page
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     return (
         <div className="fullscreen">
@@ -38,6 +69,28 @@ const Students = (props) => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 </div>
+                    <ul>
+                        {searchResults.map(student => (
+                        <li key={student.id}>
+                            {student.email}
+                        </li>
+                        ))}
+                    </ul>
+                    <ul>
+                        {students.map(student => (
+                            <li key={student.id}>
+                            <div>Email: {student.email}</div>
+                            </li>
+                        ))}
+                    </ul>
+                    {/* Pagination */}
+                    <Pagination className="mt-3">
+                        {Array.from({ length: Math.ceil(searchResults.length / studentsPerPage) }, (_, i) => (
+                            <Pagination.Item key={i} active={currentPage === i + 1} onClick={() => paginate(i + 1)}>
+                            {i + 1}
+                            </Pagination.Item>
+                        ))} 
+                    </Pagination>
             </div>
         </div>
     );

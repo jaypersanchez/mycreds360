@@ -4,6 +4,8 @@ import SideNavbar from './SideNavbar';
 
 const CreateCourse = () => {
   const [courseName, setCourseName] = useState('')
+  const [badge, setBadge] = useState('needs badge info image')
+  const [description, setDescription] = useState('')
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('')
@@ -40,7 +42,7 @@ const CreateCourse = () => {
         courses.course_name.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setSearchResults(filteredCourses);
-      console.log(`search ${JSON.stringify(filteredCourses)}`);
+      //console.log(`search ${JSON.stringify(filteredCourses)}`);
     }
   }, [searchTerm, courses]);
 
@@ -59,11 +61,42 @@ const CreateCourse = () => {
 
   // Change page
   const paginate = pageNumber => setCurrentPage(pageNumber);
+  
   const handleSubmit = (e) => {
     e.preventDefault();
+    const newCourse = {
+      course_name: courseName,
+      description: description,
+      badge: badge
+    };
+
+    fetch('http://localhost:3000/courses/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(newCourse)
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to add course.');
+        }
+        return response.json();
+      })
+      .then(data => {
+        // Handle success
+        console.log('Course added successfully:', data);
+        // Reset form fields
+        setCourseName('');
+        setDescription('');
+        setBadge('');
+      })
+      .catch(error => {
+        // Handle error
+        console.error('Failed to add course:', error);
+        setError('Failed to add course. Please try again later.');
+      });
   }
-
-
   return (
     <div className="fullscreen">
     <div className="side-navbar">
@@ -79,6 +112,23 @@ const CreateCourse = () => {
               value={courseName}
               onChange={(e) => setCourseName(e.target.value)}
             />
+            <Form.Group className="mb-3">
+            <Form.Control
+              type="text"
+              placeholder="Enter description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Control
+              type="text"
+              placeholder="Enter badge"
+              value={badge}
+              onChange={(e) => setBadge(e.target.value)}
+              />
+          </Form.Group>
+          
           </Form.Group>
           {error && <Alert variant="danger">{error}</Alert>}
           <Button variant="primary" type="submit">Add Course</Button>
@@ -97,6 +147,7 @@ const CreateCourse = () => {
             <ListGroup.Item key={course.id}>
               <div>Course ID: {course.id}</div>
               <div>Course Name: {course.course_name}</div>
+              <div>Badge: {course.badge}</div>
             </ListGroup.Item>
           ))}
         </ListGroup>
@@ -105,6 +156,8 @@ const CreateCourse = () => {
             <li key={course.id}>
               <div>Course ID: {course.id}</div>
               <div>Course Name: {course.course_name}</div>
+              <div>Description: {course.description}</div>
+              <div>Badge: {course.badge}</div>
             </li>
           ))}
           </ul>

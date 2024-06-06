@@ -25,16 +25,16 @@ const SideNavbar = ({ isActive }) => {
             <Nav.Link>Roles</Nav.Link>
           </LinkContainer>
           <LinkContainer to="/create-account">
-            <Nav.Link>Create Account</Nav.Link>
+            <Nav.Link>Accounts</Nav.Link>
           </LinkContainer>
           <LinkContainer to="/create-institution">
-            <Nav.Link>Create Institution</Nav.Link>
+            <Nav.Link>Institutions</Nav.Link>
           </LinkContainer>
           <LinkContainer to="/create-certificate-template">
-            <Nav.Link>Create Certificate Template</Nav.Link>
+            <Nav.Link>Certificate Template</Nav.Link>
           </LinkContainer>
           <LinkContainer to="/create-course">
-            <Nav.Link>Create Course</Nav.Link>
+            <Nav.Link>Courses</Nav.Link>
           </LinkContainer>
           <LinkContainer to="/badge-creation">
             <Nav.Link>Badge Creation</Nav.Link>
