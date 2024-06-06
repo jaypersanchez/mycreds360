@@ -15,17 +15,11 @@ const SideNavbar = ({ isActive }) => {
           <LinkContainer to="/dashboard">
             <Nav.Link>Dashboard</Nav.Link>
           </LinkContainer>
-          <LinkContainer to="/students">
-            <Nav.Link>Students</Nav.Link>
-          </LinkContainer>
           <LinkContainer to="/admin">
             <Nav.Link>Admin</Nav.Link>
           </LinkContainer>
-          <LinkContainer to="/roles">
-            <Nav.Link>Roles</Nav.Link>
-          </LinkContainer>
-          <LinkContainer to="/create-account">
-            <Nav.Link>Accounts</Nav.Link>
+          <LinkContainer to="/students">
+            <Nav.Link>Students</Nav.Link>
           </LinkContainer>
           <LinkContainer to="/create-institution">
             <Nav.Link>Institutions</Nav.Link>
@@ -39,6 +33,16 @@ const SideNavbar = ({ isActive }) => {
           <LinkContainer to="/badge-creation">
             <Nav.Link>Badge Creation</Nav.Link>
           </LinkContainer>
+          <LinkContainer to="/roles">
+            <Nav.Link>Roles</Nav.Link>
+          </LinkContainer>
+          <LinkContainer to="/create-account">
+            <Nav.Link>Accounts</Nav.Link>
+          </LinkContainer>
+          
+          
+          
+          
           {/* Add more links as needed */}
         </Nav>
       </Navbar.Collapse>

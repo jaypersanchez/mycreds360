@@ -7,11 +7,7 @@ import Col from 'react-bootstrap/Col';
 
 function Dashboard() {
 
-  useEffect(() => {
-      console.log("Dashboard component mounted.");
-      // Additional mount logic here if needed
-  }, []);
-
+ 
   return (
     <div className="fullscreen">
       <div className="side-navbar">

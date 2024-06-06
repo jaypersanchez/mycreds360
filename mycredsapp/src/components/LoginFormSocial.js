@@ -83,7 +83,9 @@ const LoginFormSocial = () => {
         
         // Save the user object to state or localStorage
         saveUserToLocalStorage(user)
+        .then(() => {
         navigate("/dashboard")
+        })
     } catch (error) {
         // Handle error
         console.error('Error signing in:', error.message);
