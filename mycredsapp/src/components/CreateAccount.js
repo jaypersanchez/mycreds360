@@ -113,85 +113,85 @@ const CreateAccount = () => {
   
 
   return (
-    <Container fluid>
-  <Row>
-    <Col lg={3}>
-      <SideNavbar />
-    </Col>
-    <Col lg={9}>
-      <div className="add-account-section">
-        <h3>Add Account</h3>
-        <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3">
-            <Form.Control
-              type="email"
-              placeholder="Enter email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Control
-              type="password"
-              placeholder="Enter password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>User Role</Form.Label>
-            <Form.Control as="select" value={role} onChange={(e) => setRole(e.target.value)} required>
-              <option value="">Select User Role</option>
-              <option value="1">Super Admin</option>
-              <option value="3">Admin</option>
-              <option value="4">Badge User</option>
-              <option value="7">User</option>
-            </Form.Control>
-          </Form.Group>
-          <Button variant="primary" type="submit">Add Account</Button>
-        </Form>
+    
+  <div className="fullscreen">
+      <div className="side-navbar">
+            <SideNavbar />
       </div>
+      <div className="main-content">
+          <div className="add-account-section">
+            <h3>Add Account</h3>
+            <Form onSubmit={handleSubmit}>
+              <Form.Group className="mb-3">
+                <Form.Control
+                  type="email"
+                  placeholder="Enter email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Control
+                  type="password"
+                  placeholder="Enter password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>User Role</Form.Label>
+                <Form.Control as="select" value={role} onChange={(e) => setRole(e.target.value)} required>
+                  <option value="">Select User Role</option>
+                  <option value="1">Super Admin</option>
+                  <option value="3">Admin</option>
+                  <option value="4">Badge User</option>
+                  <option value="7">User</option>
+                </Form.Control>
+              </Form.Group>
+              <Button variant="primary" type="submit">Add Account</Button>
+            </Form>
+          </div>
 
-      <div className="account-list-section">
-        <Form.Group className="mb-3">
-          <Form.Control
-            type="text"
-            placeholder="Search by email"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </Form.Group>
-        <ul>
-          {searchResults.map(user => (
-            <li key={user.id}>
-              <div>ID: {user.id}</div>
-              <div>Email: {user.email}</div>
-              <div>Status: {user.status}</div>
-            </li>
-          ))}
-        </ul>
-        <ul>
-          {currentUsers.map(user => (
-            <li key={user.id}>
-              <div>ID: {user.id}</div>
-              <div>Email: {user.email}</div>
-              <div>Status: {user.status}</div>
-            </li>
-          ))}
-          </ul>
-        <Pagination className="mt-3">
-          {Array.from({ length: Math.ceil(searchResults.length / usersPerPage) }, (_, i) => (
-            <Pagination.Item key={i} active={currentPage === i + 1} onClick={() => paginate(i + 1)}>
-              {i + 1}
-            </Pagination.Item>
-          ))}
-        </Pagination>
+          <div className="account-list-section">
+            <Form.Group className="mb-3">
+              <Form.Control
+                type="text"
+                placeholder="Search by email"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </Form.Group>
+            <ul>
+              {searchResults.map(user => (
+                <li key={user.id}>
+                  <div>ID: {user.id}</div>
+                  <div>Email: {user.email}</div>
+                  <div>Status: {user.status}</div>
+                </li>
+              ))}
+            </ul>
+            <ul>
+              {currentUsers.map(user => (
+                <li key={user.id}>
+                  <div>ID: {user.id}</div>
+                  <div>Email: {user.email}</div>
+                  <div>Status: {user.status}</div>
+                </li>
+              ))}
+              </ul>
+            <Pagination className="mt-3">
+              {Array.from({ length: Math.ceil(searchResults.length / usersPerPage) }, (_, i) => (
+                <Pagination.Item key={i} active={currentPage === i + 1} onClick={() => paginate(i + 1)}>
+                  {i + 1}
+                </Pagination.Item>
+              ))}
+            </Pagination>
+          </div>
       </div>
-    </Col>
-  </Row>
-</Container>
+  </div>
+
 
   );
 }

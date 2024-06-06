@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import '../App.css';
 import SideNavbar from './SideNavbar';
@@ -6,12 +6,18 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 function Dashboard() {
+
+  useEffect(() => {
+      console.log("Dashboard component mounted.");
+      // Additional mount logic here if needed
+  }, []);
+
   return (
-    <div className="row">
-      <div className="col-lg-3">
+    <div className="fullscreen">
+      <div className="side-navbar">
         <SideNavbar />
       </div>
-      <div className="col-lg-9">
+      <div className="main-content">
         <div className="welcome-text pt-2 mb-3">
           <Outlet /> {/* Render nested routes */}
           <div className="row justify-content-center"> 

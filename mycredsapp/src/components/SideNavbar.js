@@ -15,6 +15,15 @@ const SideNavbar = ({ isActive }) => {
           <LinkContainer to="/dashboard">
             <Nav.Link>Dashboard</Nav.Link>
           </LinkContainer>
+          <LinkContainer to="/students">
+            <Nav.Link>Students</Nav.Link>
+          </LinkContainer>
+          <LinkContainer to="/admin">
+            <Nav.Link>Admin</Nav.Link>
+          </LinkContainer>
+          <LinkContainer to="/roles">
+            <Nav.Link>Roles</Nav.Link>
+          </LinkContainer>
           <LinkContainer to="/create-account">
             <Nav.Link>Create Account</Nav.Link>
           </LinkContainer>

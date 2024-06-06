@@ -8,19 +8,28 @@ h1 {
   font-size: 2rem; /* default */
 }
 
-@media (min-width: 768px) { /* Medium devices (tablets, 768px and up) */
-  h1 {
-    font-size: 3rem;
+@media (max-width: 992px) {
+  .side-navbar {
+    width: 100%; /* Full width on smaller screens */
+    height: auto; /* Adjust height for compact view */
+    position: static; /* Static positioning on smaller screens */
+  }
+  .main-content {
+    margin-left: 0; /* Remove margin on smaller screens */
+    width: 100%; /* Full width on smaller screens */
   }
 }
 
 /* Additional custom styles */
 .fullscreen {
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  background-color: #fff; /* example background color */
+  width: 100%; /* Full width to ensure it covers all available space */
+  min-height: 100vh; /* Minimum height to cover the full viewport height */
+  display: flex; /* Flexbox to manage inner items */
+  align-items: center; /* Center align items vertically */
+  justify-content: center; /* Center horizontally if needed */
+  background-color: #fff; /* Example background color */
 }
+
 
 .login-form {
   padding: 20px;
@@ -51,10 +60,18 @@ h1 {
   position: fixed; /* Fixed sidebar for full height */
   top: 0;
   left: 0;
-  height: 100%;
+  height: 100vh; /* Full viewport height */
   width: 250px; /* Adjust width based on preference */
   background-color: #0e78e2; /* Dark theme for sidebar */
   overflow-x: hidden; /* Prevent horizontal scroll */
+  z-index: 1000; /* Ensure it's above other content */
+}
+
+.main-content {
+  margin-left: 250px; /* Offset left margin by the sidebar's width */
+  width: calc(100% - 250px); /* Reduce width to accommodate sidebar */
+  min-height: 100vh; /* Full viewport height */
+  background-color: #fff; /* Background color for main content */
 }
 
 .active-nav {
@@ -141,28 +158,40 @@ li {
 /* App.css */
 .add-account-section, .account-list-section {
   padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  margin-bottom: 20px;
+  background-color: #fff;  /* White background for better focus */
+  margin-bottom: 20px;     /* Space between sections */
+  border-radius: 8px;      /* Rounded corners for aesthetics */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);  /* Subtle shadow for depth */
 }
 
+/* Adjust the width of the form controls to fit better in the layout */
+.form-control {
+  max-width: 500px;  /* Limiting the max width for better visual structure */
+  width: 100%;       /* Full width to stretch across the container */
+  margin: 0 auto;    /* Centering the form control */
+}
+
+/* Styling for lists to make them more readable */
 ul {
-  list-style-type: none;
+  list-style-type: none;  /* Remove bullet points */
   padding: 0;
+  margin: 0 auto;         /* Center align the list */
+  max-width: 500px;       /* Consistent with form control width */
 }
 
 li {
-  margin-bottom: 10px;
+  background-color: #f8f9fa;  /* Light background for each list item */
+  padding: 10px;             /* Padding for spacing inside list items */
+  margin-bottom: 5px;        /* Space between items */
+  border-radius: 5px;        /* Rounded corners for list items */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);  /* Light shadow for depth */
 }
 
+/* Pagination centered at the bottom of the list */
 .pagination {
-  display: flex;
-  justify-content: center;
+  justify-content: center; /* Center the pagination items */
+  padding: 20px 0;         /* Padding top and bottom for separation */
 }
 
-/* General padding and margins for form controls */
-.form-control {
-  margin-bottom: 10px;
-}
 /************** Add Account end *******************/
 

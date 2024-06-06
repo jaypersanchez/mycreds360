@@ -97,11 +97,11 @@ const CreateInstitution = () => {
 
   return (
     
-      <div className="row">
-        <div className="col-lg-3">
+      <div className="fullscreen">
+        <div className="side-navbar">
           <SideNavbar />
         </div>
-        <div className="col-lg-9">
+        <div className="main-content">
         <div className="add-institution-section">
         <div className="add-institution-form">
               <form onSubmit={handleSubmit}>

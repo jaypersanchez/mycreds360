@@ -65,12 +65,11 @@ const CreateCourse = () => {
 
 
   return (
-    <Container fluid>
-  <Row>
-    <Col lg={3}>
-      <SideNavbar />
-    </Col>
-    <Col lg={9}>
+    <div className="fullscreen">
+    <div className="side-navbar">
+          <SideNavbar />
+    </div>
+    <div className="main-content">
       <div className="add-course-form">
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">
@@ -117,9 +116,8 @@ const CreateCourse = () => {
           ))}
         </Pagination>
       </div>
-    </Col>
-  </Row>
-</Container>
+    </div>
+  </div>
 
   );
 }

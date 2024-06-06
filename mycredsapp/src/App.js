@@ -10,6 +10,9 @@ import CreateInstitution from './components/CreateInstitution';
 import CreateCertificateTemplate from './components/CreateCertificateTemplate';
 import CreateCourse from './components/CreateCourse';
 import BadgeCreation from './components/BadgeCreation';
+import Admin from './components/Admin';
+import Roles from './components/Roles';
+import Students from './components/Students';
 
 function App() {
   // State to track authentication status
@@ -36,11 +39,14 @@ function App() {
               <Routes>
                 <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <LoginForm setIsAuthenticated={setIsAuthenticated} />} />
                 <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/" />} />
-                <Route path="/create-account" element={<CreateAccount />} />
-                <Route path="/create-institution" element={<CreateInstitution />} />
-                <Route path="/create-certificate-template" element={<CreateCertificateTemplate />} />
-                <Route path="/create-course" element={<CreateCourse />} />
-                <Route path="/badge-creation" element={<BadgeCreation />} />
+                <Route path="/students" element={isAuthenticated ? <Students /> : <Navigate to="/" />} />
+                <Route path="/admin" element={isAuthenticated ? <Admin /> : <Navigate to="/" />} />
+                <Route path="/roles" element={isAuthenticated ? <Roles /> : <Navigate to="/" />} />
+                <Route path="/create-account" element={ isAuthenticated ? <CreateAccount /> : <Navigate to="/" />}  />
+                <Route path="/create-institution" element={ isAuthenticated ? <CreateInstitution /> : <Navigate to="/" /> } />
+                <Route path="/create-certificate-template" element={ isAuthenticated ? <CreateCertificateTemplate /> : <Navigate to="/" /> } />
+                <Route path="/create-course" element={ isAuthenticated ? <CreateCourse /> : <Navigate to="/" /> } />
+                <Route path="/badge-creation" element={ isAuthenticated ? <BadgeCreation /> : <Navigate to="/" /> } />
               </Routes>
             </div>
             <div className="col-lg-6 col-md-12 h-100 p-0">

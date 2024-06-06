@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
-import { Link, Redirect, Navigate, useNavigate } from 'react-router-dom';
+import { Link, Redirect, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import '../App.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook, faInstagram, faGithub, faGoogle } from '@fortawesome/free-brands-svg-icons';
@@ -16,28 +16,29 @@ const LoginFormSocial = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const navigate = useNavigate();
   // State to track whether navigation is needed
-const [shouldNavigate, setShouldNavigate] = useState(false);
+  const [shouldNavigate, setShouldNavigate] = useState(false);
+  const location = useLocation();
   
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   useEffect(() => {
-    const user = JSON.parse(sessionStorage.getItem('user'));
-    if (user) {
-      setShouldNavigate(true); // Set flag to navigate
+    if(location.pathname !== '/dashboard') {
+      const user = JSON.parse(sessionStorage.getItem('user'));
+      if (user) {
+        setShouldNavigate(true); // Set flag to navigate
+      }
     }
-  }, []);
+  }, [navigate, location]);
   
   useEffect(() => {
     const user = JSON.parse(sessionStorage.getItem('user'));
     if (user) {
-        console.log(`user exist ${user}`)
+        //console.log(`user exist ${user}`)
         navigate('/dashboard')
     }
   },[shouldNavigate, navigate]);
-
- 
 
   const saveUserToLocalStorage = async (user) => {
     // Check if user object is provided
