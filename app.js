@@ -462,3 +462,28 @@ app.post('/createBadge', async (req, res) => {
         assertion
     });
 });
+
+app.get('/roles', (req, res) => {
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        const query = `select up.id, up.user_id, up.first_name, up.last_name, roles.label 
+                        from mycreds360.userprofiles up
+                        join mycreds360.role_user ru on up.user_id = ru.user_id
+                        join mycreds360.roles roles on roles.id = ru.role_id;`
+        // Use the connection to execute a query
+        connection.query(query, (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+    
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            
+            return res.json(results);
+        });
+    })
+});

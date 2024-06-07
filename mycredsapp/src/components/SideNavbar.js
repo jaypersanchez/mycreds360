@@ -18,6 +18,9 @@ const SideNavbar = ({ isActive }) => {
           <LinkContainer to="/admin">
             <Nav.Link>Admin</Nav.Link>
           </LinkContainer>
+          <LinkContainer to="/create-account">
+            <Nav.Link>Accounts</Nav.Link>
+          </LinkContainer>
           <LinkContainer to="/students">
             <Nav.Link>Students</Nav.Link>
           </LinkContainer>
@@ -36,12 +39,6 @@ const SideNavbar = ({ isActive }) => {
           <LinkContainer to="/roles">
             <Nav.Link>Roles</Nav.Link>
           </LinkContainer>
-          <LinkContainer to="/create-account">
-            <Nav.Link>Accounts</Nav.Link>
-          </LinkContainer>
-          
-          
-          
           
           {/* Add more links as needed */}
         </Nav>
