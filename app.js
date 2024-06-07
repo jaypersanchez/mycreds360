@@ -89,10 +89,45 @@ app.post('/signin', async (req, res) => {
 });
 
 // Redirect root to dashboard
-app.get('/', (req, res) => res.redirect('/dashboard'));
+app.get('/', (req, res) =>  res.redirect('/dashboard'));
+
+app.get('/dashboard/data', (req, res) => {
+    const { userId } = req.query;
+    console.log(userId)
+    // Placeholder for actual dashboard data
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        const query = `SELECT 
+                        up.first_name,
+                        up.last_name,
+                        COUNT(CASE WHEN u.status = 1 THEN 1 END) AS active_users,
+                        COUNT(CASE WHEN u.status = 0 THEN 1 END) AS inactive_users
+                        FROM 
+                        mycreds360.users u
+                        JOIN 
+                        mycreds360.userprofiles up ON u.id = up.user_id
+                        WHERE u.id = 220
+                        GROUP BY 
+                        up.first_name, up.last_name;`
+        // Use the connection to execute a query
+        connection.query(query,[userId], (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+    
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            
+            return res.json(results);
+        });
+    })
+});
 
 app.get('/students', (req, res) => {
-    
     db.pool.getConnection((err, connection) => {
         if (err) {
             console.error('Error getting connection from pool:', err);

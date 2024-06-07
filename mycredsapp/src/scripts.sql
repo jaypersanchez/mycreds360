@@ -38,6 +38,41 @@ SELECT mycreds360.users.id,
     JOIN mycreds360.badges on mycreds360.users.id = mycreds360.badges.user_id
     JOIN mycreds360.assign_certificate on mycreds360.users.id = mycreds360.assign_certificate.user_id 
     WHERE mycreds360.users.email = 'abinash@zaigoinfotech.com';
+
+SELECT 
+	u.id,
+    u.status,
+    a.active_users
+FROM
+	mycreds360.users u
+CROSS JOIN (
+    SELECT COUNT(*) AS active_users
+    FROM mycreds360.users
+    WHERE status = 1
+) a
+WHERE
+    u.status = 1;
+    
+SELECT 
+  up.first_name,
+  up.last_name,
+  COUNT(CASE WHEN u.status = 1 THEN 1 END) AS active_users,
+  COUNT(CASE WHEN u.status = 0 THEN 1 END) AS inactive_users
+FROM 
+  mycreds360.users u
+JOIN 
+  mycreds360.userprofiles up ON u.id = up.user_id
+WHERE u.id = 220
+GROUP BY 
+  up.first_name, up.last_name;
+    
+
+SELECT 
+    COUNT(CASE WHEN u.status = 1 THEN u.id END) AS active_users,
+    COUNT(CASE WHEN u.status = 0 THEN u.id END) AS inactive_users
+FROM
+    mycreds360.users u;
+
     
 SELECT 
     u.id, 
@@ -60,10 +95,10 @@ WHERE
     u.email = 'abinash@zaigoinfotech.com'
 GROUP BY 
     u.id, u.email, up.first_name, up.last_name, up.mobile_no, up.user_photo;
-
     
 select * from mycreds360.badges;
-select * from mycreds360.role_user 
+select * from mycreds360.role_user; 
 select * from mycreds360.users join mycreds360.userprofiles on mycreds360.users.id = mycreds360.userprofiles.user_id;
-insert into mycreds360.userprofiles (user_id, first_name, last_name, mobile_no, created_at, updated_at) values (220, 'Jayper', 'Sanchez', 5555555555, NOW(), NOW())
+insert into mycreds360.userprofiles (user_id, first_name, last_name, mobile_no, created_at, updated_at) values (220, 'Jayper', 'Sanchez', 5555555555, NOW(), NOW());
 select * from mycreds360.courses;
+
