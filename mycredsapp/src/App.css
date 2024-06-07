@@ -276,3 +276,44 @@ li {
 
 /************** Add Account end *******************/
 
+/************ Roles ******************/
+.roles-list ul {
+  list-style-type: none; /* Removes default list styling */
+  padding: 0;
+}
+
+.roles-list li {
+  background: #f4f4f4; /* Light grey background */
+  margin-bottom: 8px; /* Adds space between items */
+  padding: 10px; /* Adds padding inside each item */
+  border-radius: 4px; /* Rounded corners for each item */
+}
+
+.roles-list div {
+  margin-bottom: 4px; /* Adds a small space between the divs */
+}
+
+.roles-list table {
+  width: 100%; /* Sets the table width to full container width */
+  border-collapse: collapse; /* Removes space between borders */
+}
+
+.roles-list th, .roles-list td {
+  padding: 8px; /* Adds padding to all table cells */
+  text-align: left; /* Aligns text to the left */
+  border-bottom: 1px solid #ddd; /* Adds a bottom border to all cells */
+}
+
+.roles-list th {
+  background-color: #f4f4f4; /* Light grey background for headers */
+}
+
+.roles-list tr:nth-child(even) {
+  background-color: #f9f9f9; /* Zebra striping for rows */
+}
+
+.roles-list tr:hover {
+  background-color: #f1f1f1; /* Highlight on mouse over */
+}
+
+/********** Roles end ************/
