@@ -155,7 +155,25 @@ const CreateInstitution = () => {
               <ul>
               {institutions.map(institution => (
                 <li key={institution.id}>
-                  <div>ID: {institution.institution_name}</div>
+                {institution.logo ? (
+                  <img
+                    src={`http://localhost:3000/uploads/${institution.logo}`}
+                    alt={institution.institution_name}
+                    style={{ width: '50px', height: '50px', marginRight: '10px' }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      width: '50px',
+                      height: '50px',
+                      backgroundColor: 'lightgray',
+                      marginRight: '10px',
+                    }}
+                  />
+                )}
+                {institution.institution_name}
+                {institution.logo}
+                {institution.logo}
                 </li>
               ))}
           </ul>
