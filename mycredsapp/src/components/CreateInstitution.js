@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Form, Button, Alert, ListGroup, Pagination } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Alert, ListGroup, Pagination, Table } from 'react-bootstrap';
 import SideNavbar from './SideNavbar';
 
 
@@ -129,62 +129,45 @@ const CreateInstitution = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-            <ul>
-                {searchResults.map(institution => (
-                  <li key={institution.id}>
-                    {institution.logo ? (
-                      <img
-                        src={`http://localhost:3000/uploads/${institution.logo}`}
-                        alt={institution.institution_name}
-                        style={{ width: '50px', height: '50px', marginRight: '10px' }}
-                      />
-                    ) : (
-                      <div
-                        style={{
-                          width: '50px',
-                          height: '50px',
-                          backgroundColor: 'lightgray',
-                          marginRight: '10px',
-                        }}
-                      />
-                    )}
-                    {institution.institution_name}
-                  </li>
-                ))}
-              </ul>
-              <ul>
-              {institutions.map(institution => (
-                <li key={institution.id}>
-                {institution.logo ? (
-                  <img
-                    src={`http://localhost:3000/uploads/${institution.logo}`}
-                    alt={institution.institution_name}
-                    style={{ width: '50px', height: '50px', marginRight: '10px' }}
-                  />
-                ) : (
-                  <div
-                    style={{
-                      width: '50px',
-                      height: '50px',
-                      backgroundColor: 'lightgray',
-                      marginRight: '10px',
-                    }}
-                  />
-                )}
-                {institution.institution_name}
-                {institution.logo}
-                {institution.logo}
-                </li>
-              ))}
-          </ul>
-            {/* Pagination */}
-            <Pagination className="mt-3">
-          {Array.from({ length: Math.ceil(searchResults.length / institutionsPerPage) }, (_, i) => (
+            <div>
+    <Table striped bordered hover responsive>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Logo</th>
+                <th>Institution Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {searchResults.map((institution, index) => (
+                <tr key={institution.id}>
+                    <td>{index + 1}</td>
+                    <td>
+                        {institution.logo ? (
+                            <img
+                                src={`http://localhost:3000/uploads/${institution.logo}`}
+                                alt={institution.institution_name}
+                                style={{ width: '50px', height: '50px' }}
+                            />
+                        ) : (
+                            <div style={{ width: '50px', height: '50px', backgroundColor: 'lightgray' }}></div>
+                        )}
+                    </td>
+                    <td>{institution.institution_name}</td>
+                    <td>{institution.signature}</td>
+                </tr>
+            ))}
+        </tbody>
+    </Table>
+    <Pagination className="mt-3 justify-content-center">
+        {Array.from({ length: Math.ceil(searchResults.length / institutionsPerPage) }, (_, i) => (
             <Pagination.Item key={i} active={currentPage === i + 1} onClick={() => paginate(i + 1)}>
-              {i + 1}
+                {i + 1}
             </Pagination.Item>
-          ))}
-        </Pagination>
+        ))}
+    </Pagination>
+</div>
+
           </div>
         </div>
       </div>

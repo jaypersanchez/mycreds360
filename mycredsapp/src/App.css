@@ -18,6 +18,23 @@ h1 {
     margin-left: 0; /* Remove margin on smaller screens */
     width: 100%; /* Full width on smaller screens */
   }
+  .table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .table-responsive > .table {
+      margin-bottom: 0;
+  }
+  .table-responsive > .table > thead > tr > th,
+  .table-responsive > .table > tbody > tr > th,
+  .table-responsive > .table > tfoot > tr > th,
+  .table-responsive > .table > thead > tr > td,
+  .table-responsive > .table > tbody > tr > td,
+  .table-responsive > .table > tfoot > tr > td {
+      white-space: nowrap;
+  }
 }
 
 /* Additional custom styles */
@@ -160,6 +177,9 @@ li {
   white-space: nowrap; /* Ensures content in each cell does not wrap */
   overflow: hidden; /* Hides any content that overflows */
   text-overflow: ellipsis; /* Adds ellipsis to overflowed content */
+  padding: 0.75rem;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
 }
 
 .table thead th {
@@ -176,6 +196,9 @@ li {
 }
 
 .table {
+  width: 100%;
+    margin-bottom: 1rem;
+    color: #212529;
   margin-top: 20px; /* Adjust the top margin of the table */
 }
 
@@ -184,6 +207,13 @@ li {
 .table th.badges, .table td.badges,
 .table th.certificates, .table td.certificates,
 .table th.mobile, .table td.mobile { min-width: 130px; }
+
+.table .placeholder {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  background-color: #f0f0f0;
+}
 
 /************** Create course end **********************/
 
@@ -226,6 +256,22 @@ li {
   justify-content: center; /* Center the pagination items */
   padding: 20px 0;         /* Padding top and bottom for separation */
   margin-top: 20px;
+  list-style: none;
+    border-radius: 0.25rem;
+}
+
+.pagination .page-link:hover {
+  color: #0056b3;
+  text-decoration: none;
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+}
+
+.pagination .page-item.active .page-link {
+  z-index: 3;
+  color: #fff;
+  background-color: #007bff;
+  border-color: #007bff;
 }
 
 /************** Add Account end *******************/
