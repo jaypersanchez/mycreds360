@@ -13,6 +13,27 @@ const Students = (props) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState([]);
 
+    //Add a new student student states
+    const [users, setUsers] = useState([]);
+    const [liststudents, setListStudents] = useState([]);
+    const [selectedUserId, setSelectedUserId] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [email, setEmail] = useState('');
+    const [mobileNo, setMobileNo] = useState('');
+    const [userPhoto, setUserPhoto] = useState(null);
+
+    //get all users for selecting a student.
+    useEffect(() => {
+        fetch('http://localhost:3000/users')  // Adjust this URL as necessary
+            .then(response => response.json())
+            .then(data => {
+                setUsers(data)
+                //console.log(data)
+            })
+            .catch(error => console.error('Error fetching users:', error));
+    }, []);
+
     // Use useEffect for lifecycle methods
     useEffect(() => {
         // Fetch the list of students when the component mounts
@@ -43,7 +64,7 @@ const Students = (props) => {
             student.email.toLowerCase().includes(searchTerm.toLowerCase())
           );
           setSearchResults(results)
-          console.log(`search ${JSON.stringify(results)}`)
+          //console.log(`search ${JSON.stringify(results)}`)
         }
     }, [searchTerm, students]);
 
@@ -54,12 +75,53 @@ const Students = (props) => {
     // Change page
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        const formData = new FormData();
+        formData.append('user_id', selectedUserId);
+        formData.append('email', email);
+        formData.append('first_name', firstName);
+        formData.append('last_name', lastName);
+        formData.append('mobile_no', mobileNo);
+        formData.append('user_photo', userPhoto);
+
+        try {
+            const response = await fetch('http://localhost:3000/students/create', {
+                method: 'POST',
+                body: formData,
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error);
+            alert('Student added successfully!');
+        } catch (error) {
+            console.error('Failed to add student:', error);
+            alert('Failed to add student: ' + error.message);
+        }
+    };
+
     return (
         <div className="fullscreen">
             <div className="side-navbar">
                 <SideNavbar />
             </div>
             <div className="main-content">
+            <div className="add-student-form">
+                <h3>Add New Student</h3>
+                <form onSubmit={handleSubmit}>
+                    <select value={selectedUserId} onChange={e => setSelectedUserId(e.target.value)} required>
+                        <option value="">Select a User</option>
+                        {users.map(user => (
+                            <option key={user.id} value={user.id}>{user.email}</option>
+                        ))}
+                    </select>
+                    <input type="text" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
+                    <input type="text" placeholder="First Name" value={firstName} onChange={e => setFirstName(e.target.value)} required />
+                    <input type="text" placeholder="Last Name" value={lastName} onChange={e => setLastName(e.target.value)} required />
+                    <input type="text" placeholder="Mobile No" value={mobileNo} onChange={e => setMobileNo(e.target.value)} required />
+                    <input type="file" onChange={e => setUserPhoto(e.target.files[0])} />
+                    <button type="submit">Add Student</button>
+                </form>
+            </div>
                 <div className="institution-list-section">
                     <input
                         type="text"

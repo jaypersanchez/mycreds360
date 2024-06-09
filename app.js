@@ -143,7 +143,7 @@ app.post('/students/create', upload.single('user_photo'), (req, res) => {
             return res.status(500).json({ error: 'Internal server error' });
         }
         // Use the connection to execute a query
-        connection.query('INSERT INTO userprofiles (user_id, first_name, last_name, mobile_no, user_photo, created_ag, updated_at) VALUES (?, ?, ?, ?, ?)', [email, first_name, last_name, mobile_no, user_photo, NOW(), NOW()], (err, results) => {
+        connection.query('INSERT INTO userprofiles (user_id, first_name, last_name, mobile_no, user_photo) VALUES (?, ?, ?, ?, ?)', [user_id, first_name, last_name, mobile_no, user_photo], (err, results) => {
             // Release the connection back to the pool
             connection.release();
     
@@ -156,6 +156,7 @@ app.post('/students/create', upload.single('user_photo'), (req, res) => {
         });
     });
 });
+
 
 /*
 *   Students have roles set to 7
@@ -214,7 +215,7 @@ app.get('/users', async (req, res) => {
             return res.status(500).json({ error: 'Internal server error' });
         }
         // Use the connection to execute a query
-        connection.query(`SELECT * FROM users`, (err, results) => {
+        connection.query(`SELECT * FROM users ORDER BY email ASC`, (err, results) => {
             // Release the connection back to the pool
             connection.release();
     

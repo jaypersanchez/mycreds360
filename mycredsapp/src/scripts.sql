@@ -1,11 +1,12 @@
-SELECT * FROM mycreds360.users;
-SELECT * FROM mycreds360.users where mycreds360.users.email = 'jaypersanchez@gmail.com';
-insert into mycreds360.users (email, password, status) SELECT email, password, status FROM mycreds360.users where mycreds360.users.email = 'admin@admin.com';
+SELECT * FROM mycreds360.users order by ascending;
+SELECT * FROM mycreds360.users where mycreds360.users.email = 'jay.sanchez@w3cb.io';
+insert into mycreds360.users (email, password, status) SELECT email, password, status FROM mycreds360.users where mycreds360.users.email = 'jay.sanchez@w3cb.io';
 update mycreds360.users set email = 'jaypersanchez@gmail.com' where id=220;
 update mycreds360.users set password = '$2a$12$yuo3YIZPG611cmX6tgOoOuhSFobK6ZjNZeJqrXnEyhu47qD9APhva' where id=220;
-select * from mycreds360.users where email = 'jaypersanchez@gmail.com'
+select * from mycreds360.users where email = 'jaypersanchez@gmail.com';
 desc mycreds360.userprofiles;
 desc mycreds360.badges;
+select * from mycreds360.badges where user_id = 220;
 desc mycreds360.institution;
 desc mycreds360.certificate;
 desc mycreds360.courses;
@@ -25,7 +26,7 @@ SELECT `institution`.`id`,
 FROM `mycreds360`.`institution`;
 select * from mycreds360.institution;
 alter table mycreds360.institution ADD COLUMN institution_url VARCHAR(255) NULL;
-select * from mycreds360.users join mycreds360.userprofiles on mycreds360.users.id = mycreds360.userprofiles.user_id;
+select * from mycreds360.users join mycreds360.userprofiles on mycreds360.users.id = mycreds360.userprofiles.user_id where mycreds360.userprofiles.user_id = 234;
 SELECT mycreds360.users.id, 
 	mycreds360.users.email, 
     mycreds360.userprofiles.first_name, 
@@ -99,6 +100,36 @@ GROUP BY
 select * from mycreds360.badges;
 select * from mycreds360.role_user; 
 select * from mycreds360.users join mycreds360.userprofiles on mycreds360.users.id = mycreds360.userprofiles.user_id;
-insert into mycreds360.userprofiles (user_id, first_name, last_name, mobile_no, created_at, updated_at) values (220, 'Jayper', 'Sanchez', 5555555555, NOW(), NOW());
+insert into mycreds360.userprofiles (user_id, first_name, last_name, mobile_no, created_at, updated_at) values (234, 'Jay', 'Sanchez', 5555556666, NOW(), NOW());
 select * from mycreds360.courses;
 
+select up.id, up.user_id, up.first_name, up.last_name, roles.label, ru.role_id 
+from mycreds360.userprofiles up
+join mycreds360.role_user ru on up.user_id = ru.user_id
+join mycreds360.roles roles on roles.id = ru.role_id
+WHERE ru.role_id = 7;
+
+SELECT 
+        u.id, 
+        u.email, 
+        up.first_name, 
+        up.last_name, 
+        up.mobile_no, 
+        up.user_photo, 
+        COUNT(DISTINCT b.id) AS no_of_badges,
+        COUNT(DISTINCT ac.id) AS no_of_certificates
+    FROM 
+        mycreds360.users u
+    JOIN 
+        mycreds360.userprofiles up ON u.id = up.user_id
+    JOIN 
+        mycreds360.role_user ru ON u.id = ru.user_id
+    LEFT JOIN 
+        mycreds360.badges b ON u.id = b.user_id
+    LEFT JOIN 
+        mycreds360.assign_certificate ac ON u.id = ac.user_id 
+    WHERE 
+        ru.role_id = 7
+	GROUP BY 
+        u.id, u.email, up.first_name, up.last_name, up.mobile_no, up.user_photo;
+select * from mycreds360.userprofiles up where up.user_id = 234;
