@@ -127,6 +127,39 @@ app.get('/dashboard/data', (req, res) => {
     })
 });
 
+/*
+*   Create a new user record, then take the user_id generated from users.user_id
+*  and insert a new record into userprofiles table
+*/
+app.post('/students/create', upload.single('user_photo'), (req, res) => {
+    const { user_id, email, first_name, last_name, mobile_no } = req.body;
+    const user_photo = req.file ? req.file.path : null; // Assuming req.file contains the uploaded file information
+    if (!user_id || !email || !first_name || !last_name || !mobile_no) {
+        return res.status(400).json({ error: 'Email, first name, last name, and mobile number are required.  A user account must also be created first.' });
+    }
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        // Use the connection to execute a query
+        connection.query('INSERT INTO userprofiles (user_id, first_name, last_name, mobile_no, user_photo, created_ag, updated_at) VALUES (?, ?, ?, ?, ?)', [email, first_name, last_name, mobile_no, user_photo, NOW(), NOW()], (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+    
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            
+            return res.status(201).json({ message: 'Student created successfully', student_id: results.insertId });
+        });
+    });
+});
+
+/*
+*   Students have roles set to 7
+*/
 app.get('/students', (req, res) => {
     db.pool.getConnection((err, connection) => {
         if (err) {
@@ -148,10 +181,14 @@ app.get('/students', (req, res) => {
                 mycreds360.users u
             JOIN 
                 mycreds360.userprofiles up ON u.id = up.user_id
+            JOIN 
+                mycreds360.role_user ru ON u.id = ru.user_id
             LEFT JOIN 
                 mycreds360.badges b ON u.id = b.user_id
             LEFT JOIN 
                 mycreds360.assign_certificate ac ON u.id = ac.user_id 
+            WHERE 
+                ru.role_id = 7
             GROUP BY 
                 u.id, u.email, up.first_name, up.last_name, up.mobile_no, up.user_photo;
         `;
@@ -461,6 +498,17 @@ app.post('/createBadge', async (req, res) => {
         badgeClass,
         assertion
     });
+});
+
+// I need an endpoint to create a JWT token
+app.post('/createJWT', (req, res) => {
+    const { email, issuer, badgeClass, assertion } = req.body;
+    // Your logic here to create a JWT token
+    // For example, use the 'jsonwebtoken' library
+    const jwt = require('jsonwebtoken');
+    const token = jwt.sign({ email, issuer, badgeClass, assertion }, 'secret');
+
+    res.json({ token });
 });
 
 app.get('/roles', (req, res) => {
