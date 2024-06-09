@@ -61,50 +61,66 @@ const Students = (props) => {
             </div>
             <div className="main-content">
                 <div className="institution-list-section">
-                <input
-                    type="text"
-                    className="form-control mb-2"
-                    placeholder="Search Student by name"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
+                    <input
+                        type="text"
+                        className="form-control mb-2"
+                        placeholder="Search Student by name"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                 </div>
-                <div style={{overflowX: 'auto'}}>
-            <Table striped bordered hover responsive>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Email</th>
-                        <th>No. of Badges</th>
-                        <th>No. of Certificates</th>
-                        <th>Mobile No</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {students.map(student => (
-                        <tr key={student.id}>
-                            <td>{student.id}</td>
-                            <td>{student.first_name}</td>
-                            <td>{student.last_name}</td>
-                            <td>{student.email}</td>
-                            <td>{student.no_of_badges}</td>
-                            <td>{student.no_of_certificates}</td>
-                            <td>{student.mobile_no}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </Table>
-            <Pagination className="mt-3 justify-content-center">
-                {Array.from({ length: Math.ceil(students.length / studentsPerPage) }, (_, i) => (
-                    <Pagination.Item key={i} active={currentPage === i + 1} onClick={() => paginate(i + 1)}>
-                        {i + 1}
-                    </Pagination.Item>
-                ))}
-            </Pagination>
-        </div>
-            </div>
+                <div style={{ overflowX: 'auto' }}>
+                    <Table striped bordered hover responsive>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Email</th>
+                                <th>No. of Badges</th>
+                                <th>No. of Certificates</th>
+                                <th>Mobile No</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {searchTerm
+                                ? students
+                                    .filter((student) =>
+                                        `${student.first_name} ${student.last_name}`.toLowerCase().includes(searchTerm.toLowerCase())
+                                    )
+                                    .map((student) => (
+                                        <tr key={student.id}>
+                                            <td>{student.id}</td>
+                                            <td>{student.first_name}</td>
+                                            <td>{student.last_name}</td>
+                                            <td>{student.email}</td>
+                                            <td>{student.no_of_badges}</td>
+                                            <td>{student.no_of_certificates}</td>
+                                            <td>{student.mobile_no}</td>
+                                        </tr>
+                                    ))
+                                : students.map((student) => (
+                                    <tr key={student.id}>
+                                        <td>{student.id}</td>
+                                        <td>{student.first_name}</td>
+                                        <td>{student.last_name}</td>
+                                        <td>{student.email}</td>
+                                        <td>{student.no_of_badges}</td>
+                                        <td>{student.no_of_certificates}</td>
+                                        <td>{student.mobile_no}</td>
+                                    </tr>
+                                ))}
+                        </tbody>
+                    </Table>
+                    <Pagination className="mt-3 justify-content-center">
+                        {Array.from({ length: Math.ceil(students.length / studentsPerPage) }, (_, i) => (
+                            <Pagination.Item key={i} active={currentPage === i + 1} onClick={() => paginate(i + 1)}>
+                                {i + 1}
+                            </Pagination.Item>
+                        ))}
+                    </Pagination>
+                </div>
+            </div>;
         </div>
     );
 }
