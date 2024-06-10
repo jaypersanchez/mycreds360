@@ -1,7 +1,6 @@
 /*
-* This component is used to create a new course that will be stored
-* in mycreds360.newcourses.  These courses do not have any badge assignment.  
-* Courses with assigned badge through Badge Creation component are in mycreds360.courses.
+* These courses in mycreds360.courses have been assigned a badge through 
+* Badge Creation component.  
 */
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Form, Button, Alert, ListGroup, Pagination, Table } from 'react-bootstrap';
@@ -9,6 +8,7 @@ import SideNavbar from './SideNavbar';
 
 const CreateCourse = () => {
   const [courseName, setCourseName] = useState('')
+  const [badge, setBadge] = useState('needs badge info image')
   const [description, setDescription] = useState('')
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -18,11 +18,8 @@ const CreateCourse = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
 
-  /*
-  * Fetch courses from mycreds360.newcourses NOT courses
-  */
   useEffect(() => {
-    fetch('http://localhost:3000/newcourses')
+    fetch('http://localhost:3000/courses')
       .then(response => {
         if (!response.ok) {
           throw new Error('Failed to fetch courses.');
@@ -53,13 +50,6 @@ const CreateCourse = () => {
     }
   }, [searchTerm, courses]);
 
-  /*useEffect(() => {
-    const filteredCourses = courses.filter(course =>
-      course.course_name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setSearchResults(filteredCourses);
-  }, [searchTerm, courses]);*/
-
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -69,7 +59,6 @@ const CreateCourse = () => {
   }
 
   // Get current courses
-  const currentData = searchTerm ? searchResults : courses;
   const indexOfLastCourse = currentPage * coursesPerPage;
   const indexOfFirstCourse = indexOfLastCourse - coursesPerPage;
   const currentCourses = courses.slice(indexOfFirstCourse, indexOfLastCourse);
@@ -82,9 +71,10 @@ const CreateCourse = () => {
     const newCourse = {
       course_name: courseName,
       description: description,
+      badge: badge
     };
 
-    fetch('http://localhost:3000/newcourses/create', {
+    fetch('http://localhost:3000/courses/create', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -99,10 +89,11 @@ const CreateCourse = () => {
       })
       .then(data => {
         // Handle success
-        console.log('New Course added successfully:', data);
+        console.log('Course added successfully:', data);
         // Reset form fields
         setCourseName('');
         setDescription('');
+        setBadge('');
       })
       .catch(error => {
         // Handle error
@@ -116,6 +107,7 @@ const CreateCourse = () => {
           <SideNavbar />
     </div>
     <div className="main-content">
+      <div>These are course with assigned Badge.</div>
       <div className="add-course-form">
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">
@@ -133,7 +125,14 @@ const CreateCourse = () => {
               onChange={(e) => setDescription(e.target.value)}
             />
           </Form.Group>
-          
+          <Form.Group className="mb-3">
+            <Form.Control
+              type="text"
+              placeholder="Enter badge"
+              value={badge}
+              onChange={(e) => setBadge(e.target.value)}
+              />
+          </Form.Group>
           
           </Form.Group>
           {error && <Alert variant="danger">{error}</Alert>}
@@ -148,31 +147,34 @@ const CreateCourse = () => {
           value={searchTerm}
           onChange={e => setSearchTerm(e.target.value)}
         />
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th>Course ID</th>
-              <th>Course Name</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentCourses.map(course => (
-              <tr key={course.id}>
-                <td>{course.id}</td>
-                <td>{course.course_name}</td>
-                <td>{course.description}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-        <Pagination className="mt-3">
-          {Array.from({ length: Math.ceil(currentData.length / coursesPerPage) }, (_, i) => (
-            <Pagination.Item key={i} active={currentPage === i + 1} onClick={() => paginate(i + 1)}>
-              {i + 1}
-            </Pagination.Item>
-          ))}
-        </Pagination>
+          <Table striped bordered hover>
+    <thead>
+      <tr>
+        <th>Course ID</th>
+        <th>Course Name</th>
+        <th>Description</th>
+        <th>Badge</th>
+      </tr>
+    </thead>
+    <tbody>
+      {currentCourses.map(course => (
+        <tr key={course.id}>
+          <td>{course.id}</td>
+          <td>{course.course_name}</td>
+          <td>{course.description}</td>
+          <td>{course.badge}</td>
+        </tr>
+      ))}
+    </tbody>
+  </Table>
+
+  <Pagination className="mt-3">
+    {Array.from({ length: Math.ceil(searchResults.length / coursesPerPage) }, (_, i) => (
+      <Pagination.Item key={i} active={currentPage === i + 1} onClick={() => paginate(i + 1)}>
+        {i + 1}
+      </Pagination.Item>
+    ))}
+  </Pagination>
       </div>
     </div>
   </div>

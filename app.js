@@ -452,6 +452,53 @@ app.post('/account/new', (req, res) => {
     })
 })
 
+app.get('/newcourses', (req, res) => {
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        // Use the connection to execute a query
+        connection.query(`SELECT * FROM newcourses`, (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+    
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            
+            return res.json(results);
+        });
+    })
+});
+
+
+app.post('/newcourses/create', (req, res) => {
+    const { course_name, description } = req.body;
+    console.log(course_name, description)
+    const query = `insert into newcourses 
+                   (course_name, description, created_at, updated_at) 
+                   values(?,?,?,?);`
+    db.pool.getConnection((err, connection) => {   
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        connection.query(query, [course_name, description, new Date(), new Date()], (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            return res.json({results})
+        });
+    });
+
+    //res.send('Form to create a new course');
+});
+
 // Using app.get and app.post directly
 app.get('/courses', (req, res) => {
     db.pool.getConnection((err, connection) => {
