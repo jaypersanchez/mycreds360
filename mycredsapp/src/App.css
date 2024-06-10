@@ -13,10 +13,16 @@ h1 {
     width: 100%; /* Full width on smaller screens */
     height: auto; /* Adjust height for compact view */
     position: static; /* Static positioning on smaller screens */
+    .table th:nth-child(6), .table td:nth-child(6),  /* Assuming 6th is No. of Certificates */
+    .table th:nth-child(5), .table td:nth-child(5) {  /* Assuming 5th is No. of Badges */
+        display: none;
+    }
   }
   .main-content {
     margin-left: 0; /* Remove margin on smaller screens */
     width: 100%; /* Full width on smaller screens */
+    padding: 20px;
+    overflow-x: auto; 
   }
   .table-responsive {
     display: block;
@@ -34,6 +40,10 @@ h1 {
   .table-responsive > .table > tbody > tr > td,
   .table-responsive > .table > tfoot > tr > td {
       white-space: nowrap;
+  }
+
+  tr:hover {
+    background-color: #e9e9e9; /* Light grey on hover */
   }
 }
 
@@ -175,7 +185,7 @@ li {
 .table th,
 .table td {
   white-space: nowrap; /* Ensures content in each cell does not wrap */
-  overflow: hidden; /* Hides any content that overflows */
+  /*overflow: hidden;*/ /* Hides any content that overflows */
   text-overflow: ellipsis; /* Adds ellipsis to overflowed content */
   padding: 0.75rem;
     vertical-align: top;

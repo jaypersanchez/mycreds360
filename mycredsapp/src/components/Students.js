@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Form, Button, Alert, ListGroup, Pagination, Table } from 'react-bootstrap';
 import '../App.css';
 import SideNavbar from './SideNavbar';
+import StudentBadgeCertificate from './StudentBadgeCertificate';
 
 const Students = (props) => {
+    const navigate = useNavigate();
     const [studentName, setStudentName] = useState('');
     const [students, setStudents] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -12,6 +15,9 @@ const Students = (props) => {
     const [error, setError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState([]);
+
+    const [selectedStudentIdFromTable, setSelectedStudentIdFromTable] = useState('');
+
 
     //Add a new student student states
     const [users, setUsers] = useState([]);
@@ -22,6 +28,17 @@ const Students = (props) => {
     const [email, setEmail] = useState('');
     const [mobileNo, setMobileNo] = useState('');
     const [userPhoto, setUserPhoto] = useState(null);
+
+
+    const handleRowClick = (studentId) => {
+        setSelectedStudentIdFromTable(studentId);
+        // I need to add code from here, I need to open the StudentBadgeCertificate componentand pass the studentId to it
+        // I need to open the StudentBadgeCertificate component and pass the student
+        // id to it
+        navigate(`/studentbadgecertificate/${studentId}`);
+        console.log('studentId', studentId);
+        console.log('selectedStudentIdFromTable', selectedStudentIdFromTable);
+    };
 
     //get all users for selecting a student.
     useEffect(() => {
@@ -151,7 +168,10 @@ const Students = (props) => {
                                         `${student.first_name} ${student.last_name}`.toLowerCase().includes(searchTerm.toLowerCase())
                                     )
                                     .map((student) => (
-                                        <tr key={student.id}>
+                                        <tr key={student.id}
+                                        onClick={() => handleRowClick(student.id)}
+                                        style={{ cursor: 'pointer', backgroundColor: student.id === selectedStudentIdFromTable ? '#f0f0f0' : '' }}
+                                        >
                                             <td>{student.id}</td>
                                             <td>{student.first_name}</td>
                                             <td>{student.last_name}</td>
@@ -162,7 +182,10 @@ const Students = (props) => {
                                         </tr>
                                     ))
                                 : students.map((student) => (
-                                    <tr key={student.id}>
+                                    <tr key={student.id}
+                                    onClick={() => handleRowClick(student.id)}
+                                    style={{ cursor: 'pointer', backgroundColor: student.id === selectedStudentIdFromTable ? '#f0f0f0' : '' }}
+                                    >
                                         <td>{student.id}</td>
                                         <td>{student.first_name}</td>
                                         <td>{student.last_name}</td>
@@ -182,7 +205,7 @@ const Students = (props) => {
                         ))}
                     </Pagination>
                 </div>
-            </div>;
+            </div>
         </div>
     );
 }

@@ -13,6 +13,7 @@ import BadgeCreation from './components/BadgeCreation';
 import Admin from './components/Admin';
 import Roles from './components/Roles';
 import Students from './components/Students';
+import StudentBadgeCertificate from './components/StudentBadgeCertificate';
 
 function App() {
   // State to track authentication status
@@ -47,6 +48,7 @@ function App() {
                 <Route path="/create-certificate-template" element={ isAuthenticated ? <CreateCertificateTemplate /> : <Navigate to="/" /> } />
                 <Route path="/create-course" element={ isAuthenticated ? <CreateCourse /> : <Navigate to="/" /> } />
                 <Route path="/badge-creation" element={ isAuthenticated ? <BadgeCreation /> : <Navigate to="/" /> } />
+                <Route path="/studentbadgecertificate/:studentId" element={<StudentBadgeCertificate />} />
               </Routes>
             </div>
             <div className="col-lg-6 col-md-12 h-100 p-0">
