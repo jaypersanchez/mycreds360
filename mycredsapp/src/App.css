@@ -225,6 +225,22 @@ li {
   background-color: #f0f0f0;
 }
 
+.container {
+  width: 100%; /* Adjust to fit within the main-content */
+  max-width: 960px; /* Limit maximum width for readability */
+  margin: 0 auto; /* Center the container */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center align the internal contents */
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Optional shadow for depth */
+}
+
+.table-responsive {
+  width: 100%; /* Full width within container */
+  overflow-x: auto; /* Allow horizontal scrolling when necessary */
+}
+
 /************** Create course end **********************/
 
 /****************** Add Account **********************/

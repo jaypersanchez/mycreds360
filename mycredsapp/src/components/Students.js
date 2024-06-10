@@ -30,14 +30,15 @@ const Students = (props) => {
     const [userPhoto, setUserPhoto] = useState(null);
 
 
-    const handleRowClick = (studentId) => {
-        setSelectedStudentIdFromTable(studentId);
+    const handleRowClick = (student) => {
+        setSelectedStudentIdFromTable(student);
         // I need to add code from here, I need to open the StudentBadgeCertificate componentand pass the studentId to it
         // I need to open the StudentBadgeCertificate component and pass the student
         // id to it
-        navigate(`/studentbadgecertificate/${studentId}`);
-        console.log('studentId', studentId);
-        console.log('selectedStudentIdFromTable', selectedStudentIdFromTable);
+        //console.log(student)
+        navigate(`/studentbadgecertificate/${student.id}`, { state: { student: student } });
+        //console.log('studentId', student.id, student.first_name);
+        //console.log('selectedStudentIdFromTable', selectedStudentIdFromTable);
     };
 
     //get all users for selecting a student.
@@ -169,7 +170,7 @@ const Students = (props) => {
                                     )
                                     .map((student) => (
                                         <tr key={student.id}
-                                        onClick={() => handleRowClick(student.id)}
+                                        onClick={() => handleRowClick(student)}
                                         style={{ cursor: 'pointer', backgroundColor: student.id === selectedStudentIdFromTable ? '#f0f0f0' : '' }}
                                         >
                                             <td>{student.id}</td>
@@ -183,7 +184,7 @@ const Students = (props) => {
                                     ))
                                 : students.map((student) => (
                                     <tr key={student.id}
-                                    onClick={() => handleRowClick(student.id)}
+                                    onClick={() => handleRowClick(student)}
                                     style={{ cursor: 'pointer', backgroundColor: student.id === selectedStudentIdFromTable ? '#f0f0f0' : '' }}
                                     >
                                         <td>{student.id}</td>

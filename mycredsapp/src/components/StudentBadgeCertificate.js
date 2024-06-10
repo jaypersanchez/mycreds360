@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Container, Row, Col, Form, 
          Button, Alert, ListGroup, Pagination, 
          Table, Tabs, Tab 
@@ -9,15 +9,23 @@ import SideNavbar from './SideNavbar';
 
 const StudentBadgeCertificate = (props) => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const student = location.state?.student;
+    console.log(student)
     return(
         <div className="fullscreen">
             <div className="side-navbar">
                 <SideNavbar />
             </div>
             <div className="main-content"></div>
+            
             <div className="container">
+            <div>
+                <p>{student.first_name} {student.last_name}</p>
+                <p>{student.mobile_no}</p>
+                <p>{student.email}</p>
+            </div>
                 <Container>
-                    <h1>Student Badge Certificate</h1>
                     <Tabs defaultActiveKey="badges" id="uncontrolled-tab-example" className="mb-3">
                         <Tab eventKey="badges" title="Badges">
                             <Row>
