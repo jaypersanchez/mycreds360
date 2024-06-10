@@ -36,7 +36,7 @@ function Dashboard() {
       return response.json();
     })
     .then(data => {
-      console.log("Fetched data:", data);
+      //console.log("Fetched data:", data);
             // Check if data is not empty and has the first item
             if (data.length > 0) {
                 const userData = data[0];

@@ -15,6 +15,7 @@ import Roles from './components/Roles';
 import Students from './components/Students';
 import StudentBadgeCertificate from './components/StudentBadgeCertificate';
 
+
 function App() {
   // State to track authentication status
   const [isAuthenticated, setIsAuthenticated] = useState(false);

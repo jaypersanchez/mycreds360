@@ -7,11 +7,12 @@ import { Container, Row, Col, Form,
 import '../App.css';
 import SideNavbar from './SideNavbar';
 
+
 const StudentBadgeCertificate = (props) => {
     const navigate = useNavigate();
     const location = useLocation();
     const student = location.state?.student;
-    console.log(student)
+    
     return(
         <div className="fullscreen">
             <div className="side-navbar">

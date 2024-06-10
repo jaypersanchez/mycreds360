@@ -26,7 +26,7 @@ const BadgeCreation = () => {
     const userId = user.id
     const completionDate = new Date().toISOString()
     // I need a jwt and save into variable called badge.  jwt must be generate
-    const badge = 
+    //const badge = 
     
 
     e.preventDefault();

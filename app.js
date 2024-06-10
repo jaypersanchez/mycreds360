@@ -479,6 +479,29 @@ app.get('/courses/create', (req, res) => {
 });
 
 // This route will generate the badge to be issued to the student
+app.post('/create-student-badge', async (req, res) => {
+    const { course_id, course_name, date_completion, status, reference_id } = req.body;
+    const query = `insert into mycreds360.badges 
+                    (course_id, course_name, date_completion, status, reference_id) 
+                    values(?,?,?,?,?)`;
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        connection.query(query, [course_id, course_name, date_completion, status, reference_id], (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            return res.json({results})
+        });
+    });
+});
+
+// This route will generate the badge to be issued to the student
 app.post('/createBadge', async (req, res) => {
     const { email, issuer, badgeClass, assertion } = req.body;
 

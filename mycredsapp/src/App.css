@@ -1,67 +1,95 @@
-/* App.css */
+/* Global Styles */
 body {
   padding: 20px;
 }
 
-/* Responsive typography */
+/* Responsive Typography */
 h1 {
-  font-size: 2rem; /* default */
+  font-size: 2rem; /* default size */
+}
+
+/* Main Layout and Responsiveness */
+.fullscreen {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+}
+
+.side-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 250px;
+  background-color: #0e78e2;
+  overflow-x: hidden;
+  z-index: 1000;
+}
+
+.main-content {
+  margin-left: 250px;
+  width: calc(100% - 250px);
+  min-height: 100vh;
+  padding: 20px;
+  background-color: #fff;
 }
 
 @media (max-width: 992px) {
   .side-navbar {
-    width: 100%; /* Full width on smaller screens */
-    height: auto; /* Adjust height for compact view */
-    position: static; /* Static positioning on smaller screens */
-    .table th:nth-child(6), .table td:nth-child(6),  /* Assuming 6th is No. of Certificates */
-    .table th:nth-child(5), .table td:nth-child(5) {  /* Assuming 5th is No. of Badges */
-        display: none;
-    }
+    width: 100%;
+    height: auto;
+    position: static;
   }
   .main-content {
-    margin-left: 0; /* Remove margin on smaller screens */
-    width: 100%; /* Full width on smaller screens */
-    padding: 20px;
-    overflow-x: auto; 
-  }
-  .table-responsive {
-    display: block;
+    margin-left: 0;
     width: 100%;
+    padding: 20px;
     overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  .table-responsive > .table {
-      margin-bottom: 0;
-  }
-  .table-responsive > .table > thead > tr > th,
-  .table-responsive > .table > tbody > tr > th,
-  .table-responsive > .table > tfoot > tr > th,
-  .table-responsive > .table > thead > tr > td,
-  .table-responsive > .table > tbody > tr > td,
-  .table-responsive > .table > tfoot > tr > td {
-      white-space: nowrap;
-  }
-
-  tr:hover {
-    background-color: #e9e9e9; /* Light grey on hover */
   }
 }
 
-/* Additional custom styles */
-.fullscreen {
-  width: 100%; /* Full width to ensure it covers all available space */
-  min-height: 100vh; /* Minimum height to cover the full viewport height */
-  display: flex; /* Flexbox to manage inner items */
-  align-items: center; /* Center align items vertically */
-  justify-content: center; /* Center horizontally if needed */
-  background-color: #fff; /* Example background color */
+/* Navigation and Links */
+.side-navbar .nav-link {
+  color: rgba(255, 255, 255, 0.5);
+  margin: 10px 15px;
 }
 
+.side-navbar .nav-link:hover {
+  color: #fff;
+}
 
+/* Dashboard */
+.dashboard {
+  padding-top: 20px;
+}
+
+.welcome-text {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.b-head {
+  text-align: center;
+}
+
+.col-md-8, .col-lg-10 {
+  padding: 20px;
+}
+
+/* User Interaction Forms */
 .login-form {
   padding: 20px;
-  background: #f8f9fa; /* light grey background for form area */
-  
+  background: #f8f9fa;
 }
 
 .field-icon {
@@ -73,7 +101,7 @@ h1 {
 }
 
 .social-login .btn {
-  margin-top: 10px; /* Spacing between social buttons */
+  margin-top: 10px;
 }
 
 .social-login .btn-facebook { background-color: #3b5998; color: white; }
@@ -81,209 +109,69 @@ h1 {
 .social-login .btn-github { background-color: #333; color: white; }
 .social-login .btn-google { background-color: #dd4b39; color: white; }
 
-/********* SidebarNav *******/
-/* App.css */
-.side-navbar {
-  position: fixed; /* Fixed sidebar for full height */
-  top: 0;
-  left: 0;
-  height: 100vh; /* Full viewport height */
-  width: 250px; /* Adjust width based on preference */
-  background-color: #0e78e2; /* Dark theme for sidebar */
-  overflow-x: hidden; /* Prevent horizontal scroll */
-  z-index: 1000; /* Ensure it's above other content */
-}
-
-.main-content {
-  margin-left: 250px; /* Offset left margin by the sidebar's width */
-  width: calc(100% - 250px); /* Reduce width to accommodate sidebar */
-  min-height: 100vh; /* Full viewport height */
-  background-color: #fff; /* Background color for main content */
-}
-
-.active-nav {
-  margin-left: 0; /* Adjust based on how you handle active state */
-}
-
-/* Style for nav links */
-.side-navbar .nav-link {
-  color: rgba(255, 255, 255, 0.5); /* Lighter white for links */
-  margin: 10px 15px;
-}
-
-.side-navbar .nav-link:hover {
-  color: #fff; /* Bright white on hover */
-}
-
-/* Optional: Add transition for smoother active state animation */
-.side-navbar {
-  transition: margin-left 0.3s;
-}
-/****** SidebarNav end *******/
-
-/***** Dashboard *****/
-/* App.css */
-.dashboard {
-  padding-top: 20px; /* Adds space on top of the dashboard */
-}
-
-.welcome-text {
-  background-color: #f8f9fa; /* Light grey background for the text area */
-  border-radius: 8px; /* Rounded corners */
-  padding: 20px; /* Padding inside the text area */
-  margin-bottom: 20px; /* Space below the text area */
-  display: flex; /* Flexbox display style for alignment */
-  flex-direction: column; /* Children are stacked vertically */
-  justify-content: center; /* Center children vertically */
-  align-items: center; /* Center children horizontally */
-  height: 100%; /* Take full height of the parent container (adjust as necessary) */
-}
-
-.b-head {
-  text-align: center; /* Center the heading text if desired */
-}
-
-.col-md-8, .col-lg-10 {
-  padding: 20px; /* Ensure there's padding around the text for readability */
-}
-
-ul {
-  padding-left: 40px; /* Give some space for the list */
-}
-
-
-li {
-  margin-bottom: 10px; /* Space between list items */
-}
-/**** Dashboard end ****************************/
-
-/**************** Create Course ****************/
-/* App.css */
-.add-course-form {
-  padding: 20px;
-  background-color: #f4f4f4; /* Light gray background for form area */
-  border-radius: 8px; /* Rounded corners for the form */
-}
-
-.course-list-section {
-  padding: 20px;
-  background-color: #fff; /* White background for list */
-  border-radius: 8px; /* Rounded corners for the list */
-  margin-top: 20px; /* Space between form and list */
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow for depth */
-}
-
-.list-group-item {
-  border: none; /* Optional: remove borders from list items for a cleaner look */
-}
-
-.pagination {
-  display: flex;
-  justify-content: center; /* Center pagination buttons */
-}
-
-.table th,
-.table td {
-  white-space: nowrap; /* Ensures content in each cell does not wrap */
-  /*overflow: hidden;*/ /* Hides any content that overflows */
-  text-overflow: ellipsis; /* Adds ellipsis to overflowed content */
-  padding: 0.75rem;
-    vertical-align: top;
-    border-top: 1px solid #dee2e6;
-}
-
-.table thead th {
-  vertical-align: bottom;
-  border-bottom: 2px solid #dee2e6;
-}
-
-.table-striped tbody tr:nth-of-type(odd) {
-  background-color: rgba(0,0,0,.05); /* Zebra striping for rows */
-}
-
-.table-hover tbody tr:hover {
-  background-color: rgba(0,0,0,.075); /* Hover effect for rows */
-}
-
-.table {
-  width: 100%;
-    margin-bottom: 1rem;
-    color: #212529;
-  margin-top: 20px; /* Adjust the top margin of the table */
-}
-
-.table th.id, .table td.id { width: 50px; }
-.table th.email, .table td.email { min-width: 200px; }
-.table th.badges, .table td.badges,
-.table th.certificates, .table td.certificates,
-.table th.mobile, .table td.mobile { min-width: 130px; }
-
-.table .placeholder {
-  display: inline-block;
-  width: 50px;
-  height: 50px;
-  background-color: #f0f0f0;
-}
-
-.container {
-  width: 100%; /* Adjust to fit within the main-content */
-  max-width: 960px; /* Limit maximum width for readability */
-  margin: 0 auto; /* Center the container */
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Center align the internal contents */
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Optional shadow for depth */
-}
-
-.table-responsive {
-  width: 100%; /* Full width within container */
-  overflow-x: auto; /* Allow horizontal scrolling when necessary */
-}
-
-/************** Create course end **********************/
-
-/****************** Add Account **********************/
-/* App.css */
+/* Account Creation and Listing */
 .add-account-section, .account-list-section {
   padding: 20px;
-  background-color: #fff;  /* White background for better focus */
-  margin-bottom: 20px;     /* Space between sections */
-  border-radius: 8px;      /* Rounded corners for aesthetics */
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);  /* Subtle shadow for depth */
+  background-color: #fff;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-/* Adjust the width of the form controls to fit better in the layout */
 .form-control {
-  max-width: 500px;  /* Limiting the max width for better visual structure */
-  width: 100%;       /* Full width to stretch across the container */
-  margin: 0 auto;    /* Centering the form control */
+  max-width: 500px;
+  width: 100%;
+  margin: 0 auto;
 }
 
-/* Styling for lists to make them more readable */
-ul {
-  list-style-type: none;  /* Remove bullet points */
+/* Role Management */
+.roles-list ul {
+  list-style-type: none;
   padding: 0;
-  margin: 0 auto;         /* Center align the list */
-  max-width: 500px;       /* Consistent with form control width */
 }
 
-li {
-  background-color: #f8f9fa;  /* Light background for each list item */
-  padding: 10px;             /* Padding for spacing inside list items */
-  margin-bottom: 5px;        /* Space between items */
-  border-radius: 5px;        /* Rounded corners for list items */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);  /* Light shadow for depth */
+.roles-list li {
+  background: #f4f4f4;
+  margin-bottom: 8px;
+  padding: 10px;
+  border-radius: 4px;
 }
 
-/* Pagination centered at the bottom of the list */
+.roles-list div {
+  margin-bottom: 4px;
+}
+
+.roles-list table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.roles-list th, .roles-list td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.roles-list th {
+  background-color: #f4f4f4;
+}
+
+.roles-list tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.roles-list tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Pagination and Tables */
 .pagination {
   display: flex;
-  justify-content: center; /* Center the pagination items */
-  padding: 20px 0;         /* Padding top and bottom for separation */
+  justify-content: center;
+  padding: 20px 0;
   margin-top: 20px;
   list-style: none;
-    border-radius: 0.25rem;
+  border-radius: 0.25rem;
 }
 
 .pagination .page-link:hover {
@@ -300,46 +188,101 @@ li {
   border-color: #007bff;
 }
 
-/************** Add Account end *******************/
-
-/************ Roles ******************/
-.roles-list ul {
-  list-style-type: none; /* Removes default list styling */
-  padding: 0;
+/* Tables for displaying data */
+.table th,
+.table td {
+  white-space: nowrap;
+  padding: 0.75rem;
+  vertical-align: top;
+  border-top: 1px solid #dee2e6;
 }
 
-.roles-list li {
-  background: #f4f4f4; /* Light grey background */
-  margin-bottom: 8px; /* Adds space between items */
-  padding: 10px; /* Adds padding inside each item */
-  border-radius: 4px; /* Rounded corners for each item */
+.table thead th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #dee2e6;
 }
 
-.roles-list div {
-  margin-bottom: 4px; /* Adds a small space between the divs */
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0,0,0,.05);
 }
 
-.roles-list table {
-  width: 100%; /* Sets the table width to full container width */
-  border-collapse: collapse; /* Removes space between borders */
+.table-hover tbody tr:hover {
+  background-color: rgba(0,0,0,.075);
 }
 
-.roles-list th, .roles-list td {
-  padding: 8px; /* Adds padding to all table cells */
-  text-align: left; /* Aligns text to the left */
-  border-bottom: 1px solid #ddd; /* Adds a bottom border to all cells */
+.table {
+  width: 100%;
+  margin-bottom: 1rem;
+  color: #212529;
+  margin-top: 20px;
 }
 
-.roles-list th {
-  background-color: #f4f4f4; /* Light grey background for headers */
+.table th.id, .table td.id { width: 50px; }
+.table th.email, .table td.email { min-width: 200px; }
+.table th.badges, .table td.badges,
+.table th.certificates, .table td.certificates,
+.table th.mobile, .table td.mobile { min-width: 130px; }
+
+.table .placeholder {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  background-color: #f0f0f0;
 }
 
-.roles-list tr:nth-child(even) {
-  background-color: #f9f9f9; /* Zebra striping for rows */
+/* Adding styles for student form */
+/* Enhancing the overall layout for the student form area */
+.add-student-form {
+  background-color: #f8f9fa; /* Light grey background for form area */
+  padding: 20px; /* Adequate padding around the form */
+  border-radius: .25rem; /* Bootstrap default border-radius */
+  margin-bottom: 20px; /* Space below the form */
+  box-shadow: 0 .125rem .25rem rgba(0,0,0,.075); /* Bootstrap-like shadow for depth */
 }
 
-.roles-list tr:hover {
-  background-color: #f1f1f1; /* Highlight on mouse over */
+/* Customizing buttons specifically in the form for consistency */
+.add-student-form .btn-primary {
+  background-color: #4CAF50; /* Custom green color for primary actions */
+  border-color: #4CAF50; /* Border color matches background */
 }
 
-/********** Roles end ************/
+.add-student-form .btn-primary:hover {
+  background-color: #45a049; /* Darker green on hover */
+  border-color: #3e8e41; /* Corresponding darker border on hover */
+}
+
+/* Handling custom file input styles to better fit the Bootstrap theme */
+.add-student-form .custom-file-input {
+  background-color: #fff; /* Ensuring background is white for visibility */
+  border: 1px dashed #ccc; /* Dashed border for a distinct look */
+}
+
+/* Mobile responsiveness adjustments using Bootstrap utilities */
+@media (max-width: 992px) {
+  .side-navbar {
+    width: 100%; /* Full width on smaller screens for navigation */
+    position: static; /* Removes fixed positioning on mobile */
+  }
+
+  .main-content {
+    margin-left: 0; /* Reset margin to allow full width content */
+    padding: 15px; /* Sufficient padding for touch interactions */
+  }
+
+  .add-student-form {
+    padding: 15px; /* Slightly reduced padding on smaller screens */
+  }
+}
+
+/* Additional utilities to manage form layouts with React Bootstrap */
+.form-control {
+  max-width: 500px; /* Limiting maximum width for better form structure */
+  width: 100%; /* Ensuring full width within form boundaries */
+  margin-bottom: 0.5rem; /* Spacing between form elements */
+}
+
+/* Styling details for specific form fields and interactive elements */
+.form-control:focus {
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(76, 175, 80, 0.6); /* Focus shadow using primary color */
+}
+

@@ -4,6 +4,7 @@ import { Container, Row, Col, Form, Button, Alert, ListGroup, Pagination, Table 
 import '../App.css';
 import SideNavbar from './SideNavbar';
 import StudentBadgeCertificate from './StudentBadgeCertificate';
+import BadgeCreation from './BadgeCreation';
 
 const Students = (props) => {
     const navigate = useNavigate();
@@ -32,13 +33,8 @@ const Students = (props) => {
 
     const handleRowClick = (student) => {
         setSelectedStudentIdFromTable(student);
-        // I need to add code from here, I need to open the StudentBadgeCertificate componentand pass the studentId to it
-        // I need to open the StudentBadgeCertificate component and pass the student
-        // id to it
-        //console.log(student)
         navigate(`/studentbadgecertificate/${student.id}`, { state: { student: student } });
-        //console.log('studentId', student.id, student.first_name);
-        //console.log('selectedStudentIdFromTable', selectedStudentIdFromTable);
+        
     };
 
     //get all users for selecting a student.
@@ -47,7 +43,7 @@ const Students = (props) => {
             .then(response => response.json())
             .then(data => {
                 setUsers(data)
-                //console.log(data)
+                
             })
             .catch(error => console.error('Error fetching users:', error));
     }, []);
@@ -63,7 +59,6 @@ const Students = (props) => {
         return response.json();
         })
         .then(data => {
-            console.log(data)
             setStudents(data);
             setLoading(false);
         })
@@ -125,7 +120,7 @@ const Students = (props) => {
             <div className="main-content">
             <div className="add-student-form">
                 <h3>Add New Student</h3>
-                <form onSubmit={handleSubmit}>
+                <Form onSubmit={handleSubmit}>
                     <select value={selectedUserId} onChange={e => setSelectedUserId(e.target.value)} required>
                         <option value="">Select a User</option>
                         {users.map(user => (
@@ -137,8 +132,8 @@ const Students = (props) => {
                     <input type="text" placeholder="Last Name" value={lastName} onChange={e => setLastName(e.target.value)} required />
                     <input type="text" placeholder="Mobile No" value={mobileNo} onChange={e => setMobileNo(e.target.value)} required />
                     <input type="file" onChange={e => setUserPhoto(e.target.files[0])} />
-                    <button type="submit">Add Student</button>
-                </form>
+                    <Button variant="primary" type="submit">Add Student</Button>
+                </Form>
             </div>
                 <div className="institution-list-section">
                     <input
