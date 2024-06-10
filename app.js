@@ -14,6 +14,7 @@ c. User Access and Account Security / Auth0 ?
 d. Analytics
 */
 const express = require('express');
+const multer = require('multer');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const fs = require('fs-extra');
@@ -21,7 +22,6 @@ const path = require('path');
 const db = require('./db')
 const bcrypt = require('bcrypt')
 const app = express();
-const multer = require('multer')
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -35,7 +35,18 @@ app.listen(PORT, () => {
 });
 
 // Multer configuration for file uploads
-const upload = multer({ dest: 'uploads/' });
+//const upload = multer({ dest: 'uploads/' });
+// Set up storage location and filenames
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+      cb(null, 'uploads/') // Make sure this folder exists
+    },
+    filename: function(req, file, cb) {
+      cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+    }
+  });
+  
+  const upload = multer({ storage: storage });
 
 app.get('/test-db-connect', async (req, res) => {
     try {
@@ -549,25 +560,30 @@ app.post('/create-student-badge', async (req, res) => {
 });
 
 // This route will generate the badge to be issued to the student
-app.post('/createbadge', async (req, res) => {
-    const { email, issuer, badgeClass, assertion } = req.body;
-
-    // Since email hash might be required dynamically, we adjust the 'identity' field
-    if (assertion.recipient.hashed) {
-        assertion.recipient.identity = "sha256$" + require('crypto').createHash('sha256').update(email + assertion.recipient.salt).digest('hex');
-    }
-
-    // Optionally adjust 'issuedOn' date if you need to set it server-side
-    assertion.issuedOn = new Date().toISOString();
-
-    // Your logic here to handle the issuer, badgeClass, and assertion data
-    // For example, save to a database, create files, etc.
-
-    res.json({
-        message: "Badge created successfully!",
-        issuer,
-        badgeClass,
-        assertion
+app.post('/createbadge', upload.single('badge'),async (req, res) => {
+    // I need to get from req.body the course name, description and the image file 
+    const { course_name, description } = req.body;
+    const badge = req.file ? req.file.path : null; // Assuming req.file contains the uploaded file information
+    console.log(req.file);  // Check if the file is being received
+    console.log(req.body);  // Log the body to see all form data
+    
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        const query = `insert into courses 
+                        (course_name, description, badge) 
+                        values(?,?,?)`
+        connection.query(query, [course_name, description, badge], (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            return res.json({results})
+        });
     });
 });
 

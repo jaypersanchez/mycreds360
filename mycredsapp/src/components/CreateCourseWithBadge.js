@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Form, Button, Alert, ListGroup, Pagination, Table } from 'react-bootstrap';
 import SideNavbar from './SideNavbar';
 
-const CreateCourse = () => {
+const CreateBadeCourse = () => {
   const [courseName, setCourseName] = useState('')
   const [badge, setBadge] = useState('needs badge info image')
   const [description, setDescription] = useState('')
@@ -19,7 +19,7 @@ const CreateCourse = () => {
   const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:3000/courses')
+    fetch('http://localhost:3000/newcourses')
       .then(response => {
         if (!response.ok) {
           throw new Error('Failed to fetch courses.');

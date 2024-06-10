@@ -1,3 +1,8 @@
+/*
+* This component creates a badge that will be assigned to a course which is coming from 
+* mycreds360.newcourses.  Once a badge is created, this is then entered in 
+* mycreds360.courses
+*/
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Form, Button, Alert, ListGroup, Pagination } from 'react-bootstrap';
 import '../App.css';
@@ -7,32 +12,37 @@ const BadgeCreation = () => {
 
   const [selectedCourse, setSelectedCourse] = useState('')
   const [courseDescription, setCourseDescription] = useState('')
-  const [fileImage, setFileImage] = useState('')
+  const [fileImage, setFileImage] = useState(null)
   const [error, setError] = useState('')
   const [courses, setCourses] = useState([])  
 
-  // I need useEffect to fetch the courses from the API http://localhost:3000/courses
+  // I need useEffect to fetch the courses from the API http://localhost:3000/newcourses
   useEffect(() => {
-    fetch('http://localhost:3000/courses')
+    fetch('http://localhost:3000/newcourses')
       .then(response => response.json())
       .then(data => setCourses(data))
       .catch(error => setError(error.message))
   }, [])  
 
-  const handleSubmit = (e) => {
-    // This is saved in the mycreds360.courses.badge field which is an image.
-    // the display of the badge is an icon format
-    // I need to save the course_id, course_description, and badge
-    // I need to send a POST request to the API http://localhost:3000/badges
-    // with the course_id, course_description, and badge
-    
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent default form submission behavior
+    console.log(selectedCourse, courseDescription, fileImage)
+    // Define the payload
+    const formData = new FormData();
+    formData.append('course_name', selectedCourse);
+    formData.append('description', courseDescription);
+    formData.append('badge', fileImage); // Assuming fileImage is the file to be uploaded
 
-
-    
-    
-
-    e.preventDefault();
+    // Send a POST request to the API endpoint
+    fetch('http://localhost:3000/createbadge', {
+      method: 'POST',
+      body: formData,
+    })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));
   }
+
 
   return (
     <div>
@@ -55,8 +65,10 @@ const BadgeCreation = () => {
                       >
                         <option value="">Select a Course</option>
                         {courses.map(course => (
-                          <option key={course.id} value={course.id}>
-                            {course.course_name} {/* Assuming each course has an id and name */}
+                          <option key={course.id} value={course.course_name}>
+                            {
+                            course.course_name
+                            } {/* Assuming each course has an id and name */}
                           </option>
                         ))}
                       </Form.Control>
@@ -76,8 +88,7 @@ const BadgeCreation = () => {
                         <Form.Control
                           type="file"
                           placeholder="Upload Image"
-                          value={fileImage}
-                          onChange={(e) => setFileImage(e.target.value)}
+                          onChange={(e) => setFileImage(e.target.files[0])}
                           required
                         />
                       </Form.Group>
