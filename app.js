@@ -502,7 +502,7 @@ app.post('/create-student-badge', async (req, res) => {
 });
 
 // This route will generate the badge to be issued to the student
-app.post('/createBadge', async (req, res) => {
+app.post('/createbadge', async (req, res) => {
     const { email, issuer, badgeClass, assertion } = req.body;
 
     // Since email hash might be required dynamically, we adjust the 'identity' field

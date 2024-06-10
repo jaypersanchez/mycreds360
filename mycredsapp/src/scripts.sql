@@ -133,3 +133,8 @@ SELECT
 	GROUP BY 
         u.id, u.email, up.first_name, up.last_name, up.mobile_no, up.user_photo;
 select * from mycreds360.userprofiles up where up.user_id = 234;
+
+insert into mycreds360.badges (course_id, course_name, date_completion, status, reference_id) values();
+select * from mycreds360.badges order by mycreds360.badges.course_name;
+select * from mycreds360.courses;
+select * from mycreds360.courses;

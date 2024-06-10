@@ -103,6 +103,7 @@ const CreateCourse = () => {
           <SideNavbar />
     </div>
     <div className="main-content">
+      <div>These are course with assigned Badge.</div>
       <div className="add-course-form">
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">

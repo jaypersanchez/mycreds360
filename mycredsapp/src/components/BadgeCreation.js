@@ -20,13 +20,15 @@ const BadgeCreation = () => {
   }, [])  
 
   const handleSubmit = (e) => {
-    // I need to get user from session storage
-    const user = JSON.parse(sessionStorage.getItem('user')) 
-    // I need to get the id from user
-    const userId = user.id
-    const completionDate = new Date().toISOString()
-    // I need a jwt and save into variable called badge.  jwt must be generate
-    //const badge = 
+    // This is saved in the mycreds360.courses.badge field which is an image.
+    // the display of the badge is an icon format
+    // I need to save the course_id, course_description, and badge
+    // I need to send a POST request to the API http://localhost:3000/badges
+    // with the course_id, course_description, and badge
+    
+
+
+    
     
 
     e.preventDefault();
