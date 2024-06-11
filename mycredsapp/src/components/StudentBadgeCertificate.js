@@ -56,9 +56,7 @@ const StudentBadgeCertificate = (props) => {
             <div className="side-navbar">
                 <SideNavbar />
             </div>
-            <div className="main-content"></div>
-            
-            <div className="container">
+            <div className="main-content">
             <div>
                 <p>{student.first_name} {student.last_name}</p>
                 <p>{student.mobile_no}</p>
@@ -134,7 +132,7 @@ const StudentBadgeCertificate = (props) => {
                         </Tab>
                     </Tabs>
                 </Container>
-            </div>    
+                </div>
         </div>
     );
 
