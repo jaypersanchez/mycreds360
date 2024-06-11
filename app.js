@@ -48,59 +48,26 @@ const storage = multer.diskStorage({
   
   const upload = multer({ storage: storage });
 
-app.get('/test-db-connect', async (req, res) => {
-    try {
-        const isConnected = db.testConnection();
-        res.json({connected: isConnected})
-    }
-    catch(error) {
-        console.error('Error signing in user:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-})
-
-app.post('/signin', async (req, res) => {
-    const { email, password } = req.body;
-    // Check if email and password are provided
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' });
-    }
-    
+app.get('/assign-certificate', (req, res) => {
     db.pool.getConnection((err, connection) => {
         if (err) {
             console.error('Error getting connection from pool:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
         // Use the connection to execute a query
-        connection.query(`SELECT * FROM users where email = '${email}'`, (err, results) => {
+        connection.query(`SELECT * FROM assign_certificate`, (err, results) => {
             // Release the connection back to the pool
             connection.release();
     
-            if (err) {
-            console.error('Error executing query:', err);
-            return res.status(500).json({ error: `Internal server error ${err}` });
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
             }
-    
-            // Return the query results
-            //console.log(results[0].password);
-            bcrypt.compare(password, results[0].password, (err, passwordMatch) => {
-                if(err) {
-                    return res.status(500).json({ error: `Authentication failed ${err}` });
-                }
-                if(!passwordMatch) {
-                    return res.status(401).json({ error: 'Invalid email or password' });
-                }
-                // Exclude password field and include only desired fields
-                const { id, email, remember_token, status } = results[0];
-                const user = { id, email, remember_token, status };
-                return res.json(user);
-            })
+            
+            return res.json(results);
         });
     })
 });
-
-// Redirect root to dashboard
-app.get('/', (req, res) =>  res.redirect('/dashboard'));
 
 app.get('/dashboard/data', (req, res) => {
     const { userId } = req.query;
@@ -622,3 +589,57 @@ app.get('/roles', (req, res) => {
         });
     })
 });
+
+app.get('/test-db-connect', async (req, res) => {
+    try {
+        const isConnected = db.testConnection();
+        res.json({connected: isConnected})
+    }
+    catch(error) {
+        console.error('Error signing in user:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+})
+
+app.post('/signin', async (req, res) => {
+    const { email, password } = req.body;
+    // Check if email and password are provided
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+    
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        // Use the connection to execute a query
+        connection.query(`SELECT * FROM users where email = '${email}'`, (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+    
+            if (err) {
+            console.error('Error executing query:', err);
+            return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+    
+            // Return the query results
+            //console.log(results[0].password);
+            bcrypt.compare(password, results[0].password, (err, passwordMatch) => {
+                if(err) {
+                    return res.status(500).json({ error: `Authentication failed ${err}` });
+                }
+                if(!passwordMatch) {
+                    return res.status(401).json({ error: 'Invalid email or password' });
+                }
+                // Exclude password field and include only desired fields
+                const { id, email, remember_token, status } = results[0];
+                const user = { id, email, remember_token, status };
+                return res.json(user);
+            })
+        });
+    })
+});
+
+// Redirect root to dashboard
+app.get('/', (req, res) =>  res.redirect('/dashboard'));

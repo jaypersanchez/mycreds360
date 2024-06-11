@@ -27,8 +27,8 @@ const SideNavbar = ({ isActive }) => {
           <LinkContainer to="/create-institution">
             <Nav.Link>Institutions</Nav.Link>
           </LinkContainer>
-          <LinkContainer to="/create-certificate-template">
-            <Nav.Link>Certificate Template</Nav.Link>
+          <LinkContainer to="/assign-certificate">
+            <Nav.Link>Assign Certificate</Nav.Link>
           </LinkContainer>
           <LinkContainer to="/create-course">
             <Nav.Link>Courses</Nav.Link>

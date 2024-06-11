@@ -7,7 +7,7 @@ import Dashboard from './components/Dashboard'; // Import the Dashboard componen
 import LoginForm from './components/LoginFormSocial';
 import CreateAccount from './components/CreateAccount';
 import CreateInstitution from './components/CreateInstitution';
-import CreateCertificateTemplate from './components/CreateCertificateTemplate';
+import AssignCertificate from './components/AssignCertificate';
 import CreateCourse from './components/CreateCourse';
 import BadgeCreation from './components/BadgeCreation';
 import Admin from './components/Admin';
@@ -46,7 +46,7 @@ function App() {
                 <Route path="/roles" element={isAuthenticated ? <Roles /> : <Navigate to="/" />} />
                 <Route path="/create-account" element={ isAuthenticated ? <CreateAccount /> : <Navigate to="/" />}  />
                 <Route path="/create-institution" element={ isAuthenticated ? <CreateInstitution /> : <Navigate to="/" /> } />
-                <Route path="/create-certificate-template" element={ isAuthenticated ? <CreateCertificateTemplate /> : <Navigate to="/" /> } />
+                <Route path="/assign-certificate" element={ isAuthenticated ? <AssignCertificate /> : <Navigate to="/" /> } />
                 <Route path="/create-course" element={ isAuthenticated ? <CreateCourse /> : <Navigate to="/" /> } />
                 <Route path="/badge-creation" element={ isAuthenticated ? <BadgeCreation /> : <Navigate to="/" /> } />
                 <Route path="/studentbadgecertificate/:studentId" element={<StudentBadgeCertificate />} />

@@ -2,7 +2,7 @@ import React from 'react';
 import '../App.css';
 import SideNavbar from './SideNavbar';
 
-const CreateCertificateTemplate = () => {
+const AssignCertificate = () => {
   return (
     <div className="row">
       <div className="col-lg-3">
@@ -16,4 +16,4 @@ const CreateCertificateTemplate = () => {
   );
 }
 
-export default CreateCertificateTemplate;
+export default AssignCertificate;

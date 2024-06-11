@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Container, Row, Col, Form, 
          Button, Alert, ListGroup, Pagination, 
-         Table, Tabs, Tab 
+         Table, Tabs, Tab, Card
 } from 'react-bootstrap';
 import '../App.css';
 import SideNavbar from './SideNavbar';
@@ -12,7 +12,45 @@ const StudentBadgeCertificate = (props) => {
     const navigate = useNavigate();
     const location = useLocation();
     const student = location.state?.student;
+    const [certificates, setCertificates] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [certificatesPerPage] = useState(5);
     
+    useEffect(() => {
+        fetch('http://localhost:3000/assign-certificate')
+            .then(response => response.json())
+            .then(data => setCertificates(data))
+            .catch(err => console.error('Error fetching data: ', err));
+    }, []);
+
+    const indexOfLastCertificate = currentPage * certificatesPerPage;
+    const indexOfFirstCertificate = indexOfLastCertificate - certificatesPerPage;
+    const currentCertificates = certificates.slice(indexOfFirstCertificate, indexOfLastCertificate);
+
+    const paginate = pageNumber => setCurrentPage(pageNumber);
+
+    // Get the total pages
+    const pageNumbers = [];
+    for (let i = 1; i <= Math.ceil(certificates.length / certificatesPerPage); i++) {
+        pageNumbers.push(i);
+    }
+
+    // Determine the page buttons to display
+    const maxPageNumberLimit = 10; // Max pages to display in the pagination
+    const minPageNumberLimit = 0;
+
+    const renderPageNumbers = pageNumbers.map(number => {
+        if (number < maxPageNumberLimit + 1 && number > minPageNumberLimit) {
+            return (
+                <Pagination.Item key={number} active={number === currentPage} onClick={() => paginate(number)}>
+                    {number}
+                </Pagination.Item>
+            );
+        } else {
+            return null;
+        }
+    });
+
     return(
         <div className="fullscreen">
             <div className="side-navbar">
@@ -61,37 +99,36 @@ const StudentBadgeCertificate = (props) => {
                                 </Col>
                             </Row>
                         </Tab>
-                        <Tab eventKey="certificates" title="Certificates">
-                            <Row>
+                        <Tab eventKey="certificates" title="Assign Certificates">
+                        <Row>
                                 <Col>
-                                    {/* Similar table or different content for certificates */}
-                                    <Table striped bordered hover>
-                                        <thead>
-                                            <tr>
-                                                <th>Certificate</th>
-                                                <th>Course</th>
-                                                <th>Issued Date</th>
-                                                <th>Expiry Date</th>
-                                                <th>View</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>Certificate 1</td>
-                                                <td>Course 3</td>
-                                                <td>2021-12-01</td>
-                                                <td>2022-12-01</td>
-                                                <td><Button variant="primary">View</Button></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Certificate 2</td>
-                                                <td>Course 4</td>
-                                                <td>2021-12-01</td>
-                                                <td>2022-12-01</td>
-                                                <td><Button variant="primary">View</Button></td>
-                                            </tr>
-                                        </tbody>
-                                    </Table>
+                                    <Card>
+                                        <Card.Body>
+                                            <Card.Title>Certificates</Card.Title>
+                                            <Table striped bordered hover responsive className="mt-3">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Institution</th>
+                                                        <th>Course</th>
+                                                        <th>Total Hours</th>
+                                                        <th>Completion Date</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {currentCertificates.map(certificate => (
+                                                        <tr key={certificate.id}>
+                                                            <td>{certificate.institution_name}</td>
+                                                            <td>{certificate.course_name}</td>
+                                                            <td>{certificate.total_hours}</td>
+                                                            <td>{certificate.date_completion}</td>
+                                                            <td><Button variant="primary">View</Button></td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </Table>
+                                            <Pagination>{renderPageNumbers}</Pagination>
+                                        </Card.Body>
+                                    </Card>
                                 </Col>
                             </Row>
                         </Tab>
