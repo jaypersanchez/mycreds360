@@ -4,7 +4,7 @@
 * mycreds360.courses
 */
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Form, Button, Alert, ListGroup, Pagination } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Alert, ListGroup, Pagination, Card } from 'react-bootstrap';
 import '../App.css';
 import SideNavbar from './SideNavbar';
 
@@ -16,7 +16,7 @@ const BadgeCreation = () => {
   const [error, setError] = useState('')
   const [courses, setCourses] = useState([])  
 
-  // I need useEffect to fetch the courses from the API http://localhost:3000/newcourses
+  // Fetch courses on component mount
   useEffect(() => {
     fetch('http://localhost:3000/newcourses')
       .then(response => response.json())
@@ -51,51 +51,60 @@ const BadgeCreation = () => {
                     <SideNavbar />
                 </div>
                 <div className="main-content">
-                <div className="add-account-section">
-                    <h3>Create Badge</h3>
-                    <Form onSubmit={handleSubmit}>
-                    <Form.Group className="mb-3">
-                      <Form.Label>Course Name</Form.Label>
-                      <Form.Control
-                        as="select"
-                        data={courses}
-                        value={selectedCourse}
-                        onChange={(e) => setSelectedCourse(e.target.value)}
-                        required
-                      >
-                        <option value="">Select a Course</option>
-                        {courses.map(course => (
-                          <option key={course.id} value={course.course_name}>
-                            {
-                            course.course_name
-                            } {/* Assuming each course has an id and name */}
-                          </option>
-                        ))}
-                      </Form.Control>
-                    </Form.Group>
-
-                      <Form.Group className="mb-3">
-                        <Form.Control
-                          type="textarea"
-                          rows={3}
-                          placeholder="Course Description"
-                          value={courseDescription}
-                          onChange={(e) => setCourseDescription(e.target.value)}
-                          required
-                        />
-                      </Form.Group>
-                      <Form.Group className="mb-3">
-                        <Form.Control
-                          type="file"
-                          placeholder="Upload Image"
-                          onChange={(e) => setFileImage(e.target.files[0])}
-                          required
-                        />
-                      </Form.Group>
-                      <Button variant="primary" type="submit">Save Badge</Button>
-                    </Form>
-                  </div>
-                </div>
+      <div className="add-account-section">
+        <h3>Create Badge</h3>
+        <Form onSubmit={handleSubmit}>
+          <Form.Group className="mb-3">
+            <Form.Label>Course Name</Form.Label>
+            <Form.Control
+              as="select"
+              value={selectedCourse}
+              onChange={(e) => setSelectedCourse(e.target.value)}
+              required
+            >
+              <option value="">Select a Course</option>
+              {courses.map(course => (
+                <option key={course.id} value={course.course_name}>
+                  {course.course_name}
+                </option>
+              ))}
+            </Form.Control>
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Control
+              as="textarea"
+              rows={3}
+              placeholder="Course Description"
+              value={courseDescription}
+              onChange={(e) => setCourseDescription(e.target.value)}
+              required
+            />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Control
+              type="file"
+              onChange={(e) => setFileImage(e.target.files[0])}
+              required
+            />
+          </Form.Group>
+          <Button variant="primary" type="submit">Save Badge</Button>
+        </Form>
+        <Row>
+          {courses.map(course => (
+            <Col key={course.id} md={4} className="mb-3">
+              <Card>
+                <Card.Img variant="top" 
+                  src={course.badge ? `http://localhost:3000/uploads/${course.badge}`:'/uploads'} alt="Badge Image" 
+                />
+                <Card.Body>
+                  <Card.Title>{course.course_name}</Card.Title>
+                </Card.Body>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      </div>
+    </div>
             </div>
     </div>  
   );
