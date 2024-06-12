@@ -58,7 +58,7 @@ const StudentBadgeCertificate = (props) => {
             </div>
             <div className="main-content">
             <div>
-                <p>{student.first_name} {student.last_name}</p>
+                <p>{student.id} {student.first_name} {student.last_name}</p>
                 <p>{student.mobile_no}</p>
                 <p>{student.email}</p>
             </div>
@@ -97,12 +97,12 @@ const StudentBadgeCertificate = (props) => {
                                 </Col>
                             </Row>
                         </Tab>
-                        <Tab eventKey="certificates" title="Assign Certificates">
+                        <Tab eventKey="certificates" title="Certificates">
                         <Row>
                                 <Col>
                                     <Card>
                                         <Card.Body>
-                                            <Card.Title>Certificates</Card.Title>
+                                            <Card.Title>Awarded Certificates</Card.Title>
                                             <Table striped bordered hover responsive className="mt-3">
                                                 <thead>
                                                     <tr>

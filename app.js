@@ -48,14 +48,44 @@ const storage = multer.diskStorage({
   
   const upload = multer({ storage: storage });
 
+app.post('/assign-certificate/:student_id', (req, res) => {
+    const { user_id, 
+            institution_name, 
+            course_name, 
+            total_hours, 
+            date_completion } = req.body;
+    const query = `insert into assign_certificate 
+                    (user_id, institution_name, course_name, total_hours, date_completion) 
+                    values(?,?,?,?,?)`;
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        connection.query(query, [user_id, institution_name, course_name, total_hours, date_completion], (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            return res.json({results})
+        });
+    });
+});
+
 app.get('/assign-certificate', (req, res) => {
+    const {student_id} = req.body;
+    console.log(student_id)
+    const query = `select * from assign_certificate where user_id = ?`;
+
     db.pool.getConnection((err, connection) => {
         if (err) {
             console.error('Error getting connection from pool:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
         // Use the connection to execute a query
-        connection.query(`SELECT * FROM assign_certificate`, (err, results) => {
+        connection.query(query, [student_id], (err, results) => {
             // Release the connection back to the pool
             connection.release();
     
