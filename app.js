@@ -49,8 +49,8 @@ const storage = multer.diskStorage({
   const upload = multer({ storage: storage });
 
 app.post('/assign-certificate/:student_id', (req, res) => {
-    const { user_id, 
-            institution_name, 
+    const { student_id } = req.params;
+    const { institution_name, 
             course_name, 
             total_hours, 
             date_completion } = req.body;
@@ -62,7 +62,7 @@ app.post('/assign-certificate/:student_id', (req, res) => {
             console.error('Error getting connection from pool:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
-        connection.query(query, [user_id, institution_name, course_name, total_hours, date_completion], (err, results) => {
+        connection.query(query, [student_id, institution_name, course_name, total_hours, date_completion], (err, results) => {
             // Release the connection back to the pool
             connection.release();
             if (err) { 
@@ -199,8 +199,9 @@ app.get('/students', (req, res) => {
             WHERE 
                 ru.role_id = 7
             GROUP BY 
-                u.id, u.email, up.first_name, up.last_name, up.mobile_no, up.user_photo;
-        `;
+                u.id, u.email, up.first_name, up.last_name, up.mobile_no, up.user_photo
+            ORDER BY up.first_name ASC`;
+
         // Use the connection to execute a query
         connection.query(query, (err, results) => {
             // Release the connection back to the pool
