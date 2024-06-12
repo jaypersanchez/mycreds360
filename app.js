@@ -74,9 +74,9 @@ app.post('/assign-certificate/:student_id', (req, res) => {
     });
 });
 
-app.get('/assign-certificate', (req, res) => {
-    const {student_id} = req.body;
-    console.log(student_id)
+//get all assign certificates records by user_id
+app.get('/assign-certificate/:student_id', (req, res) => {
+    const {student_id} = req.params;
     const query = `select * from assign_certificate where user_id = ?`;
 
     db.pool.getConnection((err, connection) => {
@@ -86,6 +86,32 @@ app.get('/assign-certificate', (req, res) => {
         }
         // Use the connection to execute a query
         connection.query(query, [student_id], (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+    
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            
+            return res.json(results);
+        });
+    })
+});
+
+//get all assign certificates records
+app.get('/assign-certificate', (req, res) => {
+    //const {student_id} = req.body;
+    //console.log(student_id)
+    const query = `select * from assign_certificate`;
+
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        // Use the connection to execute a query
+        connection.query(query, (err, results) => {
             // Release the connection back to the pool
             connection.release();
     

@@ -17,9 +17,13 @@ const StudentBadgeCertificate = (props) => {
     const [certificatesPerPage] = useState(5);
     
     useEffect(() => {
-        fetch('http://localhost:3000/assign-certificate')
+        console.log(location.state?.student.id)
+        fetch(`http://localhost:3000/assign-certificate/${location.state?.student.id}`)
             .then(response => response.json())
-            .then(data => setCertificates(data))
+            .then(data => {
+                setCertificates(data);
+                console.log(`Assigned certificates:`, data); // Changed to log the data directly
+            })
             .catch(err => console.error('Error fetching data: ', err));
     }, []);
 
