@@ -61,8 +61,7 @@ const AssignCertificate = () => {
     };
 
     const handleSave = () => {
-      //console.log('Save button clicked');
-      //console.log(selectedStudent, institutions[selectedInstitution].institution_name, totalhours, selectedDate)
+      // Need to set the payload to be OpenBadge3 compliant
       const institutionName = institutions[selectedInstitution].institution_name;  // Assuming `institutions` array and `selectedInstitution` gives you the index
       const selectedCourseName = courses[selectedCourse].course_name;
       const studentId = selectedStudent;
