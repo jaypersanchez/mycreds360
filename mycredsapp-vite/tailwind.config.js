@@ -35,6 +35,17 @@ module.exports = {
         primary: "#093576",
         secondary: "#4872B0",
       },
+      screens: {
+        base: "360px",
+        mobile: "480px",
+        tablet: "768px",
+        laptop: "1024px",
+        desktop: "1280px",
+        lg_desktop: "1440px",
+      },
+      backgroundImage: {
+        login: "url('/images/login-bg.png')",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 import { Button } from "../ui";
-import { FlexCenter } from "../flexbox";
+import { FlexBox } from "../flexbox";
 
-import LeftIcon from "~icons/custom/left";
+import { useClickAway } from "@/hooks";
+
+import CloseIcon from "~icons/custom/close";
 import DashboardIcon from "~icons/custom/dashboard";
 import AdminIcon from "~icons/custom/admin";
 import StudentIcon from "~icons/custom/student";
@@ -64,47 +66,28 @@ const navigations = [
   },
 ];
 
-export default function Sidebar({ className }) {
+export default function Menu({ setMenuOpen }) {
+  const menuRef = useClickAway(() => setMenuOpen(false));
   const navigate = useNavigate();
-  const [isWrapped, setWrapped] = useState(false);
 
   return (
-    <aside
-      className={cn(
-        "hidden desktop:block relative",
-        isWrapped ? "w-[88px]" : "w-[280px]"
-      )}
-    >
+    <div className="fixed top-0 left-0 z-50 w-full h-full desktop:hidden bg-neutral-800/40">
       <Button
         size="icon"
-        className={cn(
-          "fixed z-50 top-6 h-6 w-6 shadow-none",
-          isWrapped ? "left-[78px]" : "left-[270px]"
-        )}
-        onClick={() => setWrapped(!isWrapped)}
+        className="fixed z-50 top-6 h-6 w-6 shadow-none left-[270px] hover:bg-red-500"
+        onClick={() => setMenuOpen(false)}
       >
-        <LeftIcon
-          className={cn(
-            "w-4 h-4",
-            isWrapped ? "animate-in rotate-180" : "animate-out mr-0.5"
-          )}
-        />
+        <CloseIcon className="w-4 h-4" />
       </Button>
 
-      <div
-        className={cn(
-          "fixed h-full border-r border-neutral-300",
-          isWrapped ? "w-[88px] px-1" : "w-[280px] px-4",
-          className
-        )}
+      <aside
+        ref={menuRef}
+        className="fixed w-[280px] h-full px-4 border-r border-neutral-300 bg-white shadow-md"
       >
         <header className="flex flex-col justify-center w-full text-white min-h-20">
-          <FlexCenter className={cn(!isWrapped && "justify-start")}>
-            <img
-              className={cn(isWrapped ? "w-[68px]" : "h-12")}
-              src="/logo.png"
-            />
-          </FlexCenter>
+          <FlexBox>
+            <img className="h-12" src="/logo.png" />
+          </FlexBox>
         </header>
 
         <ul className="flex flex-col w-full gap-1 mt-4">
@@ -112,24 +95,22 @@ export default function Sidebar({ className }) {
             <li
               key={i}
               className={cn(
-                "w-full font-semibold rounded-md flex items-center whitespace-nowrap break-all text-pretty",
-                isWrapped
-                  ? "flex-col text-[10px] p-1 min-h-[56px] justify-center gap-0.5 text-center"
-                  : "flex-row gap-4 py-2 pl-3 pr-2 min-h-[44px]",
+                "w-full font-semibold rounded-md flex items-center whitespace-nowrap break-all text-pretty gap-4 py-2 pl-3 pr-2 min-h-[44px]",
                 location.pathname === nav.link
                   ? "bg-primary text-white hover:bg-primary cursor-default"
                   : "hover:bg-secondary/30 text-primary cursor-pointer"
               )}
-              onClick={() =>
-                location.pathname !== nav.link && navigate(nav.link)
-              }
+              onClick={() => {
+                location.pathname !== nav.link && navigate(nav.link);
+                setMenuOpen(false);
+              }}
             >
-              <nav.icon className={cn(isWrapped ? "w-5" : "w-6")} />
+              <nav.icon className="w-6" />
               {nav.name}
             </li>
           ))}
         </ul>
-      </div>
-    </aside>
+      </aside>
+    </div>
   );
 }

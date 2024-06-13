@@ -1,9 +1,11 @@
-import { PageLayout } from "@/components/layouts";
+import { RouterProvider } from "react-router-dom";
+
+import Routes from "./routes";
 
 function App() {
   return (
     <>
-      <PageLayout />
+      <RouterProvider router={Routes} />
     </>
   );
 }
