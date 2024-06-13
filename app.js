@@ -24,6 +24,8 @@ const bcrypt = require('bcrypt')
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+const jwt = require('jsonwebtoken');
+const secretKey = '$2a$12$yuo3YIZPG611cmX6tgOoOuhSFobK6ZjNZeJqrXnEyhu47qD9APhva'
 
 
 // Define routes here
@@ -48,21 +50,61 @@ const storage = multer.diskStorage({
   
   const upload = multer({ storage: storage });
 
+// I need an endpoint to create a JWT token
+app.post('/createJWT', (req, res) => {
+    const { email, issuer, badgeClass, assertion } = req.body;
+    // Your logic here to create a JWT token
+    // For example, use the 'jsonwebtoken' library
+    const jwt = require('jsonwebtoken');
+    const token = jwt.sign({ email, issuer, badgeClass, assertion }, 'secret');
+
+    res.json({ token });
+});
+
 app.post('/assign-certificate/:student_id', (req, res) => {
     const { student_id } = req.params;
     const { institution_name, 
             course_name, 
             total_hours, 
-            date_completion } = req.body;
+            date_completion, 
+            badgeData } = req.body;
+    
+    /*badgeData.proof = {
+        type: "JwtProof2020",
+            jwt: jwt.sign({
+                issuer: badgeData.issuer.id,
+                subject: badgeData.credentialSubject.id,
+                audience: 'https://example.org',
+                expiresIn: '1y',  // Token expiry, e.g., 1 year
+                badge: badgeData.credentialSubject.hasCredential
+            }, secretKey, { algorithm: 'HS256' })
+    }*/
+    console.log(
+        student_id,
+        institution_name, 
+        course_name, 
+        total_hours, 
+        date_completion, 
+    )
+    console.log('\n')
+   console.log(badgeData)
+   let badgeDataString = JSON.stringify(badgeData)
     const query = `insert into assign_certificate 
-                    (user_id, institution_name, course_name, total_hours, date_completion) 
-                    values(?,?,?,?,?)`;
+                    (user_id, institution_name, course_name, total_hours, date_completion, json_values) 
+                    values(?,?,?,?,?,?)`;
     db.pool.getConnection((err, connection) => {
         if (err) {
             console.error('Error getting connection from pool:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
-        connection.query(query, [student_id, institution_name, course_name, total_hours, date_completion], (err, results) => {
+        connection.query(query, 
+                        [student_id, 
+                        institution_name, 
+                        course_name, 
+                        total_hours, 
+                        date_completion,
+                        badgeDataString], 
+                        (err, results) => {
             // Release the connection back to the pool
             connection.release();
             if (err) { 
@@ -611,16 +653,6 @@ app.post('/createbadge', upload.single('badge'),async (req, res) => {
     });
 });
 
-// I need an endpoint to create a JWT token
-app.post('/createJWT', (req, res) => {
-    const { email, issuer, badgeClass, assertion } = req.body;
-    // Your logic here to create a JWT token
-    // For example, use the 'jsonwebtoken' library
-    const jwt = require('jsonwebtoken');
-    const token = jwt.sign({ email, issuer, badgeClass, assertion }, 'secret');
-
-    res.json({ token });
-});
 
 app.get('/roles', (req, res) => {
     db.pool.getConnection((err, connection) => {

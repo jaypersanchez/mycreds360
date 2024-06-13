@@ -10,12 +10,15 @@ import SideNavbar from './SideNavbar';
 const AssignCertificate = () => {
   const [students, setStudents] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState('');
+  const [selectStudentName, setSelectStudentName] = useState(''); // Added to store student name [optional] 
   const [institutions, setInstitutions] = useState([]);
   const [selectedInstitution, setSelectedInstitution] = useState('');
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState('');
   const [totalhours, setTotalHours] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
+  const [badgeData, setBadgeData] = useState(''); // Added to store badge data
+
 
   // get all courses
   useEffect(() => {
@@ -43,13 +46,26 @@ const AssignCertificate = () => {
         .then(response => response.json())
         .then(data => {
             setStudents(data)
-            console.log(data)
+            //console.log(data)
         })
         .catch(error => console.error('Error fetching users:', error));
     }, []);
 
     const handleSelectStudent = (event) => {
-      setSelectedStudent(event.target.value);
+            
+      const studentId = event.target.value;
+      console.log(studentId)
+      setSelectedStudent(studentId)
+      
+      // Find the student in the array using the studentId
+      //const selectedStudent = students.find(student => student.id === studentId);
+      
+      //setSelectedStudent(selectedStudent.first_name + " " + selectedStudent.last_name)
+      /*if (selectedStudent) {
+        console.log("Selected Student's Name:", selectedStudent.first_name + " " + selectedStudent.last_name);
+        // If you need to save the name in the state or pass it somewhere
+        // setSelectStudentName(selectedStudent.first_name + " " + selectedStudent.last_name);
+      }*/
     };
 
     const handleSelectInstituion = (event) => {
@@ -60,6 +76,7 @@ const AssignCertificate = () => {
       setSelectedCourse(event.target.value);
     };
 
+    // Save certificate data
     const handleSave = () => {
       // Need to set the payload to be OpenBadge3 compliant
       const institutionName = institutions[selectedInstitution].institution_name;  // Assuming `institutions` array and `selectedInstitution` gives you the index
@@ -67,14 +84,56 @@ const AssignCertificate = () => {
       const studentId = selectedStudent;
       const totalHours = totalhours;
       const dateCompletion = selectedDate;
+      
+      /*console.log(`${institutions[selectedInstitution].id},
+                    ${institutionName},
+                    ${institutions[selectedInstitution].institution_url},
+                    ${selectedDate}                  
+                  `)*/
+      const certificate_badgev3 = { 
+        "@context": [
+          "https://www.w3.org/2018/credentials/v1",
+          "https://w3id.org/openbadges/v3"
+        ],
+        "type": ["VerifiableCredential", "Assertion"],
+        "id": "https://example.org/badges/123",
+        "issuer": {
+          "id": institutions[selectedInstitution].id,
+          "type": "Profile",
+          "name": institutions[selectedInstitution].institution_name,
+          "url": institutions[selectedInstitution].institution_url
+        },
+        "issuanceDate": selectedDate,
+        "credentialSubject": {
+          "id": "",
+          "type": "RecipientProfile",
+          "name": "",
+          "hasCredential": {
+            "type": "BadgeClass",
+            "name" : institutions[selectedInstitution].institution_name,
+            "description": courses[selectedCourse].course_name,
+            "image": "https://example.org/badges/images/12345.png",
+            "criteria": "https://example.org/badges/criteria/123",
+            "tags": ["Data Analysis", "Certification", "Professional"]
+          }
+        },
+        "proof": {
+          "type": "",
+          "jwt": ""
+        }
+      };
 
       // Create the payload
       const payload = {
         institution_name: institutionName,
         course_name: selectedCourseName,  // Assuming there's a state or prop that keeps track of this
         total_hours: totalHours,
-        date_completion: dateCompletion
+        date_completion: dateCompletion,
+        badgeData: certificate_badgev3
       };
+
+      //console.log(certificate_badgev3)
+
       // Use the studentId in the URL and send the request
       fetch(`http://localhost:3000/assign-certificate/${studentId}`, {
         method: 'POST',
