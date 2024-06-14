@@ -61,34 +61,97 @@ app.post('/createJWT', (req, res) => {
     res.json({ token });
 });
 
+//helper function to get userprofiles based on user_id
+const getUserProfile = async (user_id) => {
+    const query = `select * from userprofiles where user_id = ?`;
+    return new Promise((resolve, reject) => {
+        db.pool.getConnection((err, connection) => {
+            if (err) {
+                console.error('Error getting connection from pool:', err);
+                reject(err);
+            }
+            connection.query(query, [user_id], (err, results) => {
+                connection.release();
+                if (err) {
+                    console.error('Error executing query:', err);
+                    reject(err);
+                }
+                resolve(results);
+            });
+        });
+    });
+}
+
 app.post('/assign-certificate/:student_id', (req, res) => {
     const { student_id } = req.params;
-    const { institution_name, 
+    const { 
+            institution_id,
+            institution_name,
+            institution_url, 
             course_name, 
             total_hours, 
-            date_completion, 
-            badgeData } = req.body;
-    
-    /*badgeData.proof = {
-        type: "JwtProof2020",
-            jwt: jwt.sign({
-                issuer: badgeData.issuer.id,
-                subject: badgeData.credentialSubject.id,
-                audience: 'https://example.org',
-                expiresIn: '1y',  // Token expiry, e.g., 1 year
-                badge: badgeData.credentialSubject.hasCredential
-            }, secretKey, { algorithm: 'HS256' })
-    }*/
+            date_completion} = req.body;
+    let student_name = ''
+    getUserProfile(student_id)
+    .then((results) => {
+        if (results.length > 0) {
+            student_name = `${results[0].first_name} ${results[0].last_name}`;
+            console.log(student_name); // Move the console.log here
+        } else {
+            console.log("No results found");
+        }
+    })
+    .catch((err) => {
+        console.error("Error fetching user profile:", err);
+    });
+    console.log(student_name)
+    const certificate_badgev3 = { 
+                "@context": [
+                  "https://www.w3.org/2018/credentials/v1",
+                  "https://w3id.org/openbadges/v3"
+                ],
+                "type": ["VerifiableCredential", "Assertion"],
+                "id": "https://example.org/badges/123",
+                "issuer": {
+                  "id": institution_id,
+                  "type": "Profile",
+                  "name": institution_name,
+                  "url": institution_url
+                },
+                "issuanceDate": date_completion,
+                "credentialSubject": {
+                  "id": student_id,
+                  "type": "RecipientProfile",
+                  "name": student_name,
+                  "hasCredential": {
+                    "type": "BadgeClass",
+                    "name" : institution_name,
+                    "description": course_name,
+                    "image": "https://example.org/badges/images/12345.png",
+                    "criteria": "https://example.org/badges/criteria/123",
+                    "tags": ["Data Analysis", "Certification", "Professional"]
+                  }
+                },
+                "proof": {
+                  "type": "",
+                  "jwt": ""
+                }
+    };
+   
     console.log(
         student_id,
+        institution_id,
         institution_name, 
+        institution_url,
         course_name, 
         total_hours, 
         date_completion, 
     )
     console.log('\n')
-   console.log(badgeData)
-   let badgeDataString = JSON.stringify(badgeData)
+   console.log(certificate_badgev3)
+
+   let badgeDataString = JSON.stringify(certificate_badgev3)
+
     const query = `insert into assign_certificate 
                     (user_id, institution_name, course_name, total_hours, date_completion, json_values) 
                     values(?,?,?,?,?,?)`;
@@ -111,10 +174,16 @@ app.post('/assign-certificate/:student_id', (req, res) => {
                 console.error('Error executing query:', err);
                 return res.status(500).json({ error: `Internal server error ${err}` });
             }
+            certificatetoNFT(badgeDataString);
             return res.json({results})
         });
     });
 });
+
+//mint badge json to nft
+const certificatetoNFT = async (badgeDataString) => {
+
+}
 
 //get all assign certificates records by user_id
 app.get('/assign-certificate/:student_id', (req, res) => {

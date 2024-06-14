@@ -125,11 +125,12 @@ const AssignCertificate = () => {
 
       // Create the payload
       const payload = {
+        institution_id: institutions[selectedInstitution].id,
         institution_name: institutionName,
+        institution_url: institutions[selectedInstitution].institution_url,
         course_name: selectedCourseName,  // Assuming there's a state or prop that keeps track of this
         total_hours: totalHours,
-        date_completion: dateCompletion,
-        badgeData: certificate_badgev3
+        date_completion: dateCompletion
       };
 
       //console.log(certificate_badgev3)
