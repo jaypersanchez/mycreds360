@@ -50,17 +50,6 @@ const storage = multer.diskStorage({
   
   const upload = multer({ storage: storage });
 
-// I need an endpoint to create a JWT token
-app.post('/createJWT', (req, res) => {
-    const { email, issuer, badgeClass, assertion } = req.body;
-    // Your logic here to create a JWT token
-    // For example, use the 'jsonwebtoken' library
-    const jwt = require('jsonwebtoken');
-    const token = jwt.sign({ email, issuer, badgeClass, assertion }, 'secret');
-
-    res.json({ token });
-});
-
 //helper function to get userprofiles based on user_id
 const getUserProfile = async (user_id) => {
     const query = `select * from userprofiles where user_id = ?`;
@@ -104,6 +93,21 @@ app.post('/assign-certificate/:student_id', (req, res) => {
     .catch((err) => {
         console.error("Error fetching user profile:", err);
     });
+
+    // I need to generate a jwt token for the badge
+    const jwtToken = jwt.sign({ student_id, institution_id, institution_name, institution_url, course_name, total_hours, date_completion }, secretKey);   
+    //console.log(jwtToken);    
+    //console.log(jwt.verify(jwtToken, secretKey));
+    //console.log(jwt.decode(jwtToken));
+    //console.log(jwt.decode(jwtToken).student_id);
+    //console.log(jwt.decode(jwtToken).institution_id);
+    //console.log(jwt.decode(jwtToken).institution_name);
+    //console.log(jwt.decode(jwtToken).institution_url);
+    //console.log(jwt.decode(jwtToken).course_name);
+    //console.log(jwt.decode(jwtToken).total_hours);
+    //console.log(jwt.decode(jwtToken).date_completion);
+
+
     console.log(student_name)
     const certificate_badgev3 = { 
                 "@context": [
@@ -133,8 +137,8 @@ app.post('/assign-certificate/:student_id', (req, res) => {
                   }
                 },
                 "proof": {
-                  "type": "",
-                  "jwt": ""
+                  "type": "JwtProof " + new Date(),
+                  "jwt": jwtToken
                 }
     };
    
