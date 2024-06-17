@@ -25,8 +25,8 @@ function Login() {
 
       // Assuming the response includes some user data and you store it in local storage/session
       const userData = await response.json();
-      localStorage.setItem('user', JSON.stringify(userData));
-      navigate('/dashboard'); // Redirect to the Dashboard on successful login
+      sessionStorage.setItem('user', JSON.stringify(userData));
+      navigate('/'); // Redirect to the Dashboard on successful login
     } catch (error) {
       console.error('Login error:', error);
       alert('Login failed: ' + error.message);
