@@ -414,7 +414,7 @@ app.get('/institution/index', (req, res) => {
 */
 app.post('/institution/create', (req, res) => {
     
-    const { institution_name } = req.body;
+    const { institution_name, institution_url } = req.body;
     const logo = req.file ? req.file.path : null; // Assuming req.file contains the uploaded file information
     console.log(`New Instituion ${institution_name}`)
     if (!institution_name) {
@@ -427,7 +427,7 @@ app.post('/institution/create', (req, res) => {
         }
 
         // Use the connection to execute a query
-        connection.query('INSERT INTO institution (institution_name, logo) VALUES (?, ?)', [institution_name, logo], (err, results) => {
+        connection.query('INSERT INTO institution (institution_name, logo, institution_url) VALUES (?, ?,?)', [institution_name, logo, institution_url], (err, results) => {
             // Release the connection back to the pool
             connection.release();
     

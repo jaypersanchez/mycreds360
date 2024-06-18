@@ -4,6 +4,10 @@ export default function Institution() {
   const [institutions, setInstitutions] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [institutionsPerPage] = useState(10);
+  const [institutionName, setInstitutionName] = useState('');
+  const [institutionUrl, setInstitutionUrl] = useState('');
+  const [logo, setLogo] = useState(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetch('http://localhost:3000/institution/index')
@@ -19,10 +23,71 @@ export default function Institution() {
 
   // Change page
   const paginate = pageNumber => setCurrentPage(pageNumber);
+  
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData();
+    formData.append('institution_name', institutionName);
+    formData.append('logo', logo);
+    formData.append('institution_url', institutionUrl);
+
+    try {
+      const response = await fetch('http://localhost:3000/institution/create', {
+        method: 'POST',
+        body: formData, // FormData will set the Content-Type to 'multipart/form-data' automatically
+      });
+      if (!response.ok) throw new Error('Failed to create institution.');
+      alert('Institution added successfully!');
+      setInstitutionName('');
+      setInstitutionUrl('');
+      setLogo(null);
+    } catch (error) {
+      setError(error.message);
+      console.error('Failed to add institution:', error);
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h2 className="text-2xl font-semibold text-center mb-8">Institutions List</h2>
+      <h2 className="text-2xl font-semibold mb-6">Add New Institution</h2>
+      <form onSubmit={handleSubmit} className="max-w-lg mx-auto">
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700">Institution Name</label>
+          <input
+            type="text"
+            value={institutionName}
+            onChange={(e) => setInstitutionName(e.target.value)}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            required
+          />
+        </div>
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700">Institution URL</label>
+          <input
+            type="url"
+            value={institutionUrl}
+            onChange={(e) => setInstitutionUrl(e.target.value)}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            required
+          />
+        </div>
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-gray-700">Logo</label>
+          <input
+            type="file"
+            onChange={(e) => setLogo(e.target.files[0])}
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            required
+          />
+        </div>
+        <button type="submit" className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Submit
+        </button>
+        {error && <p className="mt-3 text-red-500">{error}</p>}
+      </form>
+
+      
       <div className="flex flex-col">
         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
