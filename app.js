@@ -71,6 +71,19 @@ const getUserProfile = async (user_id) => {
     });
 }
 
+// I need an endpoint where it will return all images that is in the uplodas folder which is in the same loation as this app.js.  No parameter is required
+app.get('/badge-images', (req, res) => {
+    const directoryPath = path.join(__dirname, 'uploads');
+    fs.readdir(directoryPath, (err, files) => {
+        if (err) {
+            console.error('Error reading directory:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        return res.json(files);
+    });
+});
+
+
 app.post('/assign-certificate/:student_id', (req, res) => {
     const { student_id } = req.params;
     const { 
