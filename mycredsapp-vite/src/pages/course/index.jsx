@@ -71,6 +71,9 @@ export default function Course() {
         });
     };
 
+    /*
+    * NEED TO ADD SEARCH COURSE FUNCTIONALITY
+    */
     return (
         <div className="container mx-auto px-4 py-8">
             <h2 className="text-2xl font-semibold leading-tight">Courses</h2>
