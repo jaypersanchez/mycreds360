@@ -71,6 +71,23 @@ const getUserProfile = async (user_id) => {
     });
 }
 
+// Endpoint to get a user profile by user ID
+app.get('/user-profile/:userId', async (req, res) => {
+    const userId = req.params.userId;
+    console.log(userId)
+    try {
+        const profile = await getUserProfile(userId);
+        if (profile.length > 0) {
+            res.json(profile);
+        } else {
+            res.status(404).send('Profile not found');
+        }
+    } catch (err) {
+        console.error('Failed to fetch user profile:', err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 // I need an endpoint where it will return all images that is in the uplodas folder which is in the same loation as this app.js.  No parameter is required
 app.get('/badge-images', (req, res) => {
     const directoryPath = path.join(__dirname, 'uploads');
