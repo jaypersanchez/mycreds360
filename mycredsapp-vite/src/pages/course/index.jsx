@@ -6,6 +6,8 @@ export default function Course() {
     const [coursesPerPage] = useState(10);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [courseName, setCourseName] = useState('');
+    const [description, setDescription] = useState('');
 
     useEffect(() => {
         fetch('http://localhost:3000/newcourses')
@@ -32,9 +34,71 @@ export default function Course() {
     if (loading) return <div>Loading...</div>;
     if (error) return <div>{error}</div>;
 
+    const fetchCourses = () => {
+        fetch('http://localhost:3000/newcourses')
+            .then(response => response.json())
+            .then(data => {
+                setCourses(data);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error('Failed to fetch courses:', err);
+                setError('Failed to fetch courses');
+                setLoading(false);
+            });
+    };
+
+    const handleCreateCourse = async (event) => {
+        event.preventDefault();
+        const courseData = { course_name: courseName, description };
+
+        fetch('http://localhost:3000/newcourses/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(courseData),
+        })
+        .then(response => response.json())
+        .then(() => {
+            fetchCourses();  // Refresh the list after adding new course
+            setCourseName('');
+            setDescription('');
+        })
+        .catch(error => {
+            console.error('Failed to add new course:', error);
+            alert('Failed to add new course');
+        });
+    };
+
     return (
         <div className="container mx-auto px-4 py-8">
             <h2 className="text-2xl font-semibold leading-tight">Courses</h2>
+            <form onSubmit={handleCreateCourse} className="mb-6">
+                <input
+                    className="shadow appearance-none border rounded py-2 px-3 text-grey-darker mb-3 w-full"
+                    id="courseName"
+                    type="text"
+                    placeholder="Course Name"
+                    value={courseName}
+                    onChange={(e) => setCourseName(e.target.value)}
+                    required
+                />
+                <textarea
+                    className="shadow appearance-none border rounded py-2 px-3 text-grey-darker mb-3 w-full"
+                    id="description"
+                    placeholder="Description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    required
+                />
+                <button
+                    type="submit"
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                >
+                    Add Course
+                </button>
+            </form>
             <div className="mt-4">
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
