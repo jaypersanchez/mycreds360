@@ -1,7 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Student = () => {
+  const navigate = useNavigate();  
   const [students, setStudents] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [studentsPerPage] = useState(10);
@@ -17,6 +19,11 @@ const Student = () => {
   const [userPhoto, setUserPhoto] = useState(null);
   const [users, setUsers] = useState([]);
 
+  const handleRowClick = (student) => {
+        // Navigate to the student details page with student ID
+        navigate(`/students/${student.id}`, { state: { student: student } });
+};
+
   useEffect(() => {
     fetch('http://localhost:3000/students')
         .then(response => response.json())
@@ -31,14 +38,15 @@ const Student = () => {
     * When searching for a student and there are records found, it does not seem to be displaying 
     * these on the table. WIP
     */
+    // Update filteredStudents whenever searchTerm changes
     useEffect(() => {
-        if (searchTerm) {
+        if (searchTerm.trim() === '') {
+            setFilteredStudents(students);  // Show all students if search term is empty
+        } else {
             const results = students.filter(student =>
                 `${student.first_name} ${student.last_name}`.toLowerCase().includes(searchTerm.toLowerCase())
             );
             setFilteredStudents(results);
-        } else {
-            setFilteredStudents(students); // When search term is cleared, show all students
         }
     }, [searchTerm, students]);
 

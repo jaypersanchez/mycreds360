@@ -11,6 +11,7 @@ import {
   RolesPage,
   SettingsPage,
   StudentPage,
+  
 } from "@/pages";
 
 const PageRoutes = {
