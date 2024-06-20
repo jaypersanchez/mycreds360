@@ -88,7 +88,10 @@ app.get('/user-profile/:userId', async (req, res) => {
     }
 });
 
-// I need an endpoint where it will return all images that is in the uplodas folder which is in the same loation as this app.js.  No parameter is required
+/* I need an endpoint where it will return all images that is in the uplodas folder 
+* which is in the same loation as this app.js.  No parameter is required.
+* This is for the Badges menu item not badges issued to a student.
+*/
 app.get('/badge-images', (req, res) => {
     const directoryPath = path.join(__dirname, 'uploads');
     fs.readdir(directoryPath, (err, files) => {
@@ -271,7 +274,7 @@ app.get('/assign-certificate', (req, res) => {
 });
 
 app.get('/dashboard/data', (req, res) => {
-    const { userId } = req.query;
+    const  userId  = req.query.userId;
     console.log(userId)
     // Placeholder for actual dashboard data
     db.pool.getConnection((err, connection) => {
@@ -281,18 +284,32 @@ app.get('/dashboard/data', (req, res) => {
         }
         const query = `SELECT 
                         up.first_name,
-                        up.last_name,
-                        COUNT(CASE WHEN u.status = 1 THEN 1 END) AS active_users,
-                        COUNT(CASE WHEN u.status = 0 THEN 1 END) AS inactive_users
+                        up.last_name
                         FROM 
                         mycreds360.users u
                         JOIN 
                         mycreds360.userprofiles up ON u.id = up.user_id
-                        WHERE u.id = 220
+                        WHERE u.id = ?
                         GROUP BY 
                         up.first_name, up.last_name;`
+        const _query = `SELECT 
+                        up.first_name,
+                        up.last_name,
+                        (SELECT COUNT(*) FROM mycreds360.users WHERE status = 1) AS active_users,
+                        (SELECT COUNT(*) FROM mycreds360.users WHERE status = 0) AS inactive_users,
+                        (SELECT COUNT(*) FROM mycreds360.badges) AS total_badges,
+                        (SELECT COUNT(*) FROM mycreds360.assign_certificate) AS total_certificates
+                    FROM 
+                        mycreds360.users u
+                    JOIN 
+                        mycreds360.userprofiles up ON u.id = up.user_id
+                    WHERE 
+                        u.id = ?
+                    GROUP BY 
+                        up.first_name, up.last_name;
+`
         // Use the connection to execute a query
-        connection.query(query,[userId], (err, results) => {
+        connection.query(_query,[userId], (err, results) => {
             // Release the connection back to the pool
             connection.release();
     

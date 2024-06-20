@@ -21,6 +21,22 @@ function StudentBadgeCerts() {
     // Assume user data is stored as a JSON string
     const user = JSON.parse(sessionStorage.getItem('user')) || {};
 
+    /*
+    * User must first be authenticated before they can access the course page
+    */
+    useEffect(() => {
+        const user = JSON.parse(sessionStorage.getItem('user'));
+        // I need to direct the user back to http://localhost:3000/login if they are not logged in
+        if (!user) {
+          window.location.href = 'http://localhost:5173/auth';
+        }
+        // Assuming the user object includes the user's first name and last name  
+        //setUser(user);
+        //setUserId(user.id);
+        //setFirstName(user.first_name);
+        //setLastName(user.last_name);
+      }, []);
+      
     // Fetch institutions
     useEffect(() => {
         fetch('http://localhost:3000/institution/index')
@@ -84,6 +100,12 @@ function StudentBadgeCerts() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        /*institution_id,
+        institution_name,
+        institution_url, 
+        course_name, 
+        total_hours, 
+        date_completion*/
         const payload = {
             institution_id: selectedInstitution,
             course_id: selectedCourse,

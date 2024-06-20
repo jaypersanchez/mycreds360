@@ -9,6 +9,9 @@ export default function Course() {
     const [courseName, setCourseName] = useState('');
     const [description, setDescription] = useState('');
 
+    /*
+    * User must first be authenticated before they can access the course page
+    */
     useEffect(() => {
         const user = JSON.parse(sessionStorage.getItem('user'));
         // I need to direct the user back to http://localhost:3000/login if they are not logged in
