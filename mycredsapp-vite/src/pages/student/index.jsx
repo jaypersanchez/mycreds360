@@ -22,8 +22,21 @@ const Student = () => {
   const handleRowClick = (student) => {
         // Navigate to the student details page with student ID
         navigate(`/students/${student.id}`, { state: { student: student } });
-};
+    };
 
+    useEffect(() => {
+        const user = JSON.parse(sessionStorage.getItem('user'));
+        // I need to direct the user back to http://localhost:3000/login if they are not logged in
+        if (!user) {
+          window.location.href = 'http://localhost:5173/auth';
+        }
+        // Assuming the user object includes the user's first name and last name  
+        //setUser(user);
+        //setUserId(user.id);
+        //setFirstName(user.first_name);
+        //setLastName(user.last_name);
+      }, []);
+      
   useEffect(() => {
     fetch('http://localhost:3000/students')
         .then(response => response.json())
@@ -147,7 +160,7 @@ const Student = () => {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                     {currentStudents.map((student) => (
-                        <tr key={student.id}>
+                        <tr key={student.id} onClick={() => handleRowClick(student)} className="cursor-pointer">
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                 {student.first_name} {student.last_name}
                             </td>

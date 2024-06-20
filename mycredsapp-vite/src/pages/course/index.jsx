@@ -10,6 +10,19 @@ export default function Course() {
     const [description, setDescription] = useState('');
 
     useEffect(() => {
+        const user = JSON.parse(sessionStorage.getItem('user'));
+        // I need to direct the user back to http://localhost:3000/login if they are not logged in
+        if (!user) {
+          window.location.href = 'http://localhost:5173/auth';
+        }
+        // Assuming the user object includes the user's first name and last name  
+        //setUser(user);
+        //setUserId(user.id);
+        //setFirstName(user.first_name);
+        //setLastName(user.last_name);
+      }, []);
+      
+    useEffect(() => {
         fetch('http://localhost:3000/newcourses')
             .then(response => response.json())
             .then(data => {
