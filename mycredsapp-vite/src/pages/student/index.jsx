@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 const Student = () => {
   const navigate = useNavigate();  
@@ -21,7 +21,8 @@ const Student = () => {
 
   const handleRowClick = (student) => {
         // Navigate to the student details page with student ID
-        navigate(`/students/${student.id}`, { state: { student: student } });
+        console.log('/student/student_badge_certifications', student);
+        navigate(`student_badge_certifications`);
     };
 
     useEffect(() => {
@@ -148,6 +149,7 @@ const Student = () => {
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
             />
+            <Outlet />
             <table className="min-w-full divide-y divide-gray-200">
                 <thead>
                     <tr className="bg-gray-50">
@@ -180,6 +182,7 @@ const Student = () => {
                     ))}
                 </tbody>
             </table>
+            
             <div className="py-2">
                 <div className="flex justify-center">
                     <nav>
