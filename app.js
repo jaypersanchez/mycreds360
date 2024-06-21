@@ -273,6 +273,38 @@ app.get('/assign-certificate', (req, res) => {
     })
 });
 
+app.get('/analytics/badges', (req, res) => {
+    const query = `SELECT 
+                    DATE_FORMAT(mycreds360.badges.date_completion, '%Y-%m') AS month,
+                    AVG(DATEDIFF(mycreds360.badges.created_at, mycreds360.badges.date_completion)) AS avg_days_to_issue,
+                    COUNT(*) AS badges_issued
+                FROM 
+                    mycreds360.badges
+                GROUP BY 
+                    DATE_FORMAT(mycreds360.badges.date_completion, '%Y-%m')
+                ORDER BY 
+                    month;`;
+
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        // Use the connection to execute a query
+        connection.query(query, (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+    
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            
+            return res.json(results);
+        });
+    })
+});
+
 app.get('/dashboard/data', (req, res) => {
     const  userId  = req.query.userId;
     console.log(userId)

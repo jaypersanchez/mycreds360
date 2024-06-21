@@ -1,5 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
+import { Line } from 'react-chartjs-2';
+import 'chart.js/auto';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  TimeScale,
+  TimeSeriesScale
+} from 'chart.js';
+import 'chartjs-adapter-date-fns';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  TimeScale,
+  TimeSeriesScale
+);
 
 function Dashboard() {
   const [userId, setUserId] = useState({});
@@ -9,6 +36,97 @@ function Dashboard() {
   const [inactive_users, setInactiveUsers] = useState();
   const [total_badges, setTotalBadges] = useState();
   const [total_certificates, setTotalCertificates] = useState();
+  //const [chartData, setChartData] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  /*const options = {
+    scales: {
+      y: {
+        type: 'linear',
+        display: true,
+        position: 'left',
+        // Ensure axes start at zero
+        beginAtZero: true,
+      }
+    },
+    responsive: true,
+    maintainAspectRatio: false
+  };*/
+  
+  // Fetch data from your API
+  /*useEffect(() => {
+    fetch('http://localhost:3000/analytics/badges')
+      .then(response => response.json())
+      .then(data => {
+        console.log("Fetched data:", data);
+        const months = data.map(item => item.month);
+        const badgesIssued = data.map(item => item.badges_issued);
+        
+        // Logging to ensure data shapes
+        console.log('Months:', months);
+        console.log('Badges Issued:', badgesIssued);
+        
+        setChartData({
+          labels: months,
+          datasets: [
+            {
+              label: 'Badges Issued',
+              data: badgesIssued,
+              borderColor: 'rgb(255, 99, 132)',
+              backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            }
+          ],
+        });
+      })
+      .catch(err => {
+        console.error('Failed to fetch badges data:', err);
+      });
+  }, []);*/
+
+  const chartData = {
+    labels: ['2022-11', '2022-12', '2023-01'], // Example months
+    datasets: [
+        {
+            label: 'Average Days to Issue',
+            data: [13, 9.2, 2.9], // Sample data
+            borderColor: 'rgb(75, 192, 192)',
+            backgroundColor: 'rgba(75, 192, 192, 0.5)',
+        },
+        {
+            label: 'Badges Issued',
+            data: [1, 21, 8], // Sample data
+            borderColor: 'rgb(255, 99, 132)',
+            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        }
+    ]
+};
+
+const options = {
+    scales: {
+        x: {
+            type: 'time',
+            time: {
+                unit: 'month',
+                tooltipFormat: 'MMMM YYYY'
+            }
+        },
+        y: {
+            beginAtZero: true,
+            title: {
+                display: true,
+                text: 'Value'
+            }
+        }
+    },
+    plugins: {
+        legend: {
+            display: true,
+            position: 'top',
+        }
+    },
+    responsive: true,
+    maintainAspectRatio: false
+};
 
 
   useEffect(() => {
@@ -73,7 +191,18 @@ function Dashboard() {
           <h2 className="text-lg font-semibold">Certificates Issued To Date</h2>
           <p className="text-xl">{total_certificates}</p>
         </div>
+        
       </div>
+      <div className="container mx-auto px-4 py-8">
+            <h1 className="text-2xl font-bold mb-4">Badge Analytics</h1>
+            {!loading && chartData.labels ?
+                <div className="p-4">
+                    <Line data={chartData} options={options} />
+                </div>
+                :
+                <p>Loading chart...</p>
+            }
+        </div>
     </div>
   );
 }
