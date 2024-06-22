@@ -5,7 +5,7 @@ import Form from "./components/form";
 
 export default function Login() {
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full min-h-full p-0">
+    <div className="flex flex-col items-center justify-center w-full h-full min-h-screen p-0">
       <div className="w-full max-w-md">
         <h2 className="text-4xl font-bold leading-9 tracking-tight text-center text-primary laptop:text-start">
           Welcome back!
@@ -23,3 +23,6 @@ export default function Login() {
     </div>
   );
 }
+
+export default Login;
+

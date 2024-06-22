@@ -1,3 +1,4 @@
+import React, {useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -18,13 +19,52 @@ import ProfileIcon from "~icons/custom/profile";
 
 const menu = [
   {
-    label: "Profile",
+    label: "View Profile",
     link: "/profile",
   },
 ];
 
 export default function UserMenu() {
   const navigate = useNavigate();
+  const [userProfile, setUserProfile] = useState({});
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // Retrieve the user ID from sessionStorage
+    const userString = sessionStorage.getItem('user');
+    if (!userString) {
+        setError('No user found in session storage.');
+        setLoading(false);
+        return;
+    }
+    // Parse the user string back into an object
+    const user = JSON.parse(userString);
+    console.log(user, user.id);
+    setEmail(user.email);
+    // Fetch the user profile using the user ID
+    fetch(`http://localhost:3000/user-profile/${user.id}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch user profile');
+            }
+            return response.json();
+        })
+        .then(data => {
+            setUserProfile(data[0]);
+            console.log('userprofile',userProfile);
+            setFullName(`${userProfile.first_name} ${userProfile.last_name}`);
+            setLoading(false);
+        })
+        .catch(err => {
+            console.error('Error fetching user profile:', err);
+            setError(err.message);
+            setLoading(false);
+        });
+}, []);
+
 
   return (
     <DropdownMenu>
@@ -45,10 +85,10 @@ export default function UserMenu() {
         <DropdownMenuGroup className="pb-2">
           <DropdownMenuLabel>
             <div className="text-sm font-bold uppercase break-all text-pretty text-primary">
-              firstname lastname
+              {fullName}
             </div>
             <div className="text-xs font-semibold break-all text-pretty text-neutral-400">
-              fname.lastname@email.com
+              {email}
             </div>
           </DropdownMenuLabel>
         </DropdownMenuGroup>

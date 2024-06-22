@@ -39,6 +39,11 @@ const navigations = [
   },
   {
     icon: CertificateIcon,
+    name: "Badge/Certificate",
+    link: "/student_badge_certifications"    
+  },
+  {
+    icon: CertificateIcon,
     name: "Certificate Template",
     link: "/cert-template",
   },

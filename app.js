@@ -14,6 +14,7 @@ c. User Access and Account Security / Auth0 ?
 d. Analytics
 */
 const express = require('express');
+const multer = require('multer');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const fs = require('fs-extra');
@@ -21,9 +22,10 @@ const path = require('path');
 const db = require('./db')
 const bcrypt = require('bcrypt')
 const app = express();
-const multer = require('multer')
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+const jwt = require('jsonwebtoken');
+const secretKey = '$2a$12$yuo3YIZPG611cmX6tgOoOuhSFobK6ZjNZeJqrXnEyhu47qD9APhva'
 
 
 // Define routes here
@@ -35,61 +37,405 @@ app.listen(PORT, () => {
 });
 
 // Multer configuration for file uploads
-const upload = multer({ dest: 'uploads/' });
+//const upload = multer({ dest: 'uploads/' });
+// Set up storage location and filenames
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+      cb(null, 'uploads/') // Make sure this folder exists
+    },
+    filename: function(req, file, cb) {
+      cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+    }
+  });
+  
+  const upload = multer({ storage: storage });
 
-app.get('/test-db-connect', async (req, res) => {
+//helper function to get userprofiles based on user_id
+const getUserProfile = async (user_id) => {
+    const query = `select * from userprofiles where user_id = ?`;
+    return new Promise((resolve, reject) => {
+        db.pool.getConnection((err, connection) => {
+            if (err) {
+                console.error('Error getting connection from pool:', err);
+                reject(err);
+            }
+            connection.query(query, [user_id], (err, results) => {
+                connection.release();
+                if (err) {
+                    console.error('Error executing query:', err);
+                    reject(err);
+                }
+                resolve(results);
+            });
+        });
+    });
+}
+
+// Endpoint to get a user profile by user ID
+app.get('/user-profile/:userId', async (req, res) => {
+    const userId = req.params.userId;
+    console.log(userId)
     try {
-        const isConnected = db.testConnection();
-        res.json({connected: isConnected})
+        const profile = await getUserProfile(userId);
+        if (profile.length > 0) {
+            res.json(profile);
+        } else {
+            res.status(404).send('Profile not found');
+        }
+    } catch (err) {
+        console.error('Failed to fetch user profile:', err);
+        res.status(500).send('Internal Server Error');
     }
-    catch(error) {
-        console.error('Error signing in user:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-})
+});
 
-app.post('/signin', async (req, res) => {
-    const { email, password } = req.body;
-    // Check if email and password are provided
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' });
-    }
-    
+/* I need an endpoint where it will return all images that is in the uplodas folder 
+* which is in the same loation as this app.js.  No parameter is required.
+* This is for the Badges menu item not badges issued to a student.
+*/
+app.get('/badge-images', (req, res) => {
+    const directoryPath = path.join(__dirname, 'uploads');
+    fs.readdir(directoryPath, (err, files) => {
+        if (err) {
+            console.error('Error reading directory:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        return res.json(files);
+    });
+});
+
+
+app.post('/assign-certificate/:student_id', (req, res) => {
+    const { student_id } = req.params;
+    const { 
+            institution_id,
+            institution_name,
+            institution_url, 
+            course_name, 
+            total_hours, 
+            date_completion} = req.body;
+    let student_name = ''
+    getUserProfile(student_id)
+    .then((results) => {
+        if (results.length > 0) {
+            student_name = `${results[0].first_name} ${results[0].last_name}`;
+            console.log(student_name); // Move the console.log here
+        } else {
+            console.log("No results found");
+        }
+    })
+    .catch((err) => {
+        console.error("Error fetching user profile:", err);
+    });
+
+    // I need to generate a jwt token for the badge
+    const jwtToken = jwt.sign({ student_id, institution_id, institution_name, institution_url, course_name, total_hours, date_completion }, secretKey);   
+    //console.log(jwtToken);    
+    //console.log(jwt.verify(jwtToken, secretKey));
+    //console.log(jwt.decode(jwtToken));
+    //console.log(jwt.decode(jwtToken).student_id);
+    //console.log(jwt.decode(jwtToken).institution_id);
+    //console.log(jwt.decode(jwtToken).institution_name);
+    //console.log(jwt.decode(jwtToken).institution_url);
+    //console.log(jwt.decode(jwtToken).course_name);
+    //console.log(jwt.decode(jwtToken).total_hours);
+    //console.log(jwt.decode(jwtToken).date_completion);
+
+
+    console.log(student_name)
+    const certificate_badgev3 = { 
+                "@context": [
+                  "https://www.w3.org/2018/credentials/v1",
+                  "https://w3id.org/openbadges/v3"
+                ],
+                "type": ["VerifiableCredential", "Assertion"],
+                "id": "https://example.org/badges/123",
+                "issuer": {
+                  "id": institution_id,
+                  "type": "Profile",
+                  "name": institution_name,
+                  "url": institution_url
+                },
+                "issuanceDate": date_completion,
+                "credentialSubject": {
+                  "id": student_id,
+                  "type": "RecipientProfile",
+                  "name": student_name,
+                  "hasCredential": {
+                    "type": "BadgeClass",
+                    "name" : institution_name,
+                    "description": course_name,
+                    "image": "https://example.org/badges/images/12345.png",
+                    "criteria": "https://example.org/badges/criteria/123",
+                    "tags": ["Data Analysis", "Certification", "Professional"]
+                  }
+                },
+                "proof": {
+                  "type": "JwtProof " + new Date(),
+                  "jwt": jwtToken
+                }
+    };
+   
+    console.log(
+        student_id,
+        institution_id,
+        institution_name, 
+        institution_url,
+        course_name, 
+        total_hours, 
+        date_completion, 
+    )
+    console.log('\n')
+   console.log(certificate_badgev3)
+
+   let badgeDataString = JSON.stringify(certificate_badgev3)
+
+    const query = `insert into assign_certificate 
+                    (user_id, institution_name, course_name, total_hours, date_completion, json_values) 
+                    values(?,?,?,?,?,?)`;
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        connection.query(query, 
+                        [student_id, 
+                        institution_name, 
+                        course_name, 
+                        total_hours, 
+                        date_completion,
+                        badgeDataString], 
+                        (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            certificatetoNFT(badgeDataString);
+            return res.json({results})
+        });
+    });
+});
+
+//mint badge json to nft
+const certificatetoNFT = async (badgeDataString) => {
+
+}
+
+//get all assign certificates records by user_id
+app.get('/assign-certificate/:student_id', (req, res) => {
+    const {student_id} = req.params;
+    const query = `select * from assign_certificate where user_id = ?`;
+
     db.pool.getConnection((err, connection) => {
         if (err) {
             console.error('Error getting connection from pool:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
         // Use the connection to execute a query
-        connection.query(`SELECT * FROM users where email = '${email}'`, (err, results) => {
+        connection.query(query, [student_id], (err, results) => {
             // Release the connection back to the pool
             connection.release();
     
-            if (err) {
-            console.error('Error executing query:', err);
-            return res.status(500).json({ error: `Internal server error ${err}` });
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
             }
-    
-            // Return the query results
-            //console.log(results[0].password);
-            bcrypt.compare(password, results[0].password, (err, passwordMatch) => {
-                if(err) {
-                    return res.status(500).json({ error: `Authentication failed ${err}` });
-                }
-                if(!passwordMatch) {
-                    return res.status(401).json({ error: 'Invalid email or password' });
-                }
-                // Exclude password field and include only desired fields
-                const { id, email, remember_token, status } = results[0];
-                const user = { id, email, remember_token, status };
-                return res.json(user);
-            })
+            
+            return res.json(results);
         });
     })
 });
 
-// Redirect root to dashboard
-app.get('/', (req, res) => res.redirect('/dashboard'));
+//get all assign certificates records
+app.get('/assign-certificate', (req, res) => {
+    //const {student_id} = req.body;
+    //console.log(student_id)
+    const query = `select * from assign_certificate`;
+
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        // Use the connection to execute a query
+        connection.query(query, (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+    
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            
+            return res.json(results);
+        });
+    })
+});
+
+app.get('/analytics/badges', (req, res) => {
+    const query = `SELECT 
+                    DATE_FORMAT(mycreds360.badges.date_completion, '%Y-%m') AS month,
+                    AVG(DATEDIFF(mycreds360.badges.created_at, mycreds360.badges.date_completion)) AS avg_days_to_issue,
+                    COUNT(*) AS badges_issued
+                FROM 
+                    mycreds360.badges
+                GROUP BY 
+                    DATE_FORMAT(mycreds360.badges.date_completion, '%Y-%m')
+                ORDER BY 
+                    month;`;
+
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        // Use the connection to execute a query
+        connection.query(query, (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+    
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            
+            return res.json(results);
+        });
+    })
+});
+
+app.get('/dashboard/data', (req, res) => {
+    const  userId  = req.query.userId;
+    console.log(userId)
+    // Placeholder for actual dashboard data
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        const query = `SELECT 
+                        up.first_name,
+                        up.last_name
+                        FROM 
+                        mycreds360.users u
+                        JOIN 
+                        mycreds360.userprofiles up ON u.id = up.user_id
+                        WHERE u.id = ?
+                        GROUP BY 
+                        up.first_name, up.last_name;`
+        const _query = `SELECT 
+                        up.first_name,
+                        up.last_name,
+                        (SELECT COUNT(*) FROM mycreds360.users WHERE status = 1) AS active_users,
+                        (SELECT COUNT(*) FROM mycreds360.users WHERE status = 0) AS inactive_users,
+                        (SELECT COUNT(*) FROM mycreds360.badges) AS total_badges,
+                        (SELECT COUNT(*) FROM mycreds360.assign_certificate) AS total_certificates
+                    FROM 
+                        mycreds360.users u
+                    JOIN 
+                        mycreds360.userprofiles up ON u.id = up.user_id
+                    WHERE 
+                        u.id = ?
+                    GROUP BY 
+                        up.first_name, up.last_name;
+`
+        // Use the connection to execute a query
+        connection.query(_query,[userId], (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+    
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            
+            return res.json(results);
+        });
+    })
+});
+
+/*
+*   Create a new user record, then take the user_id generated from users.user_id
+*  and insert a new record into userprofiles table
+*/
+app.post('/students/create', upload.single('user_photo'), (req, res) => {
+    const { user_id, email, first_name, last_name, mobile_no } = req.body;
+    const user_photo = req.file ? req.file.path : null; // Assuming req.file contains the uploaded file information
+    if (!user_id || !email || !first_name || !last_name || !mobile_no) {
+        return res.status(400).json({ error: 'Email, first name, last name, and mobile number are required.  A user account must also be created first.' });
+    }
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        // Use the connection to execute a query
+        connection.query('INSERT INTO userprofiles (user_id, first_name, last_name, mobile_no, user_photo) VALUES (?, ?, ?, ?, ?)', [user_id, first_name, last_name, mobile_no, user_photo], (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+    
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            
+            return res.status(201).json({ message: 'Student created successfully', student_id: results.insertId });
+        });
+    });
+});
+
+
+/*
+*   Students have roles set to 7
+*/
+app.get('/students', (req, res) => {
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        // Execute the parameterized query
+        const query = `
+            SELECT 
+                u.id, 
+                u.email, 
+                up.first_name, 
+                up.last_name, 
+                up.mobile_no, 
+                up.user_photo, 
+                COUNT(DISTINCT b.id) AS no_of_badges,
+                COUNT(DISTINCT ac.id) AS no_of_certificates
+            FROM 
+                mycreds360.users u
+            JOIN 
+                mycreds360.userprofiles up ON u.id = up.user_id
+            JOIN 
+                mycreds360.role_user ru ON u.id = ru.user_id
+            LEFT JOIN 
+                mycreds360.badges b ON u.id = b.user_id
+            LEFT JOIN 
+                mycreds360.assign_certificate ac ON u.id = ac.user_id 
+            WHERE 
+                ru.role_id = 7
+            GROUP BY 
+                u.id, u.email, up.first_name, up.last_name, up.mobile_no, up.user_photo
+            ORDER BY up.first_name ASC`;
+
+        // Use the connection to execute a query
+        connection.query(query, (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+    
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            
+            return res.json(results);
+        });
+    })
+});
 
 app.get('/users', async (req, res) => {
     db.pool.getConnection((err, connection) => {
@@ -98,7 +444,7 @@ app.get('/users', async (req, res) => {
             return res.status(500).json({ error: 'Internal server error' });
         }
         // Use the connection to execute a query
-        connection.query(`SELECT * FROM users`, (err, results) => {
+        connection.query(`SELECT * FROM users ORDER BY email ASC`, (err, results) => {
             // Release the connection back to the pool
             connection.release();
     
@@ -147,7 +493,7 @@ app.get('/institution/index', (req, res) => {
 */
 app.post('/institution/create', (req, res) => {
     
-    const { institution_name } = req.body;
+    const { institution_name, institution_url } = req.body;
     const logo = req.file ? req.file.path : null; // Assuming req.file contains the uploaded file information
     console.log(`New Instituion ${institution_name}`)
     if (!institution_name) {
@@ -160,7 +506,7 @@ app.post('/institution/create', (req, res) => {
         }
 
         // Use the connection to execute a query
-        connection.query('INSERT INTO institution (institution_name, logo) VALUES (?, ?)', [institution_name, logo], (err, results) => {
+        connection.query('INSERT INTO institution (institution_name, logo, institution_url) VALUES (?, ?,?)', [institution_name, logo, institution_url], (err, results) => {
             // Release the connection back to the pool
             connection.release();
     
@@ -335,36 +681,206 @@ app.post('/account/new', (req, res) => {
     })
 })
 
-// Using app.get and app.post directly
 app.get('/newcourses', (req, res) => {
-    res.send('Listing new courses');
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        // Use the connection to execute a query
+        connection.query(`SELECT * FROM newcourses`, (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+    
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            
+            return res.json(results);
+        });
+    })
 });
-app.get('/newcourses/create', (req, res) => {
+
+
+app.post('/newcourses/create', (req, res) => {
+    const { course_name, description } = req.body;
+    console.log(course_name, description)
+    const query = `insert into newcourses 
+                   (course_name, description, created_at, updated_at) 
+                   values(?,?,?,?);`
+    db.pool.getConnection((err, connection) => {   
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        connection.query(query, [course_name, description, new Date(), new Date()], (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            return res.json({results})
+        });
+    });
+
+    //res.send('Form to create a new course');
+});
+
+// Using app.get and app.post directly
+app.get('/courses', (req, res) => {
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        // Use the connection to execute a query
+        connection.query(`SELECT * FROM courses`, (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+    
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            
+            return res.json(results);
+        });
+    })
+});
+
+app.get('/courses/create', (req, res) => {
     res.send('Form to create a new course');
-});
-app.post('/newcourses/store', (req, res) => {
-    res.send('Store new course');
 });
 
 // This route will generate the badge to be issued to the student
-app.post('/createBadge', async (req, res) => {
-    const { email, issuer, badgeClass, assertion } = req.body;
-
-    // Since email hash might be required dynamically, we adjust the 'identity' field
-    if (assertion.recipient.hashed) {
-        assertion.recipient.identity = "sha256$" + require('crypto').createHash('sha256').update(email + assertion.recipient.salt).digest('hex');
-    }
-
-    // Optionally adjust 'issuedOn' date if you need to set it server-side
-    assertion.issuedOn = new Date().toISOString();
-
-    // Your logic here to handle the issuer, badgeClass, and assertion data
-    // For example, save to a database, create files, etc.
-
-    res.json({
-        message: "Badge created successfully!",
-        issuer,
-        badgeClass,
-        assertion
+app.post('/create-student-badge', async (req, res) => {
+    const { course_id, course_name, date_completion, status, reference_id } = req.body;
+    const query = `insert into mycreds360.badges 
+                    (course_id, course_name, date_completion, status, reference_id) 
+                    values(?,?,?,?,?)`;
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        connection.query(query, [course_id, course_name, date_completion, status, reference_id], (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            return res.json({results})
+        });
     });
 });
+
+// This route will generate the badge to be issued to the student
+app.post('/createbadge', upload.single('badge'),async (req, res) => {
+    // I need to get from req.body the course name, description and the image file 
+    const { course_name, description } = req.body;
+    const badge = req.file ? req.file.path : null; // Assuming req.file contains the uploaded file information
+    console.log(req.file);  // Check if the file is being received
+    console.log(req.body);  // Log the body to see all form data
+    
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        const query = `insert into courses 
+                        (course_name, description, badge) 
+                        values(?,?,?)`
+        connection.query(query, [course_name, description, badge], (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            return res.json({results})
+        });
+    });
+});
+
+
+app.get('/roles', (req, res) => {
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        const query = `select up.id, up.user_id, up.first_name, up.last_name, roles.label 
+                        from mycreds360.userprofiles up
+                        join mycreds360.role_user ru on up.user_id = ru.user_id
+                        join mycreds360.roles roles on roles.id = ru.role_id;`
+        // Use the connection to execute a query
+        connection.query(query, (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+    
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            
+            return res.json(results);
+        });
+    })
+});
+
+app.get('/test-db-connect', async (req, res) => {
+    try {
+        const isConnected = db.testConnection();
+        res.json({connected: isConnected})
+    }
+    catch(error) {
+        console.error('Error signing in user:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+})
+
+app.post('/signin', async (req, res) => {
+    const { email, password } = req.body;
+    // Check if email and password are provided
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+    
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        // Use the connection to execute a query
+        connection.query(`SELECT * FROM users where email = '${email}'`, (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+    
+            if (err) {
+            console.error('Error executing query:', err);
+            return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+    
+            // Return the query results
+            //console.log(results[0].password);
+            bcrypt.compare(password, results[0].password, (err, passwordMatch) => {
+                if(err) {
+                    return res.status(500).json({ error: `Authentication failed ${err}` });
+                }
+                if(!passwordMatch) {
+                    return res.status(401).json({ error: 'Invalid email or password' });
+                }
+                // Exclude password field and include only desired fields
+                const { id, email, remember_token, status } = results[0];
+                const user = { id, email, remember_token, status };
+                return res.json(user);
+            })
+        });
+    })
+});
+
+// Redirect root to dashboard
+app.get('/', (req, res) =>  res.redirect('/dashboard'));
