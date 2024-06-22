@@ -12,3 +12,5 @@ export { default as ProfilePage } from "./profile";
 
 export { default as LoginPage } from "./login";
 export { default as ResetPasswordPage } from "./reset-password";
+export { default as VerifyResetPasswordPage } from "./reset-password/verify";
+export { default as ResetPasswordSuccess } from "./reset-password/success";
