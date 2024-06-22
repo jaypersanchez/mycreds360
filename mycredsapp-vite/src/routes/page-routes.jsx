@@ -12,8 +12,8 @@ import {
   SettingsPage,
   StudentPage,
   StudentBadgeCertsPage,
-  
 } from "@/pages";
+
 //import StudentBadgeCerts from "@/pages/student/student_badge_certs";
 
 const PageRoutes = {
@@ -35,13 +35,13 @@ const PageRoutes = {
       children: [
         {
           path: "student_badge_certifications",
-          element: <StudentBadgeCertsPage />
-        }
-      ]
+          element: <StudentBadgeCertsPage />,
+        },
+      ],
     },
     {
       path: "student_badge_certifications",
-      element: <StudentBadgeCertsPage />
+      element: <StudentBadgeCertsPage />,
     },
     {
       path: "institution",

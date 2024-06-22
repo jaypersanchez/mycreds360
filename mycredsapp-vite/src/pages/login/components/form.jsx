@@ -9,7 +9,7 @@ import { Button, TextField } from "@/components/ui";
 import EyeIcon from "~icons/custom/eye";
 import EyeOffIcon from "~icons/custom/eyeoff";
 
-const Form = () => {
+export default function Form() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -104,6 +104,4 @@ const Form = () => {
       </div>
     </form>
   );
-};
-
-export default Form;
+}

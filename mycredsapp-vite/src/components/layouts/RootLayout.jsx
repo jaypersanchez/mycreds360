@@ -9,6 +9,7 @@ export default function RootLayout() {
     );
   }
 
+  sessionStorage.setItem("user", JSON.stringify([{ id: 123, name: "romar" }]));
   return (
     <>
       <Outlet />

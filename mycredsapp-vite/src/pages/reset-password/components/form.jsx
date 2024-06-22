@@ -1,15 +1,11 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { cn } from "@/lib/utils";
 
 import { Button, TextField } from "@/components/ui";
 
-import EyeIcon from "~icons/custom/eye";
-import EyeOffIcon from "~icons/custom/eyeoff";
-
-const Form = () => {
+export default function Form() {
   const navigate = useNavigate();
 
   const validationSchema = Yup.object({
@@ -63,6 +59,4 @@ const Form = () => {
       </Button>
     </form>
   );
-};
-
-export default Form;
+}
