@@ -131,7 +131,7 @@ const options = {
 
   useEffect(() => {
     const user = JSON.parse(sessionStorage.getItem('user'));
-    console.log(user.id);
+    //console.log(user.id);
     if (!user || !user.id) {
         console.error('No user id found in sessionStorage');
         return;
@@ -142,7 +142,7 @@ const options = {
         .then(response => response.json())
         .then(data => {
             if (data) {
-                console.log(data[0]);
+                //console.log(data[0]);
                 let _fullName = `${data[0].first_name} ${data[0].last_name}`;
                 setFullName(_fullName);
                 setActiveUsers(data[0].active_users);
