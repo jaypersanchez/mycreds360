@@ -221,6 +221,29 @@ app.post('/assign-certificate/:student_id', (req, res) => {
 const certificatetoNFT = async (badgeDataString) => {
 
 }
+/*
+* This endpoint will query the assign_certificate table based on user_id and return the json_values
+* which is the badge data in json format.  
+*
+*/
+app.get('/student-certificates/:student_id', (req, res) => {
+    const { student_id } = req.params;
+    const query = `select * from assign_certificate where user_id = ?`;
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        connection.query(query, [student_id], (err, results) => {
+            connection.release();
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            return res.json(results);
+        });
+    });
+});
 
 //get all assign certificates records by user_id
 app.get('/assign-certificate/:student_id', (req, res) => {
