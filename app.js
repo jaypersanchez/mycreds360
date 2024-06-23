@@ -78,6 +78,7 @@ app.get('/user-profile/:userId', async (req, res) => {
     try {
         const profile = await getUserProfile(userId);
         if (profile.length > 0) {
+            console.log(`user-profile/:userId`, profile)    
             res.json(profile);
         } else {
             res.status(404).send('Profile not found');

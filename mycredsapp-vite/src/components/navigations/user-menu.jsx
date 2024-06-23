@@ -55,7 +55,7 @@ export default function UserMenu() {
         .then(data => {
             setUserProfile(data[0]);
             console.log('userprofile',userProfile);
-            setFullName(`${userProfile.first_name} ${userProfile.last_name}`);
+            setFullName(`${data[0].first_name} ${data[0].last_name}`);
             setLoading(false);
         })
         .catch(err => {
