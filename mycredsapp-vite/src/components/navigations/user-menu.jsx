@@ -33,38 +33,45 @@ export default function UserMenu() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Retrieve the user ID from sessionStorage
-    const userString = sessionStorage.getItem('user');
-    if (!userString) {
-        setError('No user found in session storage.');
-        setLoading(false);
-        return;
-    }
-    // Parse the user string back into an object
-    const user = JSON.parse(userString);
-    console.log(user, user.id);
-    setEmail(user.email);
-    // Fetch the user profile using the user ID
-    fetch(`http://localhost:3000/user-profile/${user.id}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch user profile');
-            }
-            return response.json();
-        })
-        .then(data => {
-            setUserProfile(data[0]);
-            console.log('userprofile',userProfile);
-            setFullName(`${data[0].first_name} ${data[0].last_name}`);
-            setLoading(false);
-        })
-        .catch(err => {
-            console.error('Error fetching user profile:', err);
-            setError(err.message);
-            setLoading(false);
-        });
-}, []);
+      // Retrieve the user ID from sessionStorage
+      const userString = sessionStorage.getItem('user');
+      if (!userString) {
+          setError('No user found in session storage.');
+          setLoading(false);
+          return;
+      }
+      // Parse the user string back into an object
+      const user = JSON.parse(userString);
+      console.log(user, user.id);
+      setEmail(user.email);
+      // Fetch the user profile using the user ID
+      fetch(`http://localhost:3000/user-profile/${user.id}`)
+          .then(response => {
+              if (!response.ok) {
+                  throw new Error('Failed to fetch user profile');
+              }
+              return response.json();
+          })
+          .then(data => {
+              setUserProfile(data[0]);
+              console.log('userprofile',userProfile);
+              setFullName(`${data[0].first_name} ${data[0].last_name}`);
+              setLoading(false);
+          })
+          .catch(err => {
+              console.error('Error fetching user profile:', err);
+              setError(err.message);
+              setLoading(false);
+          });
+  }, []);
 
+  const handleSignOut = () => {
+    // Clear the session storage
+    sessionStorage.removeItem('user');
+
+    // Redirect to the login screen
+    navigate('/auth');
+  };
 
   return (
     <DropdownMenu>
@@ -107,7 +114,9 @@ export default function UserMenu() {
           ))}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="font-semibold !text-red-500 focus:bg-red-500/30">
+        <DropdownMenuItem className="font-semibold !text-red-500 focus:bg-red-500/30"
+          onClick={handleSignOut}
+        >
           Sign out
         </DropdownMenuItem>
 
