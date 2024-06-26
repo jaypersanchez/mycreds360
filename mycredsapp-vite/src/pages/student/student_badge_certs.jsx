@@ -98,6 +98,7 @@ function StudentBadgeCerts() {
         setActiveTab(tabName);
     };
 
+    // Certificate Assignment and NFT mint
     const handleSubmit = async (event) => {
         event.preventDefault();
         /*institution_id,
