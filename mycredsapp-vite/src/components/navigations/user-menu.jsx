@@ -89,7 +89,7 @@ export default function UserMenu() {
         className="border-2 rounded-md shadow-lg w-52 border-primary"
         align="end"
       >
-        <DropdownMenuGroup>
+        <DropdownMenuGroup className="pb-2">
           <DropdownMenuLabel>
             <div className="text-sm font-bold uppercase break-all text-pretty text-primary">
               {fullName}
@@ -99,7 +99,6 @@ export default function UserMenu() {
             </div>
           </DropdownMenuLabel>
         </DropdownMenuGroup>
-
         <DropdownMenuGroup>
           {menu.map((item, index) => (
             <DropdownMenuItem

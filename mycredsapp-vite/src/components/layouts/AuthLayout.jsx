@@ -21,7 +21,7 @@ export default function AuthLayout() {
           </div>
         </div>
         <section className="flex flex-col justify-center flex-grow w-full max-w-xl px-4 py-6 mx-auto tablet:px-6 laptop:px-8">
-          <div className="px-4 py-12 bg-gray-900 border shadow-md tablet:px-6 laptop:px-8 bg-opacity-10 border-white/20 rounded-xl shadow-gray-600">
+          <div className="px-4 py-12 tablet:px-6 laptop:px-8">
             <Outlet />
           </div>
         </section>

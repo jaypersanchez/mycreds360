@@ -46,7 +46,12 @@ module.exports = {
       backgroundImage: {
         login: "url('/images/login-bg.png')",
       },
+      boxShadow: {
+        "3xl":
+          "rgba(0, 0, 0, 0.2) 0px 2px 4px -1px, rgba(0, 0, 0, 0.14) 0px 4px 5px 0px, rgba(0, 0, 0, 0.12) 0px 1px 10px 0px",
+        "2.5xl": "1px 1px 8px 2px #00000040",
+      },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("autoprefixer")],
 };

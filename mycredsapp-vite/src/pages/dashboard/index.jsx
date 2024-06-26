@@ -1,3 +1,4 @@
+import StatsWidget from "./components/stats";
 import React, { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
@@ -169,42 +170,39 @@ const options = {
     //setLastName(user.last_name);
   }, []);
 
+export default function Dashboard() {
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Welcome, {fullName} </h1>
-      <div className="flex justify-between items-center bg-white shadow-md p-4 rounded-lg">
-        <div>
-          <h2 className="text-lg font-semibold">Active Users</h2>
-          <p className="text-xl">{active_users}</p>
-        </div>
-        <div>
-          <h2 className="text-lg font-semibold">Inactive User</h2>
-          <p className="text-xl">{inactive_users}</p>
-        </div>
+    <div>
+      <h2 className="pb-6 text-2xl font-bold">
+        Hi <span className="text-primary">FName</span>, Welcome Back!
+      </h2>
+
+      <div className="grid grid-cols-1 gap-4 tablet:grid-cols-2 laptop:grid-cols-4">
+        <StatsWidget
+          title="Total active users"
+          stats="12,000"
+          increment="up"
+          percentage="2%"
+        />
+        <StatsWidget
+          title="Total in-active users"
+          stats="40"
+          increment="down"
+          percentage="0.1%"
+        />
+        <StatsWidget
+          title="Total badge issued"
+          stats="3"
+          increment="up"
+          percentage="0.05%"
+        />
+        <StatsWidget
+          title="Total certificate issued"
+          stats="40"
+          increment="up"
+          percentage="2%"
+        />
       </div>
-      <div className="flex justify-between items-center bg-white shadow-md p-4 rounded-lg">
-        <div>
-          <h2 className="text-lg font-semibold">Badges Issued To Date</h2>
-          <p className="text-xl">{total_badges}</p>
-        </div>
-        <div>
-          <h2 className="text-lg font-semibold">Certificates Issued To Date</h2>
-          <p className="text-xl">{total_certificates}</p>
-        </div>
-        
-      </div>
-      <div className="container mx-auto px-4 py-8">
-            <h1 className="text-2xl font-bold mb-4">Badge Analytics</h1>
-            {!loading && chartData.labels ?
-                <div className="p-4">
-                    <Line data={chartData} options={options} />
-                </div>
-                :
-                <p>Loading chart...</p>
-            }
-        </div>
     </div>
   );
 }
-
-export default Dashboard;

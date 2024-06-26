@@ -1,6 +1,13 @@
-import { AuthLayout } from "@/components/layouts";
+import { AuthLayout, Page404 } from "@/components/layouts";
 
-import { LoginPage, ResetPasswordPage } from "@/pages";
+import { Outlet } from "react-router-dom";
+
+import {
+  LoginPage,
+  ResetPasswordPage,
+  ResetPasswordSuccess,
+  VerifyResetPasswordPage,
+} from "@/pages";
 
 const AuthRoutes = {
   id: "auth",
@@ -16,7 +23,22 @@ const AuthRoutes = {
   element: <AuthLayout />,
   children: [
     { index: true, element: <LoginPage /> },
-    { path: "reset-password", element: <ResetPasswordPage /> },
+    {
+      path: "reset-password",
+      element: <Outlet />,
+      children: [
+        { index: true, element: <ResetPasswordPage /> },
+        {
+          path: "verify",
+          element: <VerifyResetPasswordPage />,
+        },
+        {
+          path: "success/:type",
+          errorElement: <Page404 />,
+          element: <ResetPasswordSuccess />,
+        },
+      ],
+    },
   ],
 };
 

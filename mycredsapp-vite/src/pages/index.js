@@ -1,6 +1,8 @@
 export { default as DashboardPage } from "./dashboard";
 export { default as AdminPage } from "./admin";
+
 export { default as StudentPage } from "./student";
+export { default as StudentBadgeCertsPage } from "./student/student_badge_certs";
 
 export { default as InstitutionPage } from "./institution";
 export { default as CertificateTemplatePage } from "./cert-template";
@@ -13,5 +15,5 @@ export { default as ProfilePage } from "./profile";
 
 export { default as LoginPage } from "./login";
 export { default as ResetPasswordPage } from "./reset-password";
-export { default as StudentBadgeCertsPage } from "./student/student_badge_certs";
-
+export { default as VerifyResetPasswordPage } from "./reset-password/verify";
+export { default as ResetPasswordSuccess } from "./reset-password/success";
