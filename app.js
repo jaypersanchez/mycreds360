@@ -26,6 +26,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 const jwt = require('jsonwebtoken');
 const secretKey = '$2a$12$yuo3YIZPG611cmX6tgOoOuhSFobK6ZjNZeJqrXnEyhu47qD9APhva'
+// Require Stripe library and initialize with your Stripe secret key
+const stripe = require('stripe')('your_stripe_secret_key');
 
 
 // Define routes here
@@ -51,25 +53,33 @@ const storage = multer.diskStorage({
   const upload = multer({ storage: storage });
 
 //helper function to get userprofiles based on user_id
-const getUserProfile = async (user_id) => {
-    const query = `select * from userprofiles where user_id = ?`;
+const getUserProfile = (user_id) => {
+    console.log(`getUserProfile: ${user_id}`);
+    const query = `SELECT * FROM userprofiles WHERE user_id = ?`;
     return new Promise((resolve, reject) => {
         db.pool.getConnection((err, connection) => {
             if (err) {
                 console.error('Error getting connection from pool:', err);
                 reject(err);
+                return;
             }
             connection.query(query, [user_id], (err, results) => {
                 connection.release();
                 if (err) {
                     console.error('Error executing query:', err);
                     reject(err);
+                } else if (results.length > 0) {
+                    console.log(`RESULTS: ${JSON.stringify(results[0])}`);
+                    resolve(results[0]); // Resolve with the first result
+                } else {
+                    console.log("No results found");
+                    resolve(null); // Resolve with null if no results found
                 }
-                resolve(results);
             });
         });
     });
 }
+
 
 // Endpoint to get a user profile by user ID
 app.get('/user-profile/:userId', async (req, res) => {
@@ -115,17 +125,16 @@ app.post('/assign-certificate/:student_id', (req, res) => {
             total_hours, 
             date_completion} = req.body;
     let student_name = ''
-    getUserProfile(student_id)
-    .then((results) => {
-        if (results.length > 0) {
-            student_name = `${results[0].first_name} ${results[0].last_name}`;
-            console.log(student_name); // Move the console.log here
-        } else {
-            console.log("No results found");
+    console.log(`student_id: ${student_id}`)
+    getUserProfile(student_id).then(userProfile => {
+        if (!userProfile) {
+            return res.status(404).send('Profile not found');
         }
-    })
-    .catch((err) => {
-        console.error("Error fetching user profile:", err);
+        student_name = `${userProfile.first_name} ${userProfile.last_name}`;
+        console.log(`Student Name: ${student_name}`);
+    }).catch(err => {
+        console.error('Failed to fetch user profile:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
     });
 
     // I need to generate a jwt token for the badge
@@ -879,7 +888,8 @@ app.post('/signin', async (req, res) => {
             return res.status(500).json({ error: 'Internal server error' });
         }
         // Use the connection to execute a query
-        connection.query(`SELECT * FROM users where email = '${email}'`, (err, results) => {
+        const query = 'SELECT * FROM users WHERE email = ?';
+        connection.query(query,[email], (err, results) => {
             // Release the connection back to the pool
             connection.release();
     
@@ -889,7 +899,10 @@ app.post('/signin', async (req, res) => {
             }
     
             // Return the query results
-            //console.log(results[0].password);
+            if (results.length === 0) {
+                return res.status(401).json({ error: 'Invalid email or password' });
+            }
+
             bcrypt.compare(password, results[0].password, (err, passwordMatch) => {
                 if(err) {
                     return res.status(500).json({ error: `Authentication failed ${err}` });
@@ -904,6 +917,22 @@ app.post('/signin', async (req, res) => {
             })
         });
     })
+});
+
+// Stripe payament CC
+app.post('/create-payment-intent', async (req, res) => {
+    const { amount, currency } = req.body;
+    
+    try {
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: amount,  // Amount in cents
+            currency: currency,
+            payment_method_types: ['card'],
+        });
+        res.json({ clientSecret: paymentIntent.client_secret });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // Redirect root to dashboard

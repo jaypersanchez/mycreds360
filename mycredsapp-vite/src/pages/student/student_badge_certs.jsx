@@ -3,7 +3,7 @@ import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
 
 function StudentBadgeCerts() {
     const navigate = useNavigate(); // Hook for navigation
-    const { userId } = useParams(); // If you need to fetch additional data based on URL parameter
+    const [userId, setUserId] = useState(); // If you need to fetch additional data based on URL parameter
     const [activeTab, setActiveTab] = useState('badge');
     const [userData, setUserData] = useState({ fullName: '', email: '' });
     const [certifications, setCertifications] = useState([]);
@@ -26,6 +26,8 @@ function StudentBadgeCerts() {
     */
     useEffect(() => {
         const user = JSON.parse(sessionStorage.getItem('user'));
+        console.log('User:', user.id);
+        setUserId(user.id);
         // I need to direct the user back to http://localhost:3000/login if they are not logged in
         if (!user) {
           window.location.href = 'http://localhost:5173/auth';
@@ -54,7 +56,7 @@ function StudentBadgeCerts() {
     }, []);
 
     useEffect(() => {
-        if (user.id) {
+        if (user && user.id) {
             fetch(`http://localhost:3000/assign-certificate/${user.id}`)
                 .then(response => {
                     if (!response.ok) {
@@ -100,6 +102,7 @@ function StudentBadgeCerts() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        console.log(`userId ${userId}`)
         /*institution_id,
         institution_name,
         institution_url, 
@@ -115,7 +118,7 @@ function StudentBadgeCerts() {
         };
 
         // Call your API to assign a certificate
-        fetch(`http://localhost:3000/assign-certificate/${userId}`, {
+        fetch(`http://localhost:3000/assign-certificate/${user.id}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
