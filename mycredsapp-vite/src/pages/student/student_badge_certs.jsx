@@ -89,7 +89,7 @@ function StudentBadgeCerts() {
                     setError(err.message);
                 });
         }
-    }, []);
+    }, [user]);
 
     useEffect(() => {
         if (user && user.id) {
