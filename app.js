@@ -84,19 +84,29 @@ const getUserProfile = (user_id) => {
 // Endpoint to get a user profile by user ID
 app.get('/user-profile/:userId', async (req, res) => {
     const userId = req.params.userId;
-    console.log(userId)
-    try {
-        const profile = await getUserProfile(userId);
-        if (profile.length > 0) {
-            console.log(`user-profile/:userId`, profile)    
-            res.json(profile);
-        } else {
-            res.status(404).send('Profile not found');
-        }
-    } catch (err) {
-        console.error('Failed to fetch user profile:', err);
-        res.status(500).send('Internal Server Error');
-    }
+    console.log(`user-profile ${userId}`)
+        //const profile = await getUserProfile(userId);
+        const query = `SELECT * FROM userprofiles WHERE user_id = ?`;
+        db.pool.getConnection((err, connection) => {
+            if (err) {
+                console.error('Error getting connection from pool:', err);
+                reject(err);
+                return;
+            }
+            connection.query(query, [userId], (err, results) => {
+                connection.release();
+                if (err) {
+                    console.error('Error executing query:', err);
+                    reject(err);
+                } else if (results.length > 0) {
+                    console.log(`/user-profile: ${JSON.stringify(results[0])}`);
+                    return res.json(results);
+                } else {
+                    console.log("No results found");
+                    return res.json("No results found"); // Resolve with null if no results found
+                }
+            });
+        });
 });
 
 /* I need an endpoint where it will return all images that is in the uplodas folder 
@@ -115,117 +125,85 @@ app.get('/badge-images', (req, res) => {
 });
 
 
-app.post('/assign-certificate/:student_id', (req, res) => {
+app.post('/assign-certificate/:student_id', async (req, res) => {
     const { student_id } = req.params;
-    const { 
-            institution_id,
-            institution_name,
-            institution_url, 
-            course_name, 
-            total_hours, 
-            date_completion} = req.body;
-    let student_name = ''
-    console.log(`student_id: ${student_id}`)
-    getUserProfile(student_id).then(userProfile => {
-        if (!userProfile) {
-            return res.status(404).send('Profile not found');
-        }
-        student_name = `${userProfile.first_name} ${userProfile.last_name}`;
-        console.log(`Student Name: ${student_name}`);
-    }).catch(err => {
-        console.error('Failed to fetch user profile:', err);
-        res.status(500).json({ error: 'Internal Server Error' });
-    });
+    const { institution_id,institution_name, course_name, institution_url, total_hours, date_completion } = req.body;
+    let fullName = '';
+    
+        // Fetch user profile
+        console.log(`assign-certificate`,student_id,
+                                        institution_name, 
+                                        course_name, 
+                                        institution_url, 
+                                        total_hours, 
+                                        date_completion )
+        
+        /*console.log(`certificate data`,student_id,fullName, 
+                                        institution_name,
+                                        course_name,
+                                        institution_url, 
+                                        total_hours, 
+                                        date_completion )*/
+        
+                                        // Create JWT token for the badge
+        const jwtToken = jwt.sign({
+            student_id, institution_name, course_name, institution_url, total_hours, date_completion
+        }, secretKey);
 
-    // I need to generate a jwt token for the badge
-    const jwtToken = jwt.sign({ student_id, institution_id, institution_name, institution_url, course_name, total_hours, date_completion }, secretKey);   
-    //console.log(jwtToken);    
-    //console.log(jwt.verify(jwtToken, secretKey));
-    //console.log(jwt.decode(jwtToken));
-    //console.log(jwt.decode(jwtToken).student_id);
-    //console.log(jwt.decode(jwtToken).institution_id);
-    //console.log(jwt.decode(jwtToken).institution_name);
-    //console.log(jwt.decode(jwtToken).institution_url);
-    //console.log(jwt.decode(jwtToken).course_name);
-    //console.log(jwt.decode(jwtToken).total_hours);
-    //console.log(jwt.decode(jwtToken).date_completion);
-
-
-    console.log(student_name)
-    const certificate_badgev3 = { 
-                "@context": [
-                  "https://www.w3.org/2018/credentials/v1",
-                  "https://w3id.org/openbadges/v3"
-                ],
-                "type": ["VerifiableCredential", "Assertion"],
-                "id": "https://example.org/badges/123",
-                "issuer": {
-                  "id": institution_id,
-                  "type": "Profile",
-                  "name": institution_name,
-                  "url": institution_url
-                },
-                "issuanceDate": date_completion,
-                "credentialSubject": {
-                  "id": student_id,
-                  "type": "RecipientProfile",
-                  "name": student_name,
-                  "hasCredential": {
+        // Build certificate badge object
+        const certificate_badgev3 = {
+            "@context": ["https://www.w3.org/2018/credentials/v1", "https://w3id.org/openbadges/v3"],
+            "type": ["VerifiableCredential", "Assertion"],
+            "id": "https://example.org/badges/123",
+            "issuer": {
+                "id": institution_id,
+                "type": "Profile",
+                "name": institution_name,
+                "url": institution_url
+            },
+            "issuanceDate": date_completion,
+            "credentialSubject": {
+                "id": student_id,
+                "type": "RecipientProfile",
+                "name": fullName,
+                "hasCredential": {
                     "type": "BadgeClass",
-                    "name" : institution_name,
-                    "description": course_name,
+                    "name": course_name,
                     "image": "https://example.org/badges/images/12345.png",
                     "criteria": "https://example.org/badges/criteria/123",
                     "tags": ["Data Analysis", "Certification", "Professional"]
-                  }
-                },
-                "proof": {
-                  "type": "JwtProof " + new Date(),
-                  "jwt": jwtToken
                 }
-    };
-   
-    console.log(
-        student_id,
-        institution_id,
-        institution_name, 
-        institution_url,
-        course_name, 
-        total_hours, 
-        date_completion, 
-    )
-    console.log('\n')
-   console.log(certificate_badgev3)
-
-   let badgeDataString = JSON.stringify(certificate_badgev3)
-
-    const query = `insert into assign_certificate 
-                    (user_id, institution_name, course_name, total_hours, date_completion, json_values) 
-                    values(?,?,?,?,?,?)`;
-    db.pool.getConnection((err, connection) => {
-        if (err) {
-            console.error('Error getting connection from pool:', err);
-            return res.status(500).json({ error: 'Internal server error' });
-        }
-        connection.query(query, 
-                        [student_id, 
-                        institution_name, 
-                        course_name, 
-                        total_hours, 
-                        date_completion,
-                        badgeDataString], 
-                        (err, results) => {
-            // Release the connection back to the pool
-            connection.release();
-            if (err) { 
-                console.error('Error executing query:', err);
-                return res.status(500).json({ error: `Internal server error ${err}` });
+            },
+            "proof": {
+                "type": "JwtProof " + new Date().toISOString(),
+                "jwt": jwtToken
             }
-            certificatetoNFT(badgeDataString);
-            return res.json({results})
+        };
+
+        // Serialize certificate badge object
+        const badgeDataString = JSON.stringify(certificate_badgev3);
+        console.log(badgeDataString);
+        
+        // Insert certificate into the database
+        const assigncertificatequery = `insert into assign_certificate (user_id, institution_name, course_name, total_hours, date_completion, json_values) values(?,?,?,?,?,?)`;
+        db.pool.getConnection((err, connection) => {
+            if (err) {
+                console.error('Error getting connection from pool:', err);
+                return res.status(500).json({ error: 'Internal server error' });
+            }
+            connection.query(assigncertificatequery, [student_id, institution_name, course_name, total_hours, date_completion, badgeDataString], (err, results) => {
+                connection.release();
+                if (err) { 
+                    console.error('Error executing query:', err);
+                    return res.status(500).json({ error: `Internal server error ${err}` });
+                }
+                certificatetoNFT(badgeDataString);
+                res.json({ message: 'Certificate assigned successfully', results });
+            });
         });
-    });
+   
 });
+
 
 //mint badge json to nft
 const certificatetoNFT = async (badgeDataString) => {

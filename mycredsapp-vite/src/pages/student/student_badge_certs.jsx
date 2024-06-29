@@ -17,16 +17,33 @@ function StudentBadgeCerts() {
     const [institutionUrl, setInstitutionUrl] = useState('');
     const [totalHours, setTotalHours] = useState('');
     const [dateCompletion, setDateCompletion] = useState('');
+    // Local state to hold the selected institution and course details
+    const [selectedInstitutionDetails, setSelectedInstitutionDetails] = useState({});
+    const [selectedCourseDetails, setSelectedCourseDetails] = useState({});
+    const [institutionName, setInstitutionName] = useState('');
+    const [courseName, setCourseName] = useState('');   
 
     // Assume user data is stored as a JSON string
     const user = JSON.parse(sessionStorage.getItem('user')) || {};
+
+    // Effect to update institution details when selectedInstitution changes
+    useEffect(() => {
+        const institutionDetails = institutions.find(inst => inst.id === selectedInstitution);
+        setSelectedInstitutionDetails(institutionDetails || {});
+    }, [selectedInstitution, institutions]);
+
+    // Effect to update course details when selectedCourse changes
+    useEffect(() => {
+        const courseDetails = courses.find(course => course.id === selectedCourse);
+        setSelectedCourseDetails(courseDetails || {});
+    }, [selectedCourse, courses]);
 
     /*
     * User must first be authenticated before they can access the course page
     */
     useEffect(() => {
         const user = JSON.parse(sessionStorage.getItem('user'));
-        console.log('User:', user.id);
+        
         setUserId(user.id);
         // I need to direct the user back to http://localhost:3000/login if they are not logged in
         if (!user) {
@@ -60,7 +77,7 @@ function StudentBadgeCerts() {
             fetch(`http://localhost:3000/assign-certificate/${user.id}`)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Failed to fetch certification details');
+                        throw new Error('1 Failed to fetch certification details');
                     }
                     return response.json();
                 })
@@ -79,7 +96,7 @@ function StudentBadgeCerts() {
             fetch(`http://localhost:3000/user-profile/${user.id}`)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Failed to fetch user profile');
+                        throw new Error('2 Failed to fetch user profile');
                     }
                     return response.json();
                 })
@@ -102,21 +119,42 @@ function StudentBadgeCerts() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log(`userId ${userId}`)
-        /*institution_id,
-        institution_name,
-        institution_url, 
-        course_name, 
-        total_hours, 
-        date_completion*/
+        console.log(selectedInstitution, selectedCourse)
+        console.log(institutions, courses)
+        institutions.map((inst, index) =>  { 
+            if(inst.id == selectedInstitution) {
+                console.log('inst',inst.id, inst.institution_name)
+                console.log('index',index)
+                setInstitutionName(inst.institution_name)
+            }
+        })
+
+        courses.map((course, index) =>  {
+            if(course.id == selectedCourse) {
+                console.log('course',course.id, course.course_name)
+                console.log('index',index)
+                setCourseName(course.course_name)
+            }
+        })
+
         const payload = {
             institution_id: selectedInstitution,
-            course_id: selectedCourse,
+            institution_name: institutionName,
+            course_name: courseName,
             institution_url: institutionUrl,
             total_hours: totalHours,
             date_completion: dateCompletion
         };
-
+    
+        console.log('Submitting with payload:', user.id, payload);
+    
+        // Make sure user.id is defined and correctly passed in the URL
+        if (!user || !user.id) {
+            console.error('User ID is missing');
+            setError('User ID is missing');
+            return;
+        }
+    
         // Call your API to assign a certificate
         fetch(`http://localhost:3000/assign-certificate/${user.id}`, {
             method: 'POST',
@@ -125,16 +163,17 @@ function StudentBadgeCerts() {
             },
             body: JSON.stringify(payload)
         })
-        .then(response => response.json())
         .then(data => {
             console.log('Certificate assigned:', data);
             // Maybe refresh the list of certifications or navigate away
         })
         .catch(err => {
-            console.error('Failed to assign certificate:', err);
+            console.error('4 Failed to assign certificate:', err);
             setError(err.message);
         });
     };
+    
+    
 
     return (
         <div className="container mx-auto px-4 py-8">
