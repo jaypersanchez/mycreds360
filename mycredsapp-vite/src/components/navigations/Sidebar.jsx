@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 import { Button } from "../ui";
@@ -66,7 +66,10 @@ const navigations = [
 
 export default function Sidebar({ className }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isWrapped, setWrapped] = useState(false);
+
+  const parentLocation = `/${location.pathname.split("/").at(1).toString()}`;
 
   return (
     <aside
@@ -116,7 +119,7 @@ export default function Sidebar({ className }) {
                 isWrapped
                   ? "flex-col text-[10px] p-1 min-h-[56px] justify-center gap-0.5 text-center"
                   : "flex-row gap-4 py-2 pl-3 pr-2 min-h-[44px]",
-                location.pathname === nav.link
+                location.pathname === nav.link || parentLocation === nav.link
                   ? "bg-primary text-white hover:bg-primary cursor-default"
                   : "hover:bg-secondary/30 text-primary cursor-pointer"
               )}

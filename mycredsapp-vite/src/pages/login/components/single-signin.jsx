@@ -1,5 +1,3 @@
-import React from "react";
-
 import { Button } from "@/components/ui";
 import { FlexBox } from "@/components/flexbox";
 
@@ -22,9 +20,10 @@ export default function SingleSignin() {
         <Button
           key={data}
           variant="icon"
-          className="w-full text-base font-semibold tracking-wider bg-transparent border h-14 border-neutral-400 hover:border-neutral-900"
+          className="flex flex-1 flex-col w-[105px] h-20 text-base font-semibold tracking-wider bg-transparent border gap-y-2 border-neutral-400 hover:border-neutral-900"
         >
-          <data.icon className="w-6 h-6" />
+          <data.icon className="w-7 h-7" />
+          <p className="text-xs font-bold capitalize">{data.slug}</p>
         </Button>
       ))}
     </FlexBox>

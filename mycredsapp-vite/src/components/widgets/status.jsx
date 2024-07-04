@@ -4,7 +4,7 @@ import { WidgetBox } from "@/components/ui";
 import TrendUpIcon from "~icons/custom/trend-up";
 import TrendDownIcon from "~icons/custom/trend-down";
 
-export default function StatWidget({ title, stats, increment, percentage }) {
+export default function Status({ title, stats, increment, percentage }) {
   const isTrendUp = increment === "up";
   const isTrendDown = increment === "down";
   return (

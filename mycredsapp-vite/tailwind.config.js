@@ -11,9 +11,9 @@ module.exports = {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
+      padding: 0,
       screens: {
-        "2xl": "1400px",
+        "2xl": "1280px",
       },
     },
     extend: {
@@ -33,6 +33,7 @@ module.exports = {
       },
       colors: {
         primary: "#093576",
+        "primary-300": "#c3d0e5",
         secondary: "#4872B0",
       },
       screens: {

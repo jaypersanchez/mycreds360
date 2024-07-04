@@ -32,9 +32,9 @@ export default function PageLayout() {
   return (
     <div className="min-h-screen min-w-[360px] select-none flex">
       <Sidebar />
-      <main className="relative flex flex-col flex-1 min-h-full">
+      <main className="relative flex flex-col flex-1 min-h-full overflow-hidden">
         <Navbar />
-        <div className="flex-1 p-10">
+        <div className="flex-1 px-6 py-10 overflow-hidden desktop:px-10">
           <Outlet />
         </div>
         <Footer className="justify-end" />

@@ -1,13 +1,14 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui";
 
 import SuccessIcon from "~icons/custom/success";
 
 export default function ResetPasswordSuccess() {
   const navigate = useNavigate();
-  const { type } = useParams();
+  const location = useLocation();
 
-  const isPasswordChanged = type === "password-change";
+  const currentLocation = location.pathname.split("/").slice(-1).toString();
+  const isPasswordChanged = currentLocation === "password-change";
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full min-h-full p-0">

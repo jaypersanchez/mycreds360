@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 import { Button } from "../ui";
@@ -69,6 +69,9 @@ const navigations = [
 export default function Menu({ setMenuOpen }) {
   const menuRef = useClickAway(() => setMenuOpen(false));
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const parentLocation = `/${location.pathname.split("/").at(1).toString()}`;
 
   return (
     <div className="fixed top-0 left-0 z-50 w-full h-full desktop:hidden bg-neutral-800/40">
@@ -96,7 +99,7 @@ export default function Menu({ setMenuOpen }) {
               key={i}
               className={cn(
                 "w-full font-semibold rounded-md flex items-center whitespace-nowrap break-all text-pretty gap-4 py-2 pl-3 pr-2 min-h-[44px]",
-                location.pathname === nav.link
+                location.pathname === nav.link || parentLocation === nav.link
                   ? "bg-primary text-white hover:bg-primary cursor-default"
                   : "hover:bg-secondary/30 text-primary cursor-pointer"
               )}

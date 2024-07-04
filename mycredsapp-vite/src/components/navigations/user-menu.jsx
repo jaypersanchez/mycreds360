@@ -4,7 +4,7 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-  DropdownMenu,
+  DropdownMenuContainer,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuLabel,
@@ -27,7 +27,7 @@ export default function UserMenu() {
   const navigate = useNavigate();
 
   return (
-    <DropdownMenu>
+    <DropdownMenuContainer>
       <DropdownMenuTrigger asChild>
         <div className="ml-auto rounded-full cursor-pointer group hover:outline outline-2 outline-offset-1 outline-primary data-[state=open]:outline">
           <Avatar>
@@ -72,6 +72,6 @@ export default function UserMenu() {
 
         <DropdownMenuArrow className="fill-primary" />
       </DropdownMenuContent>
-    </DropdownMenu>
+    </DropdownMenuContainer>
   );
 }

@@ -1,9 +1,4 @@
-import {
-  Outlet,
-  useRouteLoaderData,
-  useNavigation,
-  Link,
-} from "react-router-dom";
+import { Outlet, useRouteLoaderData, useNavigation } from "react-router-dom";
 import Footer from "./Footer";
 
 export default function AuthLayout() {

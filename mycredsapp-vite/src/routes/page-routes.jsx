@@ -2,6 +2,10 @@ import { PageLayout } from "@/components/layouts";
 
 import {
   AdminPage,
+  AdminListPage,
+  AdminCreatePage,
+  AdminEditPage,
+  AdminViewPage,
   BadgePage,
   CertificateTemplatePage,
   CoursePage,
@@ -25,6 +29,24 @@ const PageRoutes = {
     {
       path: "admin",
       element: <AdminPage />,
+      children: [
+        {
+          index: true,
+          element: <AdminListPage />,
+        },
+        {
+          path: "create",
+          element: <AdminCreatePage />,
+        },
+        {
+          path: "edit/:id",
+          element: <AdminEditPage />,
+        },
+        {
+          path: "view/:id",
+          element: <AdminViewPage />,
+        },
+      ],
     },
     {
       path: "student",

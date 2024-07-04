@@ -1,15 +1,16 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { cn } from "@/lib/utils";
 
-import { Button, TextField } from "@/components/ui";
+import { Button } from "@/components/ui";
+import { TextField } from "@/components/forms";
 
 import EyeIcon from "~icons/custom/eye";
 import EyeOffIcon from "~icons/custom/eyeoff";
 
-const UpdateForm = () => {
+export default function UpdateForm() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -105,6 +106,4 @@ const UpdateForm = () => {
       </Button>
     </form>
   );
-};
-
-export default UpdateForm;
+}

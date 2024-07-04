@@ -4,7 +4,7 @@ export default function WidgetBox({ children, className, ...props }) {
   return (
     <div
       className={cn(
-        "flex rounded-xl p-4 border border-neutral-300/80",
+        "flex rounded-xl p-6 border border-neutral-300/80",
         className
       )}
       {...props}

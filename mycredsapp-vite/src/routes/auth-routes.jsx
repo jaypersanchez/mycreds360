@@ -33,8 +33,11 @@ const AuthRoutes = {
           element: <VerifyResetPasswordPage />,
         },
         {
-          path: "success/:type",
-          errorElement: <Page404 />,
+          path: "success/reset-request",
+          element: <ResetPasswordSuccess />,
+        },
+        {
+          path: "success/password-change",
           element: <ResetPasswordSuccess />,
         },
       ],
