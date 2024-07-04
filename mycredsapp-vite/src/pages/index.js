@@ -1,6 +1,6 @@
 export { default as DashboardPage } from "./dashboard";
 export { default as AdminPage } from "./admin";
-export { default as StudentPage } from "./student";
+export { default as StudentPage } from "./student/indexEnhanceSearch";
 
 export { default as InstitutionPage } from "./institution";
 export { default as CertificateTemplatePage } from "./cert-template";
