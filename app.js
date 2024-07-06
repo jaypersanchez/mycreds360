@@ -28,7 +28,8 @@ const jwt = require('jsonwebtoken');
 const secretKey = '$2a$12$yuo3YIZPG611cmX6tgOoOuhSFobK6ZjNZeJqrXnEyhu47qD9APhva'
 // Require Stripe library and initialize with your Stripe secret key
 const stripe = require('stripe')('your_stripe_secret_key');
-
+const ethers = require('ethers');
+const mycredsABI = require('./nft_mycreds360/artifacts/contracts/MyCredsNFT.sol/MyCredsNFT.json').abi;
 
 // Define routes here
 // Enable CORS for all routes
@@ -124,7 +125,9 @@ app.get('/badge-images', (req, res) => {
     });
 });
 
-
+/*
+*   This generates the JSON format of badge and certificate data and will mint as NFT
+*/
 app.post('/assign-certificate/:student_id', async (req, res) => {
     const { student_id } = req.params;
     const { institution_id,institution_name, course_name, institution_url, total_hours, date_completion } = req.body;
@@ -205,10 +208,31 @@ app.post('/assign-certificate/:student_id', async (req, res) => {
 });
 
 
-//mint badge json to nft
-const certificatetoNFT = async (badgeDataString) => {
+// This function mints an NFT using the badge data
+async function certificatetoNFT(badgeDataString) {
+    // these are all hardhat values
+    const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
+    const privateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' 
+    const providerUrl = 'http://127.0.0.1:8545'
+    // Initialize a provider
+    const provider = new ethers.JsonRpcProvider(providerUrl);
 
+    // Create a wallet instance using the private key and provider
+    const wallet = new ethers.Wallet(privateKey, provider);
+
+    // Create a contract instance connected to your wallet
+    const contract = new ethers.Contract(contractAddress, mycredsABI, wallet);
+
+    // Call the mint function from your contract
+    try {
+        const transaction = await contract.mint(badgeDataString);
+        await transaction.wait();  // Wait for the transaction to be mined
+        console.log('NFT minted! Transaction Hash:', transaction.hash);
+    } catch (error) {
+        console.error('Failed to mint NFT:', error);
+    }
 }
+
 /*
 * This endpoint will query the assign_certificate table based on user_id and return the json_values
 * which is the badge data in json format.  

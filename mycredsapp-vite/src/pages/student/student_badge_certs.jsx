@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
 
+
 function StudentBadgeCerts() {
     const navigate = useNavigate(); // Hook for navigation
     const [userId, setUserId] = useState(); // If you need to fetch additional data based on URL parameter
