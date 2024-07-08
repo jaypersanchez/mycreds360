@@ -118,29 +118,7 @@ const Student = () => {
 
   return (
     <div className="container mx-auto px-4">
-            <div className="flex flex-col mb-4">
-                <h3 className="text-lg font-semibold">Add New Student</h3>
-                <form onSubmit={handleSubmit} className="mt-4">
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                        <select
-                            className="p-2 border rounded-md"
-                            value={selectedUserId}
-                            onChange={e => setSelectedUserId(e.target.value)}
-                            required>
-                            <option value="">Select a User</option>
-                            {users.map(user => (
-                                <option key={user.id} value={user.id}>{user.email}</option>
-                            ))}
-                        </select>
-                        <input type="text" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} className="p-2 border rounded-md" required />
-                        <input type="text" placeholder="First Name" value={firstName} onChange={e => setFirstName(e.target.value)} className="p-2 border rounded-md" required />
-                        <input type="text" placeholder="Last Name" value={lastName} onChange={e => setLastName(e.target.value)} className="p-2 border rounded-md" required />
-                        <input type="text" placeholder="Mobile No" value={mobileNo} onChange={e => setMobileNo(e.target.value)} className="p-2 border rounded-md" required />
-                        <input type="file" onChange={e => setUserPhoto(e.target.files[0])} className="p-2 border rounded-md" />
-                    </div>
-                    <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700">Add Student</button>
-                </form>
-            </div>
+            
             <h2 className="text-2xl font-semibold leading-tight py-4">Students List</h2>
             <input
                 type="text"

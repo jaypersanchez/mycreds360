@@ -47,11 +47,15 @@ const storage = multer.diskStorage({
       cb(null, 'uploads/') // Make sure this folder exists
     },
     filename: function(req, file, cb) {
-      cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+      cb(null, file.originalname)
     }
   });
   
   const upload = multer({ storage: storage });
+  // Middleware to parse multipart/form-data
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(upload.single('logo')); 
 
 //helper function to get userprofiles based on user_id
 const getUserProfile = (user_id) => {
@@ -536,8 +540,8 @@ app.get('/institution/index', (req, res) => {
 app.post('/institution/create', (req, res) => {
     
     const { institution_name, institution_url } = req.body;
-    const logo = req.file ? req.file.path : null; // Assuming req.file contains the uploaded file information
-    //console.log(`New Instituion ${institution_name}`)
+    const logo = req.file ? req.file.path : ''; // Assuming req.file contains the uploaded file information
+    console.log(`New Instituion ${institution_name}`)
     if (!institution_name) {
         return res.status(400).json({ error: 'Institution name is required' });
     }
@@ -556,7 +560,7 @@ app.post('/institution/create', (req, res) => {
                 console.error('Error executing query:', err);
                 return res.status(500).json({ error: `Internal server error ${err}` });
             }
-            
+            console.log(`success`)
             return res.status(201).json({ message: 'Institution created successfully', institution_id: results.insertId });
         });
     });
