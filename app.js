@@ -182,10 +182,17 @@ app.post('/assign-certificate/:student_id', async (req, res) => {
         console.log(badgeDataString);
 
         // First mint the NFT and get the transaction and token ID
-        //certificatetoNFT(badgeDataString);
-
+        const transactionHash = await certificatetoNFT(badgeDataString);
+        console.log(transactionHash)
+        // create JSON nft_value
+        /*
+        *   {tx: transactionHash, token: tokenId}
+        */
+       const tokenId = Math.floor(Math.random() * 1000) + 1;
+        const nft_value = JSON.stringify({tx: transactionHash, token: tokenId});
         // Insert certificate into the database
-        const assigncertificatequery = `insert into assign_certificate (user_id, institution_name, course_name, total_hours, date_completion, json_values) values(?,?,?,?,?,?)`;
+        const assigncertificatequery = 
+            `insert into assign_certificate (user_id, institution_name, course_name, total_hours, date_completion, json_values, nft_value) values(?,?,?,?,?,?,?)`;
         console.log(assigncertificatequery)
 
         db.pool.getConnection((err, connection) => {
@@ -193,7 +200,7 @@ app.post('/assign-certificate/:student_id', async (req, res) => {
                 console.error('Error getting connection from pool:', err);
                 return res.status(500).json({ error: 'Internal server error' });
             }
-            connection.query(assigncertificatequery, [student_id, institution_name, course_name, total_hours, date_completion, badgeDataString], (err, results) => {
+            connection.query(assigncertificatequery, [student_id, institution_name, course_name, total_hours, date_completion, badgeDataString, nft_value], (err, results) => {
                 connection.release();
                 if (err) { 
                     console.error('Error executing query:', err);
@@ -227,6 +234,7 @@ async function certificatetoNFT(badgeDataString) {
         const transaction = await contract.mint(badgeDataString);
         await transaction.wait();  // Wait for the transaction to be mined
         console.log('NFT minted! Transaction Hash:', transaction.hash);
+        return transaction.hash;
     } catch (error) {
         console.error('Failed to mint NFT:', error);
     }
