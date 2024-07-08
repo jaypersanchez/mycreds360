@@ -10,7 +10,7 @@ export default function AuthLayout() {
   const data = useRouteLoaderData("main");
   const navigation = useNavigation();
 
-  console.log({ auth: data });
+  //console.log({ auth: data });
   return (
     <div className="flex">
       <div className="relative flex-1 hidden w-0 max-w-sm bg-left bg-no-repeat bg-cover bg-login laptop:block desktop:max-w-7xl scale-x-[-1]" />

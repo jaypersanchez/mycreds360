@@ -20,7 +20,7 @@ export default function Settings() {
                 body: formData,
             });
             const result = await response.json();
-            console.log('Success:', result);
+            //console.log('Success:', result);
             alert('Settings updated successfully!');
         } catch (error) {
             console.error('Error:', error);

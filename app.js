@@ -55,7 +55,7 @@ const storage = multer.diskStorage({
 
 //helper function to get userprofiles based on user_id
 const getUserProfile = (user_id) => {
-    console.log(`getUserProfile: ${user_id}`);
+    //console.log(`getUserProfile: ${user_id}`);
     const query = `SELECT * FROM userprofiles WHERE user_id = ?`;
     return new Promise((resolve, reject) => {
         db.pool.getConnection((err, connection) => {
@@ -85,7 +85,7 @@ const getUserProfile = (user_id) => {
 // Endpoint to get a user profile by user ID
 app.get('/user-profile/:userId', async (req, res) => {
     const userId = req.params.userId;
-    console.log(`user-profile ${userId}`)
+    //console.log(`user-profile ${userId}`)
         //const profile = await getUserProfile(userId);
         const query = `SELECT * FROM userprofiles WHERE user_id = ?`;
         db.pool.getConnection((err, connection) => {
@@ -141,14 +141,8 @@ app.post('/assign-certificate/:student_id', async (req, res) => {
                                         total_hours, 
                                         date_completion )
         
-        /*console.log(`certificate data`,student_id,fullName, 
-                                        institution_name,
-                                        course_name,
-                                        institution_url, 
-                                        total_hours, 
-                                        date_completion )*/
-        
-                                        // Create JWT token for the badge
+               
+        // Create JWT token for the badge
         const jwtToken = jwt.sign({
             student_id, institution_name, course_name, institution_url, total_hours, date_completion
         }, secretKey);
@@ -186,9 +180,14 @@ app.post('/assign-certificate/:student_id', async (req, res) => {
         // Serialize certificate badge object
         const badgeDataString = JSON.stringify(certificate_badgev3);
         console.log(badgeDataString);
-        
+
+        // First mint the NFT and get the transaction and token ID
+        //certificatetoNFT(badgeDataString);
+
         // Insert certificate into the database
         const assigncertificatequery = `insert into assign_certificate (user_id, institution_name, course_name, total_hours, date_completion, json_values) values(?,?,?,?,?,?)`;
+        console.log(assigncertificatequery)
+
         db.pool.getConnection((err, connection) => {
             if (err) {
                 console.error('Error getting connection from pool:', err);
@@ -200,7 +199,7 @@ app.post('/assign-certificate/:student_id', async (req, res) => {
                     console.error('Error executing query:', err);
                     return res.status(500).json({ error: `Internal server error ${err}` });
                 }
-                certificatetoNFT(badgeDataString);
+                
                 res.json({ message: 'Certificate assigned successfully', results });
             });
         });
@@ -342,7 +341,7 @@ app.get('/analytics/badges', (req, res) => {
 
 app.get('/dashboard/data', (req, res) => {
     const  userId  = req.query.userId;
-    console.log(userId)
+    //console.log(userId)
     // Placeholder for actual dashboard data
     db.pool.getConnection((err, connection) => {
         if (err) {
@@ -530,7 +529,7 @@ app.post('/institution/create', (req, res) => {
     
     const { institution_name, institution_url } = req.body;
     const logo = req.file ? req.file.path : null; // Assuming req.file contains the uploaded file information
-    console.log(`New Instituion ${institution_name}`)
+    //console.log(`New Instituion ${institution_name}`)
     if (!institution_name) {
         return res.status(400).json({ error: 'Institution name is required' });
     }
@@ -696,7 +695,7 @@ app.post('/account/new', (req, res) => {
                 console.error('Error executing query:', err);
                 return res.status(500).json({ error: `Internal server error ${err}` });
             }
-            console.log(results)
+            //console.log(results)
             // Step 2: Retrieve the automatically generated user_id
             const userId = results.insertId;
             // Step 3: Insert a record into the role_user table
@@ -740,7 +739,7 @@ app.get('/newcourses', (req, res) => {
 
 app.post('/newcourses/create', (req, res) => {
     const { course_name, description } = req.body;
-    console.log(course_name, description)
+    //console.log(course_name, description)
     const query = `insert into newcourses 
                    (course_name, description, created_at, updated_at) 
                    values(?,?,?,?);`
@@ -817,8 +816,8 @@ app.post('/createbadge', upload.single('badge'),async (req, res) => {
     // I need to get from req.body the course name, description and the image file 
     const { course_name, description } = req.body;
     const badge = req.file ? req.file.path : null; // Assuming req.file contains the uploaded file information
-    console.log(req.file);  // Check if the file is being received
-    console.log(req.body);  // Log the body to see all form data
+    //console.log(req.file);  // Check if the file is being received
+    //console.log(req.body);  // Log the body to see all form data
     
     db.pool.getConnection((err, connection) => {
         if (err) {

@@ -42,7 +42,7 @@ export default function UserMenu() {
       }
       // Parse the user string back into an object
       const user = JSON.parse(userString);
-      console.log(user, user.id);
+      //console.log(user, user.id);
       setEmail(user.email);
       // Fetch the user profile using the user ID
       fetch(`http://localhost:3000/user-profile/${user.id}`)
@@ -54,7 +54,7 @@ export default function UserMenu() {
           })
           .then(data => {
               setUserProfile(data[0]);
-              console.log('userprofile',userProfile);
+              //console.log('userprofile',userProfile);
               setFullName(`${data[0].first_name} ${data[0].last_name}`);
               setLoading(false);
           })

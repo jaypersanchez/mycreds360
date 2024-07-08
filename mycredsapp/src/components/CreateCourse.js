@@ -39,7 +39,7 @@ const CreateCourse = () => {
         courses.course_name.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setSearchResults(filteredCourses);
-      console.log(`search ${JSON.stringify(filteredCourses)}`);
+      //console.log(`search ${JSON.stringify(filteredCourses)}`);
     }
   }, [searchTerm, courses]);
 

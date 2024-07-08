@@ -120,58 +120,60 @@ function StudentBadgeCerts() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log(selectedInstitution, selectedCourse)
-        console.log(institutions, courses)
-        institutions.map((inst, index) =>  { 
-            if(inst.id == selectedInstitution) {
-                console.log('inst',inst.id, inst.institution_name)
-                console.log('index',index)
-                setInstitutionName(inst.institution_name)
-            }
-        })
+        // Get institution and course names asynchronously and then construct payload
+        Promise.all([
+            // Promise to get institution name
+            new Promise((resolve) => {
+                const institution = institutions.find(inst => inst.id === institutions[selectedInstitution].institution_name);
+                console.log('Found Institution:', institutions[selectedInstitution].institution_name);
+                setInstitutionName(institutions[selectedInstitution].institution_name)
+                resolve(institutionName);
+            }),
+            // Promise to get course name
+            new Promise((resolve) => {
+                
+                console.log('Selected Course ID:', selectedCourse);
+                const course = courses.find(c => c.id.toString() === selectedCourse);
+                if (course) {
+                    console.log('Found Course:', course);
+                    setCourseName(course.course_name);
+                    resolve(course.course_name);
+                } else {
+                    console.log('No course found for ID:', selectedCourse);
+                    resolve(''); // resolve with an empty string or appropriate default value
+                }
+                //resolve(course ? course : '');
+            })
+        ]).then(([institutionName, courseName]) => {
+            const payload = {
+                institution_id: selectedInstitution,
+                institution_name: institutionName,
+                course_name: courseName,
+                institution_url: institutionUrl,
+                total_hours: totalHours,
+                date_completion: dateCompletion
+            };
+            console.log('Payload:', payload);
 
-        courses.map((course, index) =>  {
-            if(course.id == selectedCourse) {
-                console.log('course',course.id, course.course_name)
-                console.log('index',index)
-                setCourseName(course.course_name)
-            }
-        })
-
-        const payload = {
-            institution_id: selectedInstitution,
-            institution_name: institutionName,
-            course_name: courseName,
-            institution_url: institutionUrl,
-            total_hours: totalHours,
-            date_completion: dateCompletion
-        };
-    
-        console.log('Submitting with payload:', user.id, payload);
-    
-        // Make sure user.id is defined and correctly passed in the URL
-        if (!user || !user.id) {
-            console.error('User ID is missing');
-            setError('User ID is missing');
-            return;
-        }
-    
-        // Call your API to assign a certificate
-        fetch(`http://localhost:3000/assign-certificate/${user.id}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        })
-        .then(data => {
-            console.log('Certificate assigned:', data);
-            // Maybe refresh the list of certifications or navigate away
-        })
-        .catch(err => {
-            console.error('4 Failed to assign certificate:', err);
-            setError(err.message);
+            // Call your API to assign a certificate
+            fetch(`http://localhost:3000/assign-certificate/${user.id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Certificate assigned:', data);
+                // Handle success, maybe refresh the list of certifications or navigate away
+            })
+            .catch(err => {
+                console.error('Failed to assign certificate:', err);
+                // setError(err.message); // Uncomment or modify this line if you maintain error state
+            });
         });
+        
     };
     
     
@@ -221,7 +223,10 @@ function StudentBadgeCerts() {
                         <select
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             value={selectedInstitution}
-                            onChange={e => setSelectedInstitution(e.target.value)}
+                            onChange={e => { 
+                                console.log('Inst Select value:', e.target.value);
+                                setSelectedInstitution(e.target.value)
+                            }}
                             required
                         >
                             <option value="">Select an Institution</option>

@@ -124,7 +124,7 @@ function StudentBadgeCerts() {
         })
         .then(response => response.json())
         .then(data => {
-            console.log('Certificate assigned:', data);
+            //console.log('Certificate assigned:', data);
             // Maybe refresh the list of certifications or navigate away
         })
         .catch(err => {
