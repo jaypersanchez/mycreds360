@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 
 export default function Admin() {
   const [users, setUsers] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(10);
   const [loading, setLoading] = useState(true);
@@ -30,7 +28,6 @@ export default function Admin() {
       .then(response => response.json())
       .then(data => {
         setUsers(data);
-        setFilteredUsers(data);  // Initially, no filter is applied
         setLoading(false);
       })
       .catch(err => {
@@ -39,18 +36,6 @@ export default function Admin() {
         setLoading(false);
       });
   }, []);
-
-  useEffect(() => {
-    if (searchTerm === '') {
-        setFilteredUsers(users);
-    } else {
-        const filtered = users.filter(user => 
-            user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.email.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        setFilteredUsers(filtered);
-    }
-}, [searchTerm, users]);
 
   // Get current users for pagination
   const indexOfLastUser = currentPage * usersPerPage;

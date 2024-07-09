@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
 
+
 function StudentBadgeCerts() {
     const navigate = useNavigate(); // Hook for navigation
-    const { userId } = useParams(); // If you need to fetch additional data based on URL parameter
+    const [userId, setUserId] = useState(); // If you need to fetch additional data based on URL parameter
     const [activeTab, setActiveTab] = useState('badge');
     const [userData, setUserData] = useState({ fullName: '', email: '' });
     const [certifications, setCertifications] = useState([]);
@@ -17,15 +18,34 @@ function StudentBadgeCerts() {
     const [institutionUrl, setInstitutionUrl] = useState('');
     const [totalHours, setTotalHours] = useState('');
     const [dateCompletion, setDateCompletion] = useState('');
+    // Local state to hold the selected institution and course details
+    const [selectedInstitutionDetails, setSelectedInstitutionDetails] = useState({});
+    const [selectedCourseDetails, setSelectedCourseDetails] = useState({});
+    const [institutionName, setInstitutionName] = useState('');
+    const [courseName, setCourseName] = useState('');   
 
     // Assume user data is stored as a JSON string
     const user = JSON.parse(sessionStorage.getItem('user')) || {};
+
+    // Effect to update institution details when selectedInstitution changes
+    useEffect(() => {
+        const institutionDetails = institutions.find(inst => inst.id === selectedInstitution);
+        setSelectedInstitutionDetails(institutionDetails || {});
+    }, [selectedInstitution, institutions]);
+
+    // Effect to update course details when selectedCourse changes
+    useEffect(() => {
+        const courseDetails = courses.find(course => course.id === selectedCourse);
+        setSelectedCourseDetails(courseDetails || {});
+    }, [selectedCourse, courses]);
 
     /*
     * User must first be authenticated before they can access the course page
     */
     useEffect(() => {
         const user = JSON.parse(sessionStorage.getItem('user'));
+        
+        setUserId(user.id);
         // I need to direct the user back to http://localhost:3000/login if they are not logged in
         if (!user) {
           window.location.href = 'http://localhost:5173/auth';
@@ -54,11 +74,11 @@ function StudentBadgeCerts() {
     }, []);
 
     useEffect(() => {
-        if (user.id) {
+        if (user && user.id) {
             fetch(`http://localhost:3000/assign-certificate/${user.id}`)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Failed to fetch certification details');
+                        throw new Error('1 Failed to fetch certification details');
                     }
                     return response.json();
                 })
@@ -70,14 +90,14 @@ function StudentBadgeCerts() {
                     setError(err.message);
                 });
         }
-    }, []);
+    }, [user]);
 
     useEffect(() => {
         if (user && user.id) {
             fetch(`http://localhost:3000/user-profile/${user.id}`)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Failed to fetch user profile');
+                        throw new Error('2 Failed to fetch user profile');
                     }
                     return response.json();
                 })
@@ -100,39 +120,62 @@ function StudentBadgeCerts() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        /*institution_id,
-        institution_name,
-        institution_url, 
-        course_name, 
-        total_hours, 
-        date_completion*/
-        const payload = {
-            institution_id: selectedInstitution,
-            course_id: selectedCourse,
-            institution_url: institutionUrl,
-            total_hours: totalHours,
-            date_completion: dateCompletion
-        };
+        // Get institution and course names asynchronously and then construct payload
+        Promise.all([
+            // Promise to get institution name
+            new Promise((resolve) => {
+                const institution = institutions.find(inst => inst.id === institutions[selectedInstitution].institution_name);
+                console.log('Found Institution:', institutions[selectedInstitution].institution_name);
+                setInstitutionName(institutions[selectedInstitution].institution_name)
+                resolve(institutionName);
+            }),
+            // Promise to get course name
+            new Promise((resolve) => {
+                
+                console.log('Selected Course ID:', selectedCourse);
+                const course = courses.find(c => c.id.toString() === selectedCourse);
+                if (course) {
+                    console.log('Found Course:', course);
+                    setCourseName(course.course_name);
+                    resolve(course.course_name);
+                } else {
+                    console.log('No course found for ID:', selectedCourse);
+                    resolve(''); // resolve with an empty string or appropriate default value
+                }
+                //resolve(course ? course : '');
+            })
+        ]).then(([institutionName, courseName]) => {
+            const payload = {
+                institution_id: selectedInstitution,
+                institution_name: institutionName,
+                course_name: courseName,
+                institution_url: institutionUrl,
+                total_hours: totalHours,
+                date_completion: dateCompletion
+            };
+            console.log('Payload:', payload);
 
-        // Call your API to assign a certificate
-        fetch(`http://localhost:3000/assign-certificate/${userId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        })
-        .then(response => response.json())
-        .then(data => {
-            //console.log('Certificate assigned:', data);
-            // Maybe refresh the list of certifications or navigate away
-        })
-        .catch(err => {
-            console.error('Failed to assign certificate:', err);
-            setError(err.message);
+            // Call your API to assign a certificate
+            fetch(`http://localhost:3000/assign-certificate/${user.id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Certificate assigned:', data);
+                // Handle success, maybe refresh the list of certifications or navigate away
+            })
+            .catch(err => {
+                console.error('Failed to assign certificate:', err);
+                // setError(err.message); // Uncomment or modify this line if you maintain error state
+            });
         });
+        
     };
-
+    
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="mb-6">
@@ -178,7 +221,10 @@ function StudentBadgeCerts() {
                         <select
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             value={selectedInstitution}
-                            onChange={e => setSelectedInstitution(e.target.value)}
+                            onChange={e => { 
+                                console.log('Inst Select value:', e.target.value);
+                                setSelectedInstitution(e.target.value)
+                            }}
                             required
                         >
                             <option value="">Select an Institution</option>

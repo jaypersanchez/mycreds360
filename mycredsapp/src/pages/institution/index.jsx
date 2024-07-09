@@ -39,7 +39,7 @@ export default function Institution() {
   
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+    console.log(institutionName, institutionUrl, logo )
     const formData = new FormData();
     formData.append('institution_name', institutionName);
     formData.append('logo', logo);
@@ -50,8 +50,10 @@ export default function Institution() {
         method: 'POST',
         body: formData, // FormData will set the Content-Type to 'multipart/form-data' automatically
       });
-      if (!response.ok) throw new Error('Failed to create institution.');
-      alert('Institution added successfully!');
+      const result = await response.json(); // Parse JSON response
+
+      if (!response.ok) throw new Error(result.error || 'Failed to create institution.');
+
       setInstitutionName('');
       setInstitutionUrl('');
       setLogo(null);
@@ -70,9 +72,13 @@ export default function Institution() {
           <input
             type="text"
             value={institutionName}
-            onChange={(e) => setInstitutionName(e.target.value)}
+            onChange={(e) => { 
+              console.log(e.target.value)
+              setInstitutionName(e.target.value)
+
+            }}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            required
+            //required
           />
         </div>
         <div className="mb-6">
@@ -82,7 +88,7 @@ export default function Institution() {
             value={institutionUrl}
             onChange={(e) => setInstitutionUrl(e.target.value)}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            required
+            //required
           />
         </div>
         <div className="mb-6">
@@ -91,7 +97,7 @@ export default function Institution() {
             type="file"
             onChange={(e) => setLogo(e.target.files[0])}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            required
+            //required
           />
         </div>
         <button type="submit" className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">

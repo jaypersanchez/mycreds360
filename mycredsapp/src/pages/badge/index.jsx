@@ -42,6 +42,7 @@ export default function Badge() {
     e.preventDefault();
 
     const formData = new FormData();
+    console.log(selectedCourse, description, fileImage)
     formData.append('course_name', selectedCourse);
     formData.append('description', description);
     formData.append('badge', fileImage);

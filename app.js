@@ -827,9 +827,10 @@ app.post('/create-student-badge', async (req, res) => {
 app.post('/createbadge', upload.single('badge'),async (req, res) => {
     // I need to get from req.body the course name, description and the image file 
     const { course_name, description } = req.body;
-    const badge = req.file ? req.file.path : null; // Assuming req.file contains the uploaded file information
+    const badge = req.file ? req.file.path : ''; // Assuming req.file contains the uploaded file information
     //console.log(req.file);  // Check if the file is being received
     //console.log(req.body);  // Log the body to see all form data
+    console.log(course_name, description)
     
     db.pool.getConnection((err, connection) => {
         if (err) {
