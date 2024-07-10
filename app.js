@@ -133,6 +133,7 @@ app.get('/badge-images', (req, res) => {
 *   This generates the JSON format of badge and certificate data and will mint as NFT
 */
 app.post('/assign-certificate/:student_id', async (req, res) => {
+    // need to add contract address
     const { student_id } = req.params;
     const { institution_id,institution_name, course_name, institution_url, total_hours, date_completion } = req.body;
     let fullName = '';
@@ -186,7 +187,7 @@ app.post('/assign-certificate/:student_id', async (req, res) => {
         console.log(badgeDataString);
 
         // First mint the NFT and get the transaction and token ID
-        const transactionHash = await certificatetoNFT(badgeDataString);
+        const transactionHash = await mintNFT(badgeDataString, contractAddress) //certificatetoNFT(badgeDataString);
         console.log(transactionHash)
         // create JSON nft_value
         /*
@@ -217,6 +218,25 @@ app.post('/assign-certificate/:student_id', async (req, res) => {
    
 });
 
+// Another way of minting NFT
+async function mintNFT(badgeDataString, contractAddress) {
+    const provider = new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545'); // Update with your Ethereum RPC URL
+    const signer = provider.getSigner(); // Get the default signer from the provider
+
+    const MyCredsNFT = await ethers.getContractFactory('MyCredsNFT');
+    const contract = new ethers.Contract(contractAddress, MyCredsNFT.interface, signer);
+
+    try {
+        const transaction = await contract.mint(badgeDataString);
+        await transaction.wait();  // Wait for the transaction to be mined
+
+        console.log('NFT minted! Transaction Hash:', transaction.hash);
+        return transaction.hash;
+    } catch (error) {
+        console.error('Failed to mint NFT:', error);
+        throw error; // Propagate the error back to the caller
+    }
+}
 
 // This function mints an NFT using the badge data
 async function certificatetoNFT(badgeDataString) {
