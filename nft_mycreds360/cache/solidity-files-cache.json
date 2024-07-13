@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "C:\\Users\\jaypersanchez\\projects\\mycreds360\\nft_mycreds360\\contracts\\MyCredsNFT.sol": {
-      "lastModificationDate": 1718939900427,
-      "contentHash": "9c8b55b7664cd4c609dfbc199bd7326f",
+      "lastModificationDate": 1720587932090,
+      "contentHash": "c8c91c9c815ca36c6cd7e8ea0f6a1316",
       "sourceName": "contracts/MyCredsNFT.sol",
       "solcConfig": {
         "version": "0.8.20",
@@ -30,11 +30,10 @@
         }
       },
       "imports": [
-        "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol",
-        "@openzeppelin/contracts/access/Ownable.sol"
+        "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol"
       ],
       "versionPragmas": [
-        "^0.8.20"
+        "^0.8.0"
       ],
       "artifacts": [
         "MyCredsNFT"

@@ -147,6 +147,7 @@ function StudentBadgeCerts() {
         ]).then(([institutionName, courseName]) => {
             const payload = {
                 institution_id: selectedInstitution,
+                course_id: selectedCourse,
                 institution_name: institutionName,
                 course_name: courseName,
                 institution_url: institutionUrl,

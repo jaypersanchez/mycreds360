@@ -2,39 +2,33 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract MyCredsNFT is ERC721URIStorage, Ownable {
+contract MyCredsNFT is ERC721URIStorage {
     uint256 public nextTokenId;
 
-    // Mapping to store JSON metadata and transaction hashes
+    // Mapping to store JSON metadata
     mapping(uint256 => string) public tokenJsonData;  // Token ID => JSON metadata
-    mapping(uint256 => string) public tokenTransactionHash; // Token ID => Transaction hash
 
-    event NFTMinted(uint256 indexed tokenId, string tokenURI, string jsonData, string transactionHash);
+    event NFTMinted(uint256 indexed tokenId, string tokenURI, string jsonData);
 
-    constructor() ERC721("MyCredsNFT", "MNFT") Ownable() {
-        // Initialize the contract and set the initial owner
+    constructor() ERC721("MyCredsNFT", "MNFT") {
+        // Initialize the contract
     }
 
-    function mint(string memory _tokenURI, string memory _jsonData, string memory _transactionHash) public onlyOwner {
-        _safeMint(msg.sender, nextTokenId);
-        _setTokenURI(nextTokenId, _tokenURI);
+    function mint(uint256 _tokenId, string memory _tokenURI, string memory _jsonData) public {
+        _safeMint(msg.sender, _tokenId);
+        _setTokenURI(_tokenId, _tokenURI);
 
-        // Store JSON metadata and transaction hash
-        tokenJsonData[nextTokenId] = _jsonData;
-        tokenTransactionHash[nextTokenId] = _transactionHash;
+        // Store JSON metadata
+        tokenJsonData[_tokenId] = _jsonData;
 
-        emit NFTMinted(nextTokenId, _tokenURI, _jsonData, _transactionHash);
+        emit NFTMinted(_tokenId, _tokenURI, _jsonData);
 
+        // Increment nextTokenId for the next minted token
         nextTokenId++;
     }
 
     function getTokenJsonData(uint256 _tokenId) public view returns (string memory) {
         return tokenJsonData[_tokenId];
-    }
-
-    function getTokenTransactionHash(uint256 _tokenId) public view returns (string memory) {
-        return tokenTransactionHash[_tokenId];
     }
 }

@@ -30,6 +30,8 @@ const secretKey = '$2a$12$yuo3YIZPG611cmX6tgOoOuhSFobK6ZjNZeJqrXnEyhu47qD9APhva'
 const stripe = require('stripe')('your_stripe_secret_key');
 const ethers = require('ethers');
 const mycredsABI = require('./nft_mycreds360/artifacts/contracts/MyCredsNFT.sol/MyCredsNFT.json').abi;
+const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
+const crypto = require('crypto');
 
 // Define routes here
 // Enable CORS for all routes
@@ -135,7 +137,7 @@ app.get('/badge-images', (req, res) => {
 app.post('/assign-certificate/:student_id', async (req, res) => {
     // need to add contract address
     const { student_id } = req.params;
-    const { institution_id,institution_name, course_name, institution_url, total_hours, date_completion } = req.body;
+    const { institution_id,course_id,institution_name, course_name, institution_url, total_hours, date_completion } = req.body;
     let fullName = '';
     
         // Fetch user profile
@@ -184,28 +186,34 @@ app.post('/assign-certificate/:student_id', async (req, res) => {
 
         // Serialize certificate badge object
         const badgeDataString = JSON.stringify(certificate_badgev3);
-        console.log(badgeDataString);
-
-        // First mint the NFT and get the transaction and token ID
-        const transactionHash = await mintNFT(badgeDataString, contractAddress) //certificatetoNFT(badgeDataString);
-        console.log(transactionHash)
-        // create JSON nft_value
-        /*
-        *   {tx: transactionHash, token: tokenId}
-        */
-       const tokenId = Math.floor(Math.random() * 1000) + 1;
-        const nft_value = JSON.stringify({tx: transactionHash, token: tokenId});
+        //console.log(badgeDataString);
+        // generation of token id to be hashed need to change to the actual format according to Bryant.
+        const generatedtokenId = student_id + "-" + institution_id + "-" + course_id + "-" + Math.floor(Math.random() * 1000) + 1;
+        //now hash this generated id to get the actual tokenid using sha256
+        const hashedtokenId = crypto.createHash('sha256').update(generatedtokenId).digest('hex');
+        const tokenId = BigInt('0x' + hashedtokenId)
+        console.log(`hash tokenId ${hashedtokenId, tokenId}`)
+        const tokenURI = `http://localhost:3000/nft-cert/${tokenId}`;
+        const transactionHash = await certificatetoNFT(badgeDataString,tokenId,tokenURI) //certificatetoNFT(badgeDataString);
+        const nft_value = {
+            tx: transactionHash, 
+            generatedtokenid: generatedtokenId,
+            tokenid: tokenId.toString(), 
+            hashedtokenid:hashedtokenId.toString(), 
+            tokenuri: tokenURI
+        };
+       
         // Insert certificate into the database
         const assigncertificatequery = 
             `insert into assign_certificate (user_id, institution_name, course_name, total_hours, date_completion, json_values, nft_value) values(?,?,?,?,?,?,?)`;
-        console.log(assigncertificatequery)
+        console.log(`nft_value ${JSON.stringify(nft_value)}`)
 
         db.pool.getConnection((err, connection) => {
             if (err) {
                 console.error('Error getting connection from pool:', err);
                 return res.status(500).json({ error: 'Internal server error' });
             }
-            connection.query(assigncertificatequery, [student_id, institution_name, course_name, total_hours, date_completion, badgeDataString, nft_value], (err, results) => {
+            connection.query(assigncertificatequery, [student_id, institution_name, course_name, total_hours, date_completion, badgeDataString, JSON.stringify(nft_value)], (err, results) => {
                 connection.release();
                 if (err) { 
                     console.error('Error executing query:', err);
@@ -218,34 +226,16 @@ app.post('/assign-certificate/:student_id', async (req, res) => {
    
 });
 
-// Another way of minting NFT
-async function mintNFT(badgeDataString, contractAddress) {
-    const provider = new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545'); // Update with your Ethereum RPC URL
-    const signer = provider.getSigner(); // Get the default signer from the provider
 
-    const MyCredsNFT = await ethers.getContractFactory('MyCredsNFT');
-    const contract = new ethers.Contract(contractAddress, MyCredsNFT.interface, signer);
-
-    try {
-        const transaction = await contract.mint(badgeDataString);
-        await transaction.wait();  // Wait for the transaction to be mined
-
-        console.log('NFT minted! Transaction Hash:', transaction.hash);
-        return transaction.hash;
-    } catch (error) {
-        console.error('Failed to mint NFT:', error);
-        throw error; // Propagate the error back to the caller
-    }
-}
 
 // This function mints an NFT using the badge data
-async function certificatetoNFT(badgeDataString) {
+async function certificatetoNFT(badgeDataString, tokenId,tokenURI) {
     // these are all hardhat values
-    const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
+    //const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
     const privateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' 
     const providerUrl = 'http://127.0.0.1:8545'
     // Initialize a provider
-    const provider = new ethers.JsonRpcProvider(providerUrl);
+    const provider = new ethers.JsonRpcProvider('http://127.0.0.1:8545');
 
     // Create a wallet instance using the private key and provider
     const wallet = new ethers.Wallet(privateKey, provider);
@@ -255,7 +245,7 @@ async function certificatetoNFT(badgeDataString) {
 
     // Call the mint function from your contract
     try {
-        const transaction = await contract.mint(badgeDataString);
+        const transaction = await contract.mint(tokenId, tokenURI, badgeDataString);
         await transaction.wait();  // Wait for the transaction to be mined
         console.log('NFT minted! Transaction Hash:', transaction.hash);
         return transaction.hash;
