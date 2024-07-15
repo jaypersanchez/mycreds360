@@ -15,6 +15,7 @@ contract MyCredsNFT is ERC721URIStorage {
         // Initialize the contract
     }
 
+
     function mint(uint256 _tokenId, string memory _tokenURI, string memory _jsonData) public {
         _safeMint(msg.sender, _tokenId);
         _setTokenURI(_tokenId, _tokenURI);
@@ -23,9 +24,7 @@ contract MyCredsNFT is ERC721URIStorage {
         tokenJsonData[_tokenId] = _jsonData;
 
         emit NFTMinted(_tokenId, _tokenURI, _jsonData);
-
-        // Increment nextTokenId for the next minted token
-        nextTokenId++;
+        getTokenJsonData(_tokenId);
     }
 
     function getTokenJsonData(uint256 _tokenId) public view returns (string memory) {

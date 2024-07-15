@@ -73,6 +73,7 @@ function StudentBadgeCerts() {
             .catch(err => console.error('Error fetching courses:', err));
     }, []);
 
+    // this will fetch the certifications and badges that the student has
     useEffect(() => {
         if (user && user.id) {
             fetch(`http://localhost:3000/assign-certificate/${user.id}`)
@@ -166,7 +167,7 @@ function StudentBadgeCerts() {
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Certificate assigned:', data);
+                console.log('Certificate assigned:', JSON.stringify(data));
                 // Handle success, maybe refresh the list of certifications or navigate away
             })
             .catch(err => {
@@ -304,7 +305,9 @@ function StudentBadgeCerts() {
                                     {certifications.map((certification, index) => (
                                         <tr key={index}>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                {certification.institution_name}
+                                                <a href={`http://localhost:3000/assign-certificate/${user.id}/${certification.id}`} target="_blank" rel="noopener noreferrer">
+                                                    {certification.institution_name}
+                                                </a>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 {certification.course_name}

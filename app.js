@@ -33,6 +33,8 @@ const mycredsABI = require('./nft_mycreds360/artifacts/contracts/MyCredsNFT.sol/
 const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
 const crypto = require('crypto');
 
+
+
 // Define routes here
 // Enable CORS for all routes
 app.use(cors());
@@ -191,6 +193,7 @@ app.post('/assign-certificate/:student_id', async (req, res) => {
         const generatedtokenId = student_id + "-" + institution_id + "-" + course_id + "-" + Math.floor(Math.random() * 1000) + 1;
         //now hash this generated id to get the actual tokenid using sha256
         const hashedtokenId = crypto.createHash('sha256').update(generatedtokenId).digest('hex');
+        // this tokenid is the token id used for NFT.
         const tokenId = BigInt('0x' + hashedtokenId)
         console.log(`hash tokenId ${hashedtokenId, tokenId}`)
         const tokenURI = `http://localhost:3000/nft-cert/${tokenId}`;
@@ -205,7 +208,7 @@ app.post('/assign-certificate/:student_id', async (req, res) => {
        
         // Insert certificate into the database
         const assigncertificatequery = 
-            `insert into assign_certificate (user_id, institution_name, course_name, total_hours, date_completion, json_values, nft_value) values(?,?,?,?,?,?,?)`;
+            `insert into assign_certificate (user_id, institution_name, course_name, total_hours, date_completion, json_values, nft_value,tokenURI,txhash,tokenid) values(?,?,?,?,?,?,?,?,?,?)`;
         console.log(`nft_value ${JSON.stringify(nft_value)}`)
 
         db.pool.getConnection((err, connection) => {
@@ -213,7 +216,7 @@ app.post('/assign-certificate/:student_id', async (req, res) => {
                 console.error('Error getting connection from pool:', err);
                 return res.status(500).json({ error: 'Internal server error' });
             }
-            connection.query(assigncertificatequery, [student_id, institution_name, course_name, total_hours, date_completion, badgeDataString, JSON.stringify(nft_value)], (err, results) => {
+            connection.query(assigncertificatequery, [student_id, institution_name, course_name, total_hours, date_completion, badgeDataString, JSON.stringify(nft_value),tokenURI,transactionHash,tokenId], (err, results) => {
                 connection.release();
                 if (err) { 
                     console.error('Error executing query:', err);
@@ -225,8 +228,6 @@ app.post('/assign-certificate/:student_id', async (req, res) => {
         });
    
 });
-
-
 
 // This function mints an NFT using the badge data
 async function certificatetoNFT(badgeDataString, tokenId,tokenURI) {
@@ -255,6 +256,56 @@ async function certificatetoNFT(badgeDataString, tokenId,tokenURI) {
 }
 
 /*
+*
+*   This endpoint will return the badge data in JSON format based on the token id
+*/
+// Endpoint to upload metadata to IPFS
+app.post('/upload-metadata', async (req, res) => {
+    try {
+        const metadata = req.body; // Assuming JSON body contains metadata
+
+        const metadataBuffer = Buffer.from(JSON.stringify(metadata));
+        const { cid } = await ipfs.add(metadataBuffer);
+
+        const metadataURI = `ipfs://${cid}`;
+        console.log('Metadata uploaded to IPFS:', metadataURI);
+
+        res.json({ metadataURI });
+    } catch (error) {
+        console.error('Failed to upload metadata to IPFS:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+/*
+*   Get certificate meta data from smart contract based on token id
+*/
+app.get('/nft-cert/:tokenId', async (req, res) => {
+    const tokenId = parseInt(req.params.tokenId);
+    const bigTokenId = BigInt(tokenId);
+    const privateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' 
+    const providerUrl = 'http://127.0.0.1:8545'
+    // Initialize a provider
+    const provider = new ethers.JsonRpcProvider('http://localhost:8545');   
+    // Create a wallet instance using the private key and provider
+    const wallet = new ethers.Wallet(privateKey, provider);
+    // Create a contract instance connected to your wallet
+    const contract = new ethers.Contract(contractAddress, mycredsABI, wallet);
+    // call getTokenJsonData() function from your contract
+    try {
+
+        const tokenJsonData = await contract.getTokenJsonData(bigTokenId);
+        // Handle BigNumber to string conversion
+        const jsonData = tokenJsonData.toString();
+        console.log('Token JSON Data:', tokenJsonData);
+        return res.json(JSON.parse(jsonData));
+    } catch (error) {
+        console.error('Failed to get token JSON data:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+/*
 * This endpoint will query the assign_certificate table based on user_id and return the json_values
 * which is the badge data in json format.  
 *
@@ -278,9 +329,31 @@ app.get('/student-certificates/:student_id', (req, res) => {
     });
 });
 
+// I need an endpoint that will handle this URL http://localhost:3000/assign-certificate/234/448.
+// this will query the assign_certificate table based on the user_id and the certificate_id and get the json_values and display it
+app.get('/assign-certificate/:student_id/:certificate_id', (req, res) => {
+    const { student_id, certificate_id } = req.params;
+    const query = `select * from assign_certificate where user_id = ? and id = ?`;
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        connection.query(query, [student_id, certificate_id], (err, results) => {
+            connection.release();
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            return res.json(results);
+        });
+    });
+});
+
 //get all assign certificates records by user_id
 app.get('/assign-certificate/:student_id', (req, res) => {
     const {student_id} = req.params;
+    console.log(`assign-certificate ${student_id}`)
     const query = `select * from assign_certificate where user_id = ?`;
 
     db.pool.getConnection((err, connection) => {
