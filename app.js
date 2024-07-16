@@ -641,6 +641,49 @@ app.get('/institution/unused', (req, res) => {
     })
 });
 
+// Example Express.js endpoint to save template positions
+app.post('/save-template-positions', (req, res) => {
+    const { fields } = req.body;
+
+    // Validate and process the fields to save in your database
+    // Example using Sequelize ORM for MySQL database
+    Certificate.create({
+        institution_id: 1, // Example institution ID
+        image_url: '', // Example image URL
+        image_svg: '', // Example SVG data
+        image_json: JSON.stringify(fields), // Save fields as JSON string
+        created_at: new Date(),
+        updated_at: new Date(),
+    })
+    .then(() => {
+        res.status(200).send('Template positions saved successfully');
+    })
+    .catch((error) => {
+        console.error('Error saving template positions:', error);
+        res.status(500).send('Failed to save template positions');
+    });
+});
+
+    // Example Express.js endpoint to get saved template positions
+    app.get('/get-template-positions', (req, res) => {
+        // Example using Sequelize ORM for MySQL database
+        Certificate.findOne({
+            order: [['created_at', 'DESC']], // Example: Get latest entry
+        })
+        .then((certificate) => {
+            if (certificate) {
+                res.status(200).json(certificate);
+            } else {
+                res.status(404).send('Template positions not found');
+            }
+        })
+        .catch((error) => {
+            console.error('Error getting template positions:', error);
+            res.status(500).send('Failed to get template positions');
+        });
+    });
+
+
 /*
 *   Need to add capability to save institution's logo image
 *   and a signature image   
