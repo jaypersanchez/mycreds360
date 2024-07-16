@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
+import CertificationModal from './CertificationModal.jsx';
 
 
 function StudentBadgeCerts() {
@@ -23,6 +24,10 @@ function StudentBadgeCerts() {
     const [selectedCourseDetails, setSelectedCourseDetails] = useState({});
     const [institutionName, setInstitutionName] = useState('');
     const [courseName, setCourseName] = useState('');   
+    // State for modal
+    const [modalOpen, setModalOpen] = useState(false);
+    const [selectedCertification, setSelectedCertification] = useState(null);
+
 
     // Assume user data is stored as a JSON string
     const user = JSON.parse(sessionStorage.getItem('user')) || {};
@@ -73,6 +78,7 @@ function StudentBadgeCerts() {
             .catch(err => console.error('Error fetching courses:', err));
     }, []);
 
+    // this will fetch the certifications and badges that the student has
     useEffect(() => {
         if (user && user.id) {
             fetch(`http://localhost:3000/assign-certificate/${user.id}`)
@@ -147,6 +153,7 @@ function StudentBadgeCerts() {
         ]).then(([institutionName, courseName]) => {
             const payload = {
                 institution_id: selectedInstitution,
+                course_id: selectedCourse,
                 institution_name: institutionName,
                 course_name: courseName,
                 institution_url: institutionUrl,
@@ -165,7 +172,7 @@ function StudentBadgeCerts() {
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Certificate assigned:', data);
+                console.log('Certificate assigned:', JSON.stringify(data));
                 // Handle success, maybe refresh the list of certifications or navigate away
             })
             .catch(err => {
@@ -176,6 +183,16 @@ function StudentBadgeCerts() {
         
     };
     
+    const handleModalOpen = (certification) => {
+        setSelectedCertification(certification);
+        setModalOpen(true);
+    };
+
+    const handleModalClose = () => {
+        setSelectedCertification(null);
+        setModalOpen(false);
+    };
+
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="mb-6">
@@ -303,7 +320,12 @@ function StudentBadgeCerts() {
                                     {certifications.map((certification, index) => (
                                         <tr key={index}>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                {certification.institution_name}
+                                                <button
+                                                    onClick={() => handleModalOpen(certification)}
+                                                    className="text-blue-600 hover:underline cursor-pointer focus:outline-none"
+                                                >
+                                                    {certification.institution_name}
+                                                </button>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 {certification.course_name}
@@ -319,6 +341,14 @@ function StudentBadgeCerts() {
                                 </tbody>
                             </table>
                         </div>
+                        {/* Modal Component */}
+            {selectedCertification && (
+                <CertificationModal
+                    certificationId={selectedCertification.id} // Pass the certification ID
+                    userId={userId} // Pass the user ID
+                    onClose={handleModalClose}
+                />
+            )}
                     </div>
                 )}
             </div>

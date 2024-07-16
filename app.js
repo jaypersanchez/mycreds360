@@ -617,6 +617,31 @@ app.get('/institution/index', (req, res) => {
 });
 
 /*
+*  This endpoint will return all institutions that have not created a template for their certificate
+*/
+app.get('/institution/unused', (req, res) => {
+    // Placeholder for actual institution index
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        // Use the connection to execute a query
+        connection.query(`SELECT i.id, i.institution_name FROM mycreds360.institution i LEFT JOIN mycreds360.certificate c ON i.id = c.institution_id WHERE c.institution_id IS NULL;`, (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+    
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            
+            return res.json(results);
+        });
+    })
+});
+
+/*
 *   Need to add capability to save institution's logo image
 *   and a signature image   
 */

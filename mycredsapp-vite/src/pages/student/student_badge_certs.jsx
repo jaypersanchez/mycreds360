@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
+import CertificationModal from './CertificationModal.jsx';
 
 
 function StudentBadgeCerts() {
@@ -23,6 +24,10 @@ function StudentBadgeCerts() {
     const [selectedCourseDetails, setSelectedCourseDetails] = useState({});
     const [institutionName, setInstitutionName] = useState('');
     const [courseName, setCourseName] = useState('');   
+    // State for modal
+    const [modalOpen, setModalOpen] = useState(false);
+    const [selectedCertification, setSelectedCertification] = useState(null);
+
 
     // Assume user data is stored as a JSON string
     const user = JSON.parse(sessionStorage.getItem('user')) || {};
@@ -178,6 +183,16 @@ function StudentBadgeCerts() {
         
     };
     
+    const handleModalOpen = (certification) => {
+        setSelectedCertification(certification);
+        setModalOpen(true);
+    };
+
+    const handleModalClose = () => {
+        setSelectedCertification(null);
+        setModalOpen(false);
+    };
+
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="mb-6">
@@ -305,9 +320,12 @@ function StudentBadgeCerts() {
                                     {certifications.map((certification, index) => (
                                         <tr key={index}>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                <a href={`http://localhost:3000/assign-certificate/${user.id}/${certification.id}`} target="_blank" rel="noopener noreferrer">
+                                                <button
+                                                    onClick={() => handleModalOpen(certification)}
+                                                    className="text-blue-600 hover:underline cursor-pointer focus:outline-none"
+                                                >
                                                     {certification.institution_name}
-                                                </a>
+                                                </button>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 {certification.course_name}
@@ -323,6 +341,14 @@ function StudentBadgeCerts() {
                                 </tbody>
                             </table>
                         </div>
+                        {/* Modal Component */}
+            {selectedCertification && (
+                <CertificationModal
+                    certificationId={selectedCertification.id} // Pass the certification ID
+                    userId={userId} // Pass the user ID
+                    onClose={handleModalClose}
+                />
+            )}
                     </div>
                 )}
             </div>
