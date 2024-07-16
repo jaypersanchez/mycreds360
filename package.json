@@ -32,6 +32,7 @@
     "mysql2": "^3.9.7",
     "react-chartjs-2": "^5.2.0",
     "react-dnd": "^16.0.1",
+    "react-draggable": "^4.4.6",
     "stripe": "^16.1.0"
   },
   "devDependencies": {
