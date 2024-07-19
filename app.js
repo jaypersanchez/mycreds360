@@ -59,7 +59,7 @@ const storage = multer.diskStorage({
   // Middleware to parse multipart/form-data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(upload.single('logo')); 
+//app.use(upload.single('logo')); 
 
 //helper function to get userprofiles based on user_id
 const getUserProfile = (user_id) => {
@@ -254,6 +254,52 @@ async function certificatetoNFT(badgeDataString, tokenId,tokenURI) {
         console.error('Failed to mint NFT:', error);
     }
 }
+
+// Example endpoint to save certificate template
+app.post('/save-certificate-template', upload.single('file'),(req, res) => {
+    // Handle incoming JSON data
+    console.log(`saving certificate template data:`);
+    const institutionId = req.body.institutionId;
+    const fields = req.body.fields;
+    const file = req.file;
+    console.log(file);
+    if (!institutionId || !file || !fields) {
+        return res.status(400).json({ message: 'Missing required data' });
+    }
+    console.log(fields)
+
+    // Process file URL
+    const imageUrl = `uploads/${file.filename}`;
+    const imageSvg = ''; // If you have SVG data
+    const imageJson = JSON.stringify(fields); // Convert fields array to JSON string
+    console.log(imageUrl, imageSvg, imageJson);
+    //console.log('Received certificate template data:', templateData);
+    // Prepare data for database insertion
+    const sql = `INSERT INTO certificate (institution_id, image_url, image_svg, image_json, created_at, updated_at) 
+                 VALUES (?, ?, ?, ?, NOW(), NOW())`;
+    const values = [institutionId, imageUrl, imageSvg, imageJson];
+    console.log(sql, values);
+
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        // Use the connection to execute a query
+        connection.query(sql, values, (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+
+            return res.status(201).json({ message: 'Certificate template saved successfully' });
+        });
+    });
+});
 
 /*
 *

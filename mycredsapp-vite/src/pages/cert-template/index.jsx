@@ -23,7 +23,7 @@ function CertificateTemplate() {
     // Simulated data or fetch from API
     useEffect(() => {
         fetchInstitutionsWithoutTemplates();
-        loadTemplatePositions(); // Load saved template positions
+        //loadTemplatePositions(); // Load saved template positions
     }, []);
 
     // Function to fetch institutions without certificate templates setup
@@ -62,23 +62,60 @@ function CertificateTemplate() {
             alert('Please select an institution and upload a file.');
             return;
         }
-
-        // Assuming you want to display or process the selected file here
-        console.log('Selected Institution:', selectedInstitution);
-        console.log('Selected File:', selectedFile);
-
-        // Example: Display the selected file
-        if (selectedFile.type.includes('image')) {
-            // Display image
-            const imageUrl = URL.createObjectURL(selectedFile);
-            console.log('Displaying image:', imageUrl);
-            // You can render this imageUrl in an <img> tag for display
-        } else if (selectedFile.type === 'application/pdf') {
-            // Display PDF (optional, requires PDF viewer component)
-            console.log('Displaying PDF:', selectedFile);
-            // You can render a PDF viewer component here
-        }
+    
+        // Prepare FormData
+        const formData = new FormData();
+        formData.append('institutionId', selectedInstitution);
+        formData.append('fields', JSON.stringify(draggableFields));
+        formData.append('file', selectedFile);
+    
+        // Send data to server
+        fetch('http://localhost:3000/save-certificate-template', {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to save certificate template');
+            }
+            console.log('Certificate template saved successfully');
+            // Optionally, you can reset states or show a success message
+        })
+        .catch(error => {
+            console.error('Error saving certificate template:', error);
+            // Handle error state if needed
+        });
     };
+    
+
+    // Function to save certificate template data to backend
+    const saveCertificateTemplate = (templateData) => {
+        const formData = new FormData();
+        
+        // Append file data
+        if (templateData.file) {
+            formData.append('file', templateData.file);
+        }
+        
+        // Append other data
+        formData.append('institutionId', templateData.institutionId);
+        formData.append('fields', JSON.stringify(templateData.fields));
+    
+        fetch('http://localhost:3000/save-certificate-template', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to save certificate template');
+            }
+            console.log('Certificate template saved successfully');
+        })
+        .catch(error => {
+            console.error('Error saving certificate template:', error);
+        });
+    };
+    
 
     // Render draggable placeholders on the certificate template image
     const renderPlaceholderFields = () => {
@@ -105,7 +142,8 @@ function CertificateTemplate() {
             field.id === fieldId ? { ...field, x: data.x, y: data.y } : field
         );
         setDraggableFields(updatedFields);
-        saveTemplatePositions(updatedFields); // Save updated positions
+        //saveTemplatePositions(updatedFields); // Save updated positions
+        sessionStorage.setItem('draggableFields', JSON.stringify(updatedFields));
     };
 
     // Save template positions to backend API
@@ -183,23 +221,24 @@ function CertificateTemplate() {
             {/* Display Selected File */}
             {selectedFile && (
                 <div className="mb-4 relative flex">
-                    {/* Image Preview */}
-                    <div className="flex-grow relative">
-                        <h3 className="text-lg font-semibold mb-2">Selected File Preview:</h3>
-                        {selectedFile.type.includes('image') ? (
-                            <img src={URL.createObjectURL(selectedFile)} alt="Selected File" className="max-w-full h-auto" />
-                        ) : selectedFile.type === 'application/pdf' ? (
-                            <embed src={URL.createObjectURL(selectedFile)} type="application/pdf" width="100%" height="600px" />
-                        ) : (
-                            <p>Unsupported file type</p>
-                        )}
-                    </div>
-
-                    {/* Draggable Placeholder Fields */}
-                    <div className="absolute top-0 right-0 p-4 flex flex-col space-y-4">
-                        {renderPlaceholderFields()}
-                    </div>
+                {/* Image Preview */}
+                <div className="flex-grow relative">
+                    <h3 className="text-lg font-semibold mb-2">Selected File Preview:</h3>
+                    {selectedFile.type.includes('image') ? (
+                        <img src={URL.createObjectURL(selectedFile)} alt="Selected File" className="max-w-full h-auto" />
+                    ) : selectedFile.type === 'application/pdf' ? (
+                        <embed src={URL.createObjectURL(selectedFile)} type="application/pdf" width="100%" height="600px" />
+                    ) : (
+                        <p>Unsupported file type</p>
+                    )}
                 </div>
+            
+                {/* Draggable Placeholder Fields */}
+                <div className="absolute top-0 right-0 p-4 flex flex-col items-end">
+                    {renderPlaceholderFields()}
+                </div>
+            </div>
+            
             )}
 
             {/* Submit Button */}
@@ -208,7 +247,7 @@ function CertificateTemplate() {
                 onClick={handleSubmit}
                 disabled={!selectedInstitution || !selectedFile}
             >
-                Load Certificate Template
+                Save Certificate Template
             </button>
         </div>
     );
