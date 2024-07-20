@@ -22,7 +22,7 @@ const Student = () => {
   const handleRowClick = (student) => {
         // Navigate to the student details page with student ID
         //console.log('/student/student_badge_certifications', student);
-        navigate(`student_badge_certifications`);
+        //navigate(`student_badge_certifications`);
     };
 
     useEffect(() => {

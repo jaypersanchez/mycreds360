@@ -19,7 +19,7 @@ const Student = () => {
   const [users, setUsers] = useState([]);
 
   const handleRowClick = (student) => {
-    navigate(`student_badge_certifications`);
+    //navigate(`student_badge_certifications`);
   };
 
   useEffect(() => {
@@ -124,7 +124,7 @@ const Student = () => {
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {filteredStudents.map((student) => (
-            <tr key={student.id} onClick={() => handleRowClick(student)} className="cursor-pointer">
+            <tr key={student.id} className="cursor-pointer">
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 {student.first_name} {student.last_name}
               </td>

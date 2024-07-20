@@ -34,7 +34,6 @@ const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
 const crypto = require('crypto');
 
 
-
 // Define routes here
 // Enable CORS for all routes
 app.use(cors());
@@ -60,6 +59,8 @@ const storage = multer.diskStorage({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 //app.use(upload.single('logo')); 
+app.use('/images', express.static('uploads'));
+
 
 //helper function to get userprofiles based on user_id
 const getUserProfile = (user_id) => {
@@ -254,6 +255,74 @@ async function certificatetoNFT(badgeDataString, tokenId,tokenURI) {
         console.error('Failed to mint NFT:', error);
     }
 }
+
+// need a get endpoint to return all results from this query select * from mycreds360.certificate;
+app.get('/certificate', (req, res) => {
+    const query = `select * from certificate`;
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        connection.query(query, (err, results) => {
+            connection.release();
+            if (err) { 
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            // Ensure that image_url paths are relative to the '/images' URL
+            results.forEach(record => {
+                if (record.image_url && record.image_url.startsWith('uploads/')) {
+                    record.image_url = `/images/${record.image_url.replace('uploads/', '')}`;
+                }
+            });
+            return res.json(results);
+        });
+    });
+});
+
+app.get('/certificate-image/:id', (req, res) => {
+    const certificateId = req.params.id;
+
+    // Fetch certificate to get the image path
+    const query = `SELECT image_url FROM certificate WHERE id = ?`;
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        connection.query(query, [certificateId], (err, results) => {
+            connection.release();
+            if (err) {
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: 'Internal server error' });
+            }
+
+            if (results.length === 0) {
+                return res.status(404).json({ error: 'Certificate not found' });
+            }
+
+            const imageUrl = results[0].image_url;
+
+            if (imageUrl && imageUrl.startsWith('uploads/')) {
+                const imagePath = path.join(__dirname, 'uploads', imageUrl.replace('uploads/', ''));
+                
+                // Check if file exists
+                fs.access(imagePath, fs.constants.F_OK, (err) => {
+                    if (err) {
+                        console.error('File not found:', err);
+                        return res.status(404).json({ error: 'Image not found' });
+                    }
+
+                    // Set appropriate content type and send the file
+                    res.sendFile(imagePath);
+                });
+            } else {
+                return res.status(400).json({ error: 'Invalid image path' });
+            }
+        });
+    });
+});
 
 // Example endpoint to save certificate template
 app.post('/save-certificate-template', upload.single('file'),(req, res) => {

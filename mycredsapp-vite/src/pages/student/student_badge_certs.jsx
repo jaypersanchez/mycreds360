@@ -27,7 +27,9 @@ function StudentBadgeCerts() {
     // State for modal
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedCertification, setSelectedCertification] = useState(null);
-
+    const [selectedCertTemp, setSelectedCertTemp] = useState('');
+    const [certificates, setCertificates] = useState([]);
+    const [selectedImage, setSelectedImage] = useState('');
 
     // Assume user data is stored as a JSON string
     const user = JSON.parse(sessionStorage.getItem('user')) || {};
@@ -96,7 +98,7 @@ function StudentBadgeCerts() {
                     setError(err.message);
                 });
         }
-    }, [user]);
+    }, []);
 
     useEffect(() => {
         if (user && user.id) {
@@ -163,7 +165,7 @@ function StudentBadgeCerts() {
             console.log('Payload:', payload);
 
             // Call your API to assign a certificate
-            fetch(`http://localhost:3000/assign-certificate/${user.id}`, {
+            fetch(`http://localhost:3000/assign-certificate/${cert.id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -191,6 +193,39 @@ function StudentBadgeCerts() {
     const handleModalClose = () => {
         setSelectedCertification(null);
         setModalOpen(false);
+    };
+
+    useEffect(() => {
+        // Fetch the certificates from the server when the component mounts
+        const fetchCertificates = async () => {
+            try {
+                const response = await fetch('http://localhost:3000/certificate');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                setCertificates(data);
+            } catch (error) {
+                console.error('Error fetching certificates:', error);
+            }
+        };
+
+        fetchCertificates();
+    }, []);
+
+    // Handle selection change
+    const handleSelectChange = async (e) => {
+        const selectedId = e.target.value;
+        console.log('Selected ID:', selectedId);
+        setSelectedCertTemp(selectedId);
+
+        if (selectedId) {
+            // Fetch the actual image
+            const imageUrl = `http://localhost:3000/certificate-image/${selectedId}`;
+            setSelectedImage(imageUrl);
+        } else {
+            setSelectedImage(''); // Clear the image if no selection
+        }
     };
 
     return (
@@ -233,6 +268,32 @@ function StudentBadgeCerts() {
             <h1 className="text-2xl font-semibold">Certification Details</h1>
             <form onSubmit={handleSubmit} className="mt-4">
                 <div className="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                <label className="block text-sm font-medium text-gray-700">Select Template</label>
+                <select
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                value={selectedCertTemp}
+                onChange={handleSelectChange}
+                required
+            >
+                <option value="">Select Template</option>
+                {certificates.map(cert => (
+                    <option key={cert.id} value={cert.id}>
+                       {cert.id}:{cert.institution_id} - {cert.image_url}
+                    </option>
+                ))}
+            </select>
+
+            {selectedImage && (
+                <div className="mt-4">
+                    <img 
+                        src={selectedImage} 
+                        alt="Selected Certificate" 
+                        className="max-w-full h-auto"
+                    />
+                </div>
+            )}
+            </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Select Institution</label>
                         <select
