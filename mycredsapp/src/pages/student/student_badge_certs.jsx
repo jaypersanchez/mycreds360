@@ -30,6 +30,7 @@ function StudentBadgeCerts() {
     const [selectedCertTemp, setSelectedCertTemp] = useState('');
     const [certificates, setCertificates] = useState([]);
     const [selectedImage, setSelectedImage] = useState('');
+    const [fields, setFields] = useState([]);
 
     // Assume user data is stored as a JSON string
     const user = JSON.parse(sessionStorage.getItem('user')) || {};
@@ -126,6 +127,10 @@ function StudentBadgeCerts() {
         setActiveTab(tabName);
     };
 
+    /*
+    * This function will handle the submission of the form to assign a certificate to a student
+    * This requires both student id, which is user.id and the certificate id
+    */
     const handleSubmit = async (event) => {
         event.preventDefault();
         // Get institution and course names asynchronously and then construct payload
@@ -195,6 +200,9 @@ function StudentBadgeCerts() {
         setModalOpen(false);
     };
 
+    /*
+    * This will fetch the certificates from the server and set the state for the drop down list
+    */
     useEffect(() => {
         // Fetch the certificates from the server when the component mounts
         const fetchCertificates = async () => {
@@ -213,16 +221,38 @@ function StudentBadgeCerts() {
         fetchCertificates();
     }, []);
 
-    // Handle selection change
+    /* 
+    * This function selects the image certificate based on the selected template list.
+    * This has the json values for the field placements.
+    */
     const handleSelectChange = async (e) => {
         const selectedId = e.target.value;
         console.log('Selected ID:', selectedId);
         setSelectedCertTemp(selectedId);
 
         if (selectedId) {
-            // Fetch the actual image
-            const imageUrl = `http://localhost:3000/certificate-image/${selectedId}`;
-            setSelectedImage(imageUrl);
+            try {
+                // Fetch the certificate data
+                const response = await fetch(`http://localhost:3000/certificate/${selectedId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch certificate details');
+                }
+                const data = await response.json();
+                // Fetch the actual image
+                const imageUrl = `http://localhost:3000/certificate-image/${selectedId}`;
+                setSelectedImage(imageUrl);
+
+                // Unescape the JSON data
+                const unescapedJson = data.image_json.replace(/\\'/g, "'").replace(/\\"/g, '"');
+                
+                // Parse the JSON data for field placements
+                const fields = JSON.parse(unescapedJson);
+                setFields(fields);
+            }
+            catch (error) {
+                console.error('Error fetching certificate image:', error);
+            }
+            
         } else {
             setSelectedImage(''); // Clear the image if no selection
         }
@@ -282,18 +312,33 @@ function StudentBadgeCerts() {
                        {cert.id}:{cert.institution_id} - {cert.image_url}
                     </option>
                 ))}
-            </select>
+                    </select>
 
-            {selectedImage && (
-                <div className="mt-4">
-                    <img 
-                        src={selectedImage} 
-                        alt="Selected Certificate" 
-                        className="max-w-full h-auto"
-                    />
-                </div>
-            )}
-            </div>
+                    {selectedImage && (
+                        <div className="mt-4">
+                            <img 
+                                src={selectedImage} 
+                                alt="Selected Certificate" 
+                                className="max-w-full h-auto"
+                            />
+                            {fields.map(field => (
+                                <div
+                                    key={field.id}
+                                    style={{
+                                        position: 'absolute',
+                                        top: `${field.y}px`,
+                                        left: `${field.x}px`,
+                                        color: 'black', // Customize text color if needed
+                                        fontSize: '16px', // Customize text size if needed
+                                        whiteSpace: 'nowrap'
+                                    }}
+                                >
+                                    {field.text}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Select Institution</label>
                         <select

@@ -324,6 +324,37 @@ app.get('/certificate-image/:id', (req, res) => {
     });
 });
 
+/*
+* This endpoint will return the certificate as well but the front end
+* will handle this specific to the JSON data.
+*/
+app.get('/certificate/:id', (req, res) => {
+    const certificateId = req.params.id;
+
+    const query = `SELECT image_url, image_json FROM certificate WHERE id = ?`;
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        connection.query(query, [certificateId], (err, results) => {
+            connection.release();
+            if (err) {
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: 'Internal server error' });
+            }
+
+            if (results.length === 0) {
+                return res.status(404).json({ error: 'Certificate not found' });
+            }
+
+            const certificate = results[0];
+            res.json(certificate);
+        });
+    });
+});
+
+
 // Example endpoint to save certificate template
 app.post('/save-certificate-template', upload.single('file'),(req, res) => {
     // Handle incoming JSON data
