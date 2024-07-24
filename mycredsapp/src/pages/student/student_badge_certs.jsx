@@ -343,7 +343,7 @@ function StudentBadgeCerts() {
                 ))}
                     </select>
 
-                    {selectedImage && selectedStudent && (
+                    {selectedImage && selectedStudent && selectedInstitution && selectedCourse && institutionUrl && totalHours && dateCompletion && (
                         <div className="relative mt-4">
                             <img 
                                 src={selectedImage} 
@@ -359,12 +359,89 @@ function StudentBadgeCerts() {
                                         color: 'black', // Customize text color if needed
                                         fontSize: '24px', // Customize text size if needed
                                         whiteSpace: 'nowrap',
-                                        fontWeight: 'bold'
+                                        fontWeight: 'bold',
+                                        backgroundColor: 'rgba(255, 255, 255, 0.6)', // Optional: Semi-transparent background for readability
+                                        padding: '5px', // Optional: Padding for better text visibility
+                                        borderRadius: '5px' // Optional: Rounded corners for the background
                                     }}
                                 >
-                                    asdkfjsadjfsdafj;lsfjkd
+                                    {selectedStudent}
                                 </div>
-                            
+                                <div
+                                    style={{
+                                        position: 'absolute',
+                                        top: '50px', // Adjust as needed
+                                        left: '10px', // Adjust as needed
+                                        color: 'black',
+                                        fontSize: '16px',
+                                        whiteSpace: 'nowrap',
+                                        backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                                        padding: '5px',
+                                        borderRadius: '5px'
+                                    }}
+                                >
+                                {selectedInstitution}
+                                </div>
+                                <div
+                                    style={{
+                                        position: 'absolute',
+                                        top: '90px', // Adjust as needed
+                                        left: '10px', // Adjust as needed
+                                        color: 'black',
+                                        fontSize: '16px',
+                                        whiteSpace: 'nowrap',
+                                        backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                                        padding: '5px',
+                                        borderRadius: '5px'
+                                    }}
+                                >
+                                {selectedCourse}
+                                </div>
+                                <div
+                                    style={{
+                                        position: 'absolute',
+                                        top: '130px', // Adjust as needed
+                                        left: '10px', // Adjust as needed
+                                        color: 'black',
+                                        fontSize: '16px',
+                                        whiteSpace: 'nowrap',
+                                        backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                                        padding: '5px',
+                                        borderRadius: '5px'
+                                    }}
+                                >
+                                    Website: {institutionUrl}
+                                </div>
+                                <div
+                                    style={{
+                                        position: 'absolute',
+                                        top: '170px', // Adjust as needed
+                                        left: '10px', // Adjust as needed
+                                        color: 'black',
+                                        fontSize: '16px',
+                                        whiteSpace: 'nowrap',
+                                        backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                                        padding: '5px',
+                                        borderRadius: '5px'
+                                    }}
+                                >
+                                    Total Hours: {totalHours}
+                                </div>
+                                <div
+                                    style={{
+                                        position: 'absolute',
+                                        top: '210px', // Adjust as needed
+                                        left: '10px', // Adjust as needed
+                                        color: 'black',
+                                        fontSize: '16px',
+                                        whiteSpace: 'nowrap',
+                                        backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                                        padding: '5px',
+                                        borderRadius: '5px'
+                                    }}
+                                >
+                                    Date of Completion: {dateCompletion}
+                                </div>
                         </div>
                     )}
                     </div>
