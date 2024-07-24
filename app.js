@@ -477,10 +477,28 @@ app.get('/student-certificates/:student_id', (req, res) => {
 
 // I need an endpoint that will handle this URL http://localhost:3000/assign-certificate/234/448.
 // this will query the assign_certificate table based on the user_id and the certificate_id and get the json_values and display it
-app.get('/assign-certificate/:student_id/:certificate_id', (req, res) => {
+app.post('/assign-certificate/:student_id/:certificate_id', (req, res) => {
     const { student_id, certificate_id } = req.params;
+    const {
+        student,
+        institution_id,
+        course_id,
+        institution_name,
+        course_name,
+        institution_url,
+        total_hours,
+        date_completion
+    } = req.body;
+    console.log(student,
+        institution_id,
+        course_id,
+        institution_name,
+        course_name,
+        institution_url,
+        total_hours,
+        date_completion)
     const query = `select * from assign_certificate where user_id = ? and id = ?`;
-    db.pool.getConnection((err, connection) => {
+    /*db.pool.getConnection((err, connection) => {
         if (err) {
             console.error('Error getting connection from pool:', err);
             return res.status(500).json({ error: 'Internal server error' });
@@ -493,7 +511,7 @@ app.get('/assign-certificate/:student_id/:certificate_id', (req, res) => {
             }
             return res.json(results);
         });
-    });
+    });*/
 });
 
 //get all assign certificates records by user_id

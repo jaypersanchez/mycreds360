@@ -31,6 +31,10 @@ function StudentBadgeCerts() {
     const [certificates, setCertificates] = useState([]);
     const [selectedImage, setSelectedImage] = useState('');
     const [fields, setFields] = useState([]);
+    //need state saved for selected student
+    const [students, setStudents] = useState([]);
+    const [selectedStudent, setSelectedStudent] = useState('');
+    const [showStudentName, setShowStudentName] = useState(false);
 
     // Assume user data is stored as a JSON string
     const user = JSON.parse(sessionStorage.getItem('user')) || {};
@@ -122,6 +126,17 @@ function StudentBadgeCerts() {
                 });
         }
     }, []);
+
+    // useeffect to get all students from endpoint http://localhost:3000/students
+    useEffect(() => {
+        fetch('http://localhost:3000/students')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Students:', data);
+                setStudents(data);
+            })
+            .catch(err => console.error('Error fetching students:', err));
+    }, []);
     
     const handleTabClick = (tabName) => {
         setActiveTab(tabName);
@@ -156,9 +171,14 @@ function StudentBadgeCerts() {
                     resolve(''); // resolve with an empty string or appropriate default value
                 }
                 //resolve(course ? course : '');
+            }),
+            new Promise((resolve) => {
+                console.log('Selected Student:', selectedStudent);
+                resolve(selectedStudent);
             })
-        ]).then(([institutionName, courseName]) => {
+        ]).then(([institutionName, courseName, selectedStudent]) => {
             const payload = {
+                student: selectedStudent,
                 institution_id: selectedInstitution,
                 course_id: selectedCourse,
                 institution_name: institutionName,
@@ -170,7 +190,7 @@ function StudentBadgeCerts() {
             console.log('Payload:', payload);
 
             // Call your API to assign a certificate
-            fetch(`http://localhost:3000/assign-certificate/${userId}/${certificates.id}`, {
+            fetch(`http://localhost:3000/assign-certificate/${selectedStudent}/${selectedCertTemp}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -258,6 +278,15 @@ function StudentBadgeCerts() {
         }
     };
 
+    const handleViewTemplate = () => {
+        // Trigger the rendering of the student text on the image
+        if (selectedStudent && selectedImage) {
+            console.log(`handleViewTemplate: ${selectedStudent}`);
+            // Update the state to show the student's name on the image
+            setShowStudentName(true); // You can manage this state if needed
+        }
+    };
+
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="mb-6">
@@ -314,30 +343,45 @@ function StudentBadgeCerts() {
                 ))}
                     </select>
 
-                    {selectedImage && (
-                        <div className="mt-4">
+                    {selectedImage && selectedStudent && (
+                        <div className="relative mt-4">
                             <img 
                                 src={selectedImage} 
                                 alt="Selected Certificate" 
                                 className="max-w-full h-auto"
                             />
-                            {fields.map(field => (
+                            
                                 <div
-                                    key={field.id}
                                     style={{
                                         position: 'absolute',
-                                        top: `${field.y}px`,
-                                        left: `${field.x}px`,
+                                        top: '10px', // Adjust as needed
+                                        left: '10px', // Adjust as needed
                                         color: 'black', // Customize text color if needed
-                                        fontSize: '16px', // Customize text size if needed
-                                        whiteSpace: 'nowrap'
+                                        fontSize: '24px', // Customize text size if needed
+                                        whiteSpace: 'nowrap',
+                                        fontWeight: 'bold'
                                     }}
                                 >
-                                    {field.text}
+                                    asdkfjsadjfsdafj;lsfjkd
                                 </div>
-                            ))}
+                            
                         </div>
                     )}
+                    </div>
+                    
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Select Student</label>
+                        <select
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            value={selectedStudent}
+                            onChange={e => setSelectedStudent(e.target.value)}
+                            required
+                        >
+                            <option value="">Select a Student</option>
+                            {students.map(student => (
+                                <option key={student.id} value={student.id}>{student.first_name} {student.last_name}</option>
+                            ))}
+                        </select>   
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Select Institution</label>
@@ -402,6 +446,13 @@ function StudentBadgeCerts() {
                     </div>
                 </div>
                 <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700">Assign Certificate</button>
+                <button 
+            type="button" 
+            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-700"
+            onClick={handleViewTemplate}
+        >
+            View Template
+        </button>
             </form>
         </div>
                         <div className="mt-4">
