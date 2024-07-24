@@ -140,7 +140,25 @@ app.get('/badge-images', (req, res) => {
 app.post('/assign-certificate/:student_id', async (req, res) => {
     // need to add contract address
     const { student_id } = req.params;
-    const { institution_id,course_id,institution_name, course_name, institution_url, total_hours, date_completion } = req.body;
+    const {
+        student,
+        institution_id,
+        course_id,
+        institution_name,
+        course_name,
+        institution_url,
+        total_hours,
+        date_completion
+    } = req.body;
+    console.log(`req.body`,student,
+        institution_id,
+        course_id,
+        institution_name,
+        course_name,
+        institution_url,
+        total_hours,
+        date_completion)
+    //const { institution_id,course_id,institution_name, course_name, institution_url, total_hours, date_completion } = req.body;
     let fullName = '';
     
         // Fetch user profile
@@ -190,10 +208,13 @@ app.post('/assign-certificate/:student_id', async (req, res) => {
         // Serialize certificate badge object
         const badgeDataString = JSON.stringify(certificate_badgev3);
         //console.log(badgeDataString);
+        
         // generation of token id to be hashed need to change to the actual format according to Bryant.
         const generatedtokenId = student_id + "-" + institution_id + "-" + course_id + "-" + Math.floor(Math.random() * 1000) + 1;
+        
         //now hash this generated id to get the actual tokenid using sha256
         const hashedtokenId = crypto.createHash('sha256').update(generatedtokenId).digest('hex');
+        
         // this tokenid is the token id used for NFT.
         const tokenId = BigInt('0x' + hashedtokenId)
         console.log(`hash tokenId ${hashedtokenId, tokenId}`)
@@ -498,7 +519,7 @@ app.post('/assign-certificate/:student_id/:certificate_id', (req, res) => {
         total_hours,
         date_completion)
     const query = `select * from assign_certificate where user_id = ? and id = ?`;
-    /*db.pool.getConnection((err, connection) => {
+    db.pool.getConnection((err, connection) => {
         if (err) {
             console.error('Error getting connection from pool:', err);
             return res.status(500).json({ error: 'Internal server error' });
@@ -511,7 +532,7 @@ app.post('/assign-certificate/:student_id/:certificate_id', (req, res) => {
             }
             return res.json(results);
         });
-    });*/
+    });
 });
 
 //get all assign certificates records by user_id

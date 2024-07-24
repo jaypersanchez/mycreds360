@@ -190,7 +190,8 @@ function StudentBadgeCerts() {
             console.log('Payload:', payload);
 
             // Call your API to assign a certificate
-            fetch(`http://localhost:3000/assign-certificate/${selectedStudent}/${selectedCertTemp}`, {
+            //fetch(`http://localhost:3000/assign-certificate/${selectedStudent}/${selectedCertTemp}`, {
+            fetch(`http://localhost:3000/assign-certificate/${selectedStudent}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -524,12 +525,12 @@ function StudentBadgeCerts() {
                 </div>
                 <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700">Assign Certificate</button>
                 <button 
-            type="button" 
-            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-700"
-            onClick={handleViewTemplate}
-        >
-            View Template
-        </button>
+                    type="button" 
+                    className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-700"
+                    onClick={handleViewTemplate}
+                >
+                    View Template
+                </button>
             </form>
         </div>
                         <div className="mt-4">
