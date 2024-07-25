@@ -157,17 +157,17 @@ function StudentBadgeCerts() {
             // Promise to get institution name
             new Promise((resolve) => {
                 const institution = institutions.find(inst => inst.id === institutions[selectedInstitution].institution_name);
-                console.log('Found Institution:', institutions[selectedInstitution].institution_name);
+                //console.log('Found Institution:', institutions[selectedInstitution].institution_name);
                 setInstitutionName(institutions[selectedInstitution].institution_name)
                 resolve(institutionName);
             }),
             // Promise to get course name
             new Promise((resolve) => {
                 
-                console.log('Selected Course ID:', selectedCourse);
+                //console.log('Selected Course ID:', selectedCourse);
                 const course = courses.find(c => c.id.toString() === selectedCourse);
                 if (course) {
-                    console.log('Found Course:', course);
+                    //console.log('Found Course:', course);
                     setCourseName(course.course_name);
                     resolve(course.course_name);
                 } else {
@@ -177,7 +177,7 @@ function StudentBadgeCerts() {
                 //resolve(course ? course : '');
             }),
             new Promise((resolve) => {
-                console.log('Selected Student:', selectedStudent);
+                //console.log('Selected Student:', selectedStudent);
                 resolve(selectedStudent);
             })
         ]).then(([institutionName, courseName, selectedStudent]) => {
@@ -191,10 +191,9 @@ function StudentBadgeCerts() {
                 total_hours: totalHours,
                 date_completion: dateCompletion
             };
-            console.log('Payload:', payload);
+            //console.log('Payload:', payload);
 
             // Call your API to assign a certificate
-            //fetch(`http://localhost:3000/assign-certificate/${selectedStudent}/${selectedCertTemp}`, {
             fetch(`http://localhost:3000/assign-certificate/${selectedStudent}`, {
                 method: 'POST',
                 headers: {
@@ -252,7 +251,7 @@ function StudentBadgeCerts() {
     */
     const handleSelectChange = async (e) => {
         const selectedId = e.target.value;
-        console.log('Selected ID:', selectedId);
+        //console.log('Selected ID:', selectedId);
         setSelectedCertTemp(selectedId);
 
         if (selectedId) {
@@ -285,16 +284,16 @@ function StudentBadgeCerts() {
 
     const handleStudentChange = (e) => {
         const studentId = e.target.value;
-        console.log('Selected Student ID:', studentId);
+        //console.log('Selected Student ID:', studentId);
 
         // Ensure the studentId is correctly compared to student.id
         const student = students.find(student => student.id.toString() === studentId);
         
         if (student) {
-            console.log('Selected Student:', student.first_name, student.last_name);
+            //console.log('Selected Student:', student.first_name, student.last_name);
             setSelectedStudentName(`${student.first_name} ${student.last_name}`);
         } else {
-            console.log('Student not found');
+            //console.log('Student not found');
             setSelectedStudentName('');
         }
 
@@ -304,15 +303,15 @@ function StudentBadgeCerts() {
     // function to handleInstitutionChange
     const handleInstitutionChange = (e) => {
         const institutionId = e.target.value;
-        console.log('Selected Institution ID:', institutionId);
+        //console.log('Selected Institution ID:', institutionId);
         setSelectedInstitution(institutionId);
         // I need the institution name to display on the certificate
         const institution = institutions.find(inst => inst.id.toString() === institutionId);
         if (institution) {
-            console.log('Selected Institution:', institution.institution_name);
+            //console.log('Selected Institution:', institution.institution_name);
             setInstitutionName(institution.institution_name);
         } else {
-            console.log('Institution not found');
+            //console.log('Institution not found');
             setInstitutionName('');
         }
     };
@@ -320,15 +319,15 @@ function StudentBadgeCerts() {
     // function to handlecoursechange
     const handleCourseChange = (e) => {
         const courseId = e.target.value;
-        console.log('Selected Course ID:', courseId);
+        //console.log('Selected Course ID:', courseId);
         setSelectedCourse(courseId);
         // I need the course name to display on the certificate
         const course = courses.find(c => c.id.toString() === courseId);
         if (course) {
-            console.log('Selected Course:', course.course_name);
+            //console.log('Selected Course:', course.course_name);
             setCourseName(course.course_name);
         } else {
-            console.log('Course not found');
+            //console.log('Course not found');
             setCourseName('');
         }
     };
@@ -336,7 +335,7 @@ function StudentBadgeCerts() {
     const handleViewTemplate = () => {
         // Trigger the rendering of the student text on the image
         if (selectedStudent && selectedImage) {
-            console.log(`handleViewTemplate: ${selectedStudent}`);
+            //console.log(`handleViewTemplate: ${selectedStudent}`);
             // Update the state to show the student's name on the image
             setShowStudentName(true); // You can manage this state if needed
         }

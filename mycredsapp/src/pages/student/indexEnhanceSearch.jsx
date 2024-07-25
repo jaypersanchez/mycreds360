@@ -74,7 +74,7 @@ const Student = () => {
     formData.append('email', email);
     formData.append('mobile_no', mobileNo);
     formData.append('user_photo', userPhoto);
-    console.log(`add student`, formData);
+    //console.log(`add student`, formData);
 
     try {
       const response = await fetch('http://localhost:3000/students/create', {
