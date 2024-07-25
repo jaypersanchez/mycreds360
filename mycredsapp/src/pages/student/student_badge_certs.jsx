@@ -285,22 +285,38 @@ function StudentBadgeCerts() {
 
     const handleStudentChange = (e) => {
         const studentId = e.target.value;
-    console.log('Selected Student ID:', studentId);
+        console.log('Selected Student ID:', studentId);
 
-    // Ensure the studentId is correctly compared to student.id
-    const student = students.find(student => student.id.toString() === studentId);
-    
-    if (student) {
-        console.log('Selected Student:', student.first_name, student.last_name);
-        setSelectedStudentName(`${student.first_name} ${student.last_name}`);
-    } else {
-        console.log('Student not found');
-        setSelectedStudentName('');
-    }
-
-    setSelectedStudent(studentId);
+        // Ensure the studentId is correctly compared to student.id
+        const student = students.find(student => student.id.toString() === studentId);
         
+        if (student) {
+            console.log('Selected Student:', student.first_name, student.last_name);
+            setSelectedStudentName(`${student.first_name} ${student.last_name}`);
+        } else {
+            console.log('Student not found');
+            setSelectedStudentName('');
+        }
+
+        setSelectedStudent(studentId);
     };
+
+    // function to handleInstitutionChange
+    const handleInstitutionChange = (e) => {
+        const institutionId = e.target.value;
+        console.log('Selected Institution ID:', institutionId);
+        setSelectedInstitution(institutionId);
+        // I need the institution name to display on the certificate
+        const institution = institutions.find(inst => inst.id.toString() === institutionId);
+        if (institution) {
+            console.log('Selected Institution:', institution.institution_name);
+            setInstitutionName(institution.institution_name);
+        } else {
+            console.log('Institution not found');
+            setInstitutionName('');
+        }
+    };
+
 
     const handleViewTemplate = () => {
         // Trigger the rendering of the student text on the image
@@ -400,7 +416,7 @@ function StudentBadgeCerts() {
                                         borderRadius: '5px'
                                     }}
                                 >
-                                {selectedInstitution}
+                                {institutionName}
                                 </div>
                                 <div
                                     style={{
@@ -485,10 +501,7 @@ function StudentBadgeCerts() {
                         <select
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             value={selectedInstitution}
-                            onChange={e => { 
-                                console.log('Inst Select value:', e.target.value);
-                                setSelectedInstitution(e.target.value)
-                            }}
+                            onChange={handleInstitutionChange}
                             required
                         >
                             <option value="">Select an Institution</option>
