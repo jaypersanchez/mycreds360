@@ -317,6 +317,21 @@ function StudentBadgeCerts() {
         }
     };
 
+    // function to handlecoursechange
+    const handleCourseChange = (e) => {
+        const courseId = e.target.value;
+        console.log('Selected Course ID:', courseId);
+        setSelectedCourse(courseId);
+        // I need the course name to display on the certificate
+        const course = courses.find(c => c.id.toString() === courseId);
+        if (course) {
+            console.log('Selected Course:', course.course_name);
+            setCourseName(course.course_name);
+        } else {
+            console.log('Course not found');
+            setCourseName('');
+        }
+    };
 
     const handleViewTemplate = () => {
         // Trigger the rendering of the student text on the image
@@ -431,7 +446,7 @@ function StudentBadgeCerts() {
                                         borderRadius: '5px'
                                     }}
                                 >
-                                {selectedCourse}
+                                {courseName}
                                 </div>
                                 <div
                                     style={{
@@ -515,7 +530,7 @@ function StudentBadgeCerts() {
                         <select
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             value={selectedCourse}
-                            onChange={e => setSelectedCourse(e.target.value)}
+                            onChange={handleCourseChange}
                             required
                         >
                             <option value="">Select a Course</option>
