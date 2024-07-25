@@ -132,7 +132,7 @@ function StudentBadgeCerts() {
         fetch('http://localhost:3000/students')
             .then(response => response.json())
             .then(data => {
-                console.log('Students:', data);
+                //console.log('Students:', data);
                 setStudents(data);
             })
             .catch(err => console.error('Error fetching students:', err));
@@ -291,12 +291,8 @@ function StudentBadgeCerts() {
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="mb-6">
-                <h1 className="text-2xl font-semibold mb-4">Student Badge and Certification Assignment</h1>
-                <div className="bg-white shadow-md rounded-lg p-4">
-                    <h2 className="text-lg font-semibold">Student ID: {user.id}</h2>
-                    <p className="text-gray-600">Name: {userData.fullName}</p>
-                    <p className="text-gray-600">Email: {user.email}</p>
-                </div>
+                <h1 className="text-2xl font-semibold mb-4">Student Badge and Certification Issuance</h1>
+                
             </div>
             <div className="border-b border-gray-200">
                 <ul className="flex flex-wrap -mb-px">
@@ -533,50 +529,8 @@ function StudentBadgeCerts() {
                 </button>
             </form>
         </div>
-                        <div className="mt-4">
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
-                                    <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Institution Name
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Course Name
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Total Hours
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Date of Completion
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                    {certifications.map((certification, index) => (
-                                        <tr key={index}>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                <button
-                                                    onClick={() => handleModalOpen(certification)}
-                                                    className="text-blue-600 hover:underline cursor-pointer focus:outline-none"
-                                                >
-                                                    {certification.institution_name}
-                                                </button>
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {certification.course_name}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {certification.total_hours}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {certification.date_completion}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                        {/* Modal Component */}
+                        
+            {/* Modal Component should display*/}
             {selectedCertification && (
                 <CertificationModal
                     certificationId={selectedCertification.id} // Pass the certification ID

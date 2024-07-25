@@ -39,6 +39,19 @@ const Student = () => {
       .catch(err => console.error('Failed to fetch students:', err));
   }, []);
 
+  /*
+  * Get all users
+  */
+  useEffect(() => {
+    fetch('http://localhost:3000/users')
+      .then(response => response.json())
+      .then(users => {
+        setUsers(users);
+        //setFilteredStudents(data); // Initialize filteredStudents with all students
+      })
+      .catch(err => console.error('Failed to fetch students:', err));
+  }, []);
+
   useEffect(() => {
     if (searchTerm.trim() === '') {
       setFilteredStudents(students); // Show all students if search term is empty
@@ -61,6 +74,7 @@ const Student = () => {
     formData.append('email', email);
     formData.append('mobile_no', mobileNo);
     formData.append('user_photo', userPhoto);
+    console.log(`add student`, formData);
 
     try {
       const response = await fetch('http://localhost:3000/students/create', {
@@ -81,7 +95,7 @@ const Student = () => {
   return (
     <div className="container mx-auto px-4">
       <div className="flex flex-col mb-4">
-        <h3 className="text-lg font-semibold">Add New Student</h3>
+        <h3 className="text-lg font-semibold">Create Student Profile</h3>
         <form onSubmit={handleSubmit} className="mt-4">
           <div className="grid grid-cols-2 gap-4 mb-4">
             <select
@@ -91,7 +105,7 @@ const Student = () => {
               required>
               <option value="">Select a User</option>
               {users.map(user => (
-                <option key={user.id} value={user.id}>{user.email}</option>
+                <option key={user.id} value={user.id}>{user.id}-{user.email}</option>
               ))}
             </select>
             <input type="text" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} className="p-2 border rounded-md" required />

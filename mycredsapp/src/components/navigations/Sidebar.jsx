@@ -29,7 +29,7 @@ const navigations = [
   },
   {
     icon: StudentIcon,
-    name: "Student",
+    name: "Student Profile",
     link: "/student",
   },
   {
