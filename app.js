@@ -60,6 +60,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 //app.use(upload.single('logo')); 
 app.use('/images', express.static('uploads'));
+app.use('/uploads/badges', express.static(path.join(__dirname, 'uploads', 'badges')));
 
 
 //helper function to get userprofiles based on user_id
@@ -124,15 +125,25 @@ app.get('/user-profile/:userId', async (req, res) => {
 * This is for the Badges menu item not badges issued to a student.
 */
 app.get('/badge-images', (req, res) => {
-    const directoryPath = path.join(__dirname, 'uploads');
+    const directoryPath = path.join(__dirname, 'uploads', 'badges');
+    
     fs.readdir(directoryPath, (err, files) => {
         if (err) {
             console.error('Error reading directory:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
-        return res.json(files);
+        
+        const badgeImages = files
+            .filter(file => fs.statSync(path.join(directoryPath, file)).isFile())
+            .map(file => ({
+                filename: file,
+                imageUrl: `/uploads/badges/${file}` // Construct URL for badge image
+            }));
+        
+        return res.json(badgeImages);
     });
 });
+
 
 /*
 *   This generates the JSON format of badge and certificate data and will mint as NFT
@@ -1138,16 +1149,65 @@ app.get('/courses/create', (req, res) => {
 
 // This route will generate the badge to be issued to the student
 app.post('/create-student-badge', async (req, res) => {
-    const { course_id, course_name, date_completion, status, reference_id } = req.body;
-    const query = `insert into mycreds360.badges 
-                    (course_id, course_name, date_completion, status, reference_id) 
-                    values(?,?,?,?,?)`;
+    const { course_id, course_name, date_completion, status, reference_id, json_values, nft_value } = req.body;
+
+    const query = `
+        INSERT INTO mycreds360.badges 
+        (course_id, course_name, date_completion, status, reference_id, json_values, nft_value, created_at, updated_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+    `;
+
     db.pool.getConnection((err, connection) => {
         if (err) {
             console.error('Error getting connection from pool:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
-        connection.query(query, [course_id, course_name, date_completion, status, reference_id], (err, results) => {
+
+        connection.query(query, [course_id, course_name, date_completion, status, reference_id, json_values, nft_value], (err, results) => {
+            // Release the connection back to the pool
+            connection.release();
+            if (err) {
+                console.error('Error executing query:', err);
+                return res.status(500).json({ error: `Internal server error ${err}` });
+            }
+            return res.json({ results });
+        });
+    });
+});
+
+
+// This route will generate the badge to be issued to the student
+app.post('/createbadge', upload.single('badge'),async (req, res) => {
+    const badgesDir = path.join(__dirname, 'uploads', 'badges');
+    if (!fs.existsSync(badgesDir)) {
+        fs.mkdirSync(badgesDir, { recursive: true });
+    }
+    // I need to get from req.body the course name, description and the image file 
+    const { course_name, description } = req.body;
+    const badgeFile = req.file;
+
+    if (!badgeFile) {
+        return res.status(400).json({ error: 'No badge file uploaded' });
+    }
+    //console.log(course_name, description)
+    // Construct the new file path
+    const oldPath = badgeFile.path;
+    const newPath = path.join(badgesDir, badgeFile.originalname);
+    
+    fs.rename(oldPath, newPath, (err) => {
+        if (err) {
+            console.error('Error moving file:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+    db.pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error getting connection from pool:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+        const query = `insert into courses 
+                        (course_name, description, badge) 
+                        values(?,?,?)`
+        connection.query(query, [course_name, description, `/uploads/badges/${badgeFile.originalname}`], (err, results) => {
             // Release the connection back to the pool
             connection.release();
             if (err) { 
@@ -1157,34 +1217,6 @@ app.post('/create-student-badge', async (req, res) => {
             return res.json({results})
         });
     });
-});
-
-// This route will generate the badge to be issued to the student
-app.post('/createbadge', upload.single('badge'),async (req, res) => {
-    // I need to get from req.body the course name, description and the image file 
-    const { course_name, description } = req.body;
-    const badge = req.file ? req.file.path : ''; // Assuming req.file contains the uploaded file information
-    //console.log(req.file);  // Check if the file is being received
-    //console.log(req.body);  // Log the body to see all form data
-    console.log(course_name, description)
-    
-    db.pool.getConnection((err, connection) => {
-        if (err) {
-            console.error('Error getting connection from pool:', err);
-            return res.status(500).json({ error: 'Internal server error' });
-        }
-        const query = `insert into courses 
-                        (course_name, description, badge) 
-                        values(?,?,?)`
-        connection.query(query, [course_name, description, badge], (err, results) => {
-            // Release the connection back to the pool
-            connection.release();
-            if (err) { 
-                console.error('Error executing query:', err);
-                return res.status(500).json({ error: `Internal server error ${err}` });
-            }
-            return res.json({results})
-        });
     });
 });
 

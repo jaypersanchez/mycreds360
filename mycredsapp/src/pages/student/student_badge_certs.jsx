@@ -36,6 +36,12 @@ function StudentBadgeCerts() {
     const [selectedStudent, setSelectedStudent] = useState('');
     const [selectedStudentName, setSelectedStudentName] = useState('');
     const [showStudentName, setShowStudentName] = useState(false);
+    const [success, setSuccess] = useState('');
+    const [badgecourseId, setBadgeCourseId] = useState('');
+    const [referenceId, setReferenceId] = useState('');
+    const [jsonValues, setJsonValues] = useState('');
+    const [nftValue, setNftValue] = useState('');
+    const [badgeselectedStudentId, setBadgeSelectedStudentId] = useState('');
 
     // Assume user data is stored as a JSON string
     const user = JSON.parse(sessionStorage.getItem('user')) || {};
@@ -367,9 +373,115 @@ function StudentBadgeCerts() {
                 {activeTab === 'badge' ? (
                     <div>
                         <h3 className="text-lg font-semibold">Badge Details</h3>
-                        {/* Content for Badge */}
+                                    {/* Content for Badge */}
+                                    <form onSubmit={handleSubmit} className="mt-4">
+
+                                    <div className="mb-4">
+    <label htmlFor="studentId" className="block text-sm font-medium text-gray-700">Student</label>
+    <select
+        id="studentId"
+        value={badgeselectedStudentId}  // Add state for selected student
+        onChange={(e) => setBadgeSelectedStudentId(e.target.value)}
+        className="mt-1 block w-full text-sm text-gray-500 border border-gray-300 rounded-md shadow-sm"
+        required
+    >
+        <option value="">Select a student</option>
+        {students.map(student => (
+            <option key={student.id} value={student.id}>
+                {student.id} - {student.first_name} {student.last_name}
+            </option>
+        ))}
+    </select>
+</div>
+                <div className="mb-4">
+                    <label htmlFor="courseName" className="block text-sm font-medium text-gray-700">Course Name</label>
+                    <select
+                        id="courseId"
+                        value={badgecourseId}
+                        onChange={(e) => setBadgeCourseId(e.target.value)}
+                        className="mt-1 block w-full text-sm text-gray-500 border border-gray-300 rounded-md shadow-sm"
+                        required
+                    >
+                        <option value="">Select a course</option>
+                        {courses.map(course => (
+                            <option key={course.id} value={course.id}>
+                                {course.id} - {course.course_name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="mb-4">
+                    <label htmlFor="dateCompletion" className="block text-sm font-medium text-gray-700">Date of Completion</label>
+                    <input
+                        type="date"
+                        id="dateCompletion"
+                        value={dateCompletion}
+                        onChange={(e) => setDateCompletion(e.target.value)}
+                        className="mt-1 block w-full text-sm text-gray-500 border border-gray-300 rounded-md shadow-sm"
+                        required
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <label htmlFor="status" className="block text-sm font-medium text-gray-700">Status</label>
+                    <input
+                        type="text"
+                        id="status"
+                        value={status}
+                        onChange={(e) => setStatus(e.target.value)}
+                        className="mt-1 block w-full text-sm text-gray-500 border border-gray-300 rounded-md shadow-sm"
+                        required
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <label htmlFor="referenceId" className="block text-sm font-medium text-gray-700">Reference ID</label>
+                    <input
+                        type="text"
+                        id="referenceId"
+                        value={referenceId}
+                        onChange={(e) => setReferenceId(e.target.value)}
+                        className="mt-1 block w-full text-sm text-gray-500 border border-gray-300 rounded-md shadow-sm"
+                        required
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <label htmlFor="jsonValues" className="block text-sm font-medium text-gray-700">JSON Values</label>
+                    <textarea
+                        id="jsonValues"
+                        value={jsonValues}
+                        onChange={(e) => setJsonValues(e.target.value)}
+                        className="mt-1 block w-full text-sm text-gray-500 border border-gray-300 rounded-md shadow-sm"
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <label htmlFor="nftValue" className="block text-sm font-medium text-gray-700">NFT Value</label>
+                    <input
+                        type="text"
+                        id="nftValue"
+                        value={nftValue}
+                        onChange={(e) => setNftValue(e.target.value)}
+                        className="mt-1 block w-full text-sm text-gray-500 border border-gray-300 rounded-md shadow-sm"
+                    />
+                </div>
+
+                <button
+                    type="submit"
+                    className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                    Issue Badge
+                </button>
+
+                {error && <p className="text-red-500 mt-4">{error}</p>}
+                {success && <p className="text-green-500 mt-4">{success}</p>}
+            </form>
+
                     </div>
                 ) : (
+                    
                     <div>
                         {/* Certificate Details */}
                         {error && <p className="text-red-500">{error}</p>}
