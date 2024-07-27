@@ -1149,12 +1149,12 @@ app.get('/courses/create', (req, res) => {
 
 // This route will generate the badge to be issued to the student
 app.post('/create-student-badge', async (req, res) => {
-    const { course_id, course_name, date_completion, status, reference_id, json_values, nft_value } = req.body;
+    const { student_id, course_id, course_name, date_completion } = req.body;
 
     const query = `
         INSERT INTO mycreds360.badges 
-        (course_id, course_name, date_completion, status, reference_id, json_values, nft_value, created_at, updated_at) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+        (student_id, course_id, course_name, date_completion, created_at, updated_at) 
+        VALUES (?, ?, ?, ?, NOW(), NOW())
     `;
 
     db.pool.getConnection((err, connection) => {
@@ -1163,7 +1163,7 @@ app.post('/create-student-badge', async (req, res) => {
             return res.status(500).json({ error: 'Internal server error' });
         }
 
-        connection.query(query, [course_id, course_name, date_completion, status, reference_id, json_values, nft_value], (err, results) => {
+        connection.query(query, [course_id, course_name, date_completion], (err, results) => {
             // Release the connection back to the pool
             connection.release();
             if (err) {

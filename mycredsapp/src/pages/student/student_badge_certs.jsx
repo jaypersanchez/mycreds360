@@ -142,8 +142,14 @@ function StudentBadgeCerts() {
         fetch('http://localhost:3000/students')
             .then(response => response.json())
             .then(data => {
-                //console.log('Students:', data);
-                setStudents(data);
+                // Sort students by last name
+                const sortedStudents = data.sort((a, b) => {
+                    if (a.last_name < b.last_name) return -1;
+                    if (a.last_name > b.last_name) return 1;
+                    return 0;
+                });
+                console.log(`Students: ${sortedStudents}`);
+                    setStudents(data);
             })
             .catch(err => console.error('Error fetching students:', err));
     }, []);
@@ -220,6 +226,41 @@ function StudentBadgeCerts() {
         
     };
     
+    const handleSubmitStudentBadge = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch('http://localhost:3000/create-student-badge', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    student_id: badgeSelectedStudentId,
+                    course_id: badgeCourseId,
+                    course_name: courses.find(course => course.id === badgeCourseId)?.course_name || '',
+                    date_completion: dateCompletion,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setSuccess('Badge issued successfully!');
+                setError('');
+                // Clear form or reset states if needed
+                setBadgeSelectedStudentId('');
+                setBadgeCourseId('');
+                setDateCompletion('');
+            } else {
+                setSuccess('');
+                setError(data.error || 'Failed to issue badge');
+            }
+        } catch (error) {
+            setSuccess('');
+            setError('An unexpected error occurred.');
+        }
+    };
+
     const handleModalOpen = (certification) => {
         setSelectedCertification(certification);
         setModalOpen(true);
@@ -420,51 +461,6 @@ function StudentBadgeCerts() {
                         onChange={(e) => setDateCompletion(e.target.value)}
                         className="mt-1 block w-full text-sm text-gray-500 border border-gray-300 rounded-md shadow-sm"
                         required
-                    />
-                </div>
-
-                <div className="mb-4">
-                    <label htmlFor="status" className="block text-sm font-medium text-gray-700">Status</label>
-                    <input
-                        type="text"
-                        id="status"
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value)}
-                        className="mt-1 block w-full text-sm text-gray-500 border border-gray-300 rounded-md shadow-sm"
-                        required
-                    />
-                </div>
-
-                <div className="mb-4">
-                    <label htmlFor="referenceId" className="block text-sm font-medium text-gray-700">Reference ID</label>
-                    <input
-                        type="text"
-                        id="referenceId"
-                        value={referenceId}
-                        onChange={(e) => setReferenceId(e.target.value)}
-                        className="mt-1 block w-full text-sm text-gray-500 border border-gray-300 rounded-md shadow-sm"
-                        required
-                    />
-                </div>
-
-                <div className="mb-4">
-                    <label htmlFor="jsonValues" className="block text-sm font-medium text-gray-700">JSON Values</label>
-                    <textarea
-                        id="jsonValues"
-                        value={jsonValues}
-                        onChange={(e) => setJsonValues(e.target.value)}
-                        className="mt-1 block w-full text-sm text-gray-500 border border-gray-300 rounded-md shadow-sm"
-                    />
-                </div>
-
-                <div className="mb-4">
-                    <label htmlFor="nftValue" className="block text-sm font-medium text-gray-700">NFT Value</label>
-                    <input
-                        type="text"
-                        id="nftValue"
-                        value={nftValue}
-                        onChange={(e) => setNftValue(e.target.value)}
-                        className="mt-1 block w-full text-sm text-gray-500 border border-gray-300 rounded-md shadow-sm"
                     />
                 </div>
 
