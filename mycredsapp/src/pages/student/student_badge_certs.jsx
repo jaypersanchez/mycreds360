@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
 import CertificationModal from './CertificationModal.jsx';
-
+import BadgeIssuance from './BadgeIssuance.jsx';
 
 function StudentBadgeCerts() {
     const navigate = useNavigate(); // Hook for navigation
@@ -42,6 +42,8 @@ function StudentBadgeCerts() {
     const [jsonValues, setJsonValues] = useState('');
     const [nftValue, setNftValue] = useState('');
     const [badgeselectedStudentId, setBadgeSelectedStudentId] = useState('');
+    const [badgeCourseName, setBadgeCourseName] = useState('');
+    
 
     // Assume user data is stored as a JSON string
     const user = JSON.parse(sessionStorage.getItem('user')) || {};
@@ -228,6 +230,7 @@ function StudentBadgeCerts() {
     
     const handleSubmitStudentBadge = async (e) => {
         e.preventDefault();
+        console.log(badgeselectedStudentId, badgecourseId, badgeCourseName, dateCompletion);
         try {
             const response = await fetch('http://localhost:3000/create-student-badge', {
                 method: 'POST',
@@ -235,9 +238,9 @@ function StudentBadgeCerts() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    student_id: badgeSelectedStudentId,
-                    course_id: badgeCourseId,
-                    course_name: courses.find(course => course.id === badgeCourseId)?.course_name || '',
+                    student_id: badgeselectedStudentId, 
+                    course_id: badgecourseId,
+                    course_name: badgeCourseName,
                     date_completion: dateCompletion,
                 }),
             });
@@ -415,38 +418,50 @@ function StudentBadgeCerts() {
                     <div>
                         <h3 className="text-lg font-semibold">Badge Details</h3>
                                     {/* Content for Badge */}
-                                    <form onSubmit={handleSubmit} className="mt-4">
+                                    <form onSubmit={handleSubmitStudentBadge} className="mt-4">
 
-                                    <div className="mb-4">
-    <label htmlFor="studentId" className="block text-sm font-medium text-gray-700">Student</label>
-    <select
-        id="studentId"
-        value={badgeselectedStudentId}  // Add state for selected student
-        onChange={(e) => setBadgeSelectedStudentId(e.target.value)}
-        className="mt-1 block w-full text-sm text-gray-500 border border-gray-300 rounded-md shadow-sm"
-        required
-    >
-        <option value="">Select a student</option>
-        {students.map(student => (
-            <option key={student.id} value={student.id}>
-                {student.id} - {student.first_name} {student.last_name}
-            </option>
-        ))}
-    </select>
-</div>
+                    <div className="mb-4">
+                        <label htmlFor="studentId" className="block text-sm font-medium text-gray-700">Student</label>
+                        <select
+                            id="studentId"
+                            value={badgeselectedStudentId}  // Add state for selected student
+                            onChange={(e) => {
+                                const fullValue = e.target.value;
+                                const [studentId] = fullValue.split(' - '); // Split the string and take the first part
+                                setBadgeSelectedStudentId(studentId);
+                            }}
+                            className="mt-1 block w-full text-sm text-gray-500 border border-gray-300 rounded-md shadow-sm"
+                            required
+                        >
+                            <option value="">Select a student</option>
+                            {students.map(student => (
+                                <option key={student.id} value={student.id}>
+                                    {student.id} - {student.first_name} {student.last_name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 <div className="mb-4">
                     <label htmlFor="courseName" className="block text-sm font-medium text-gray-700">Course Name</label>
                     <select
                         id="courseId"
                         value={badgecourseId}
-                        onChange={(e) => setBadgeCourseId(e.target.value)}
+                        onChange={(e) => { 
+                            const fullValue = e.target.value;
+                            console.log('fullValue:', fullValue); // Debugging output
+                            const [courseId, courseName] = fullValue.split('-').map(str => str.trim());
+                            console.log('courseId:', courseId); // Debugging output
+                            console.log('courseName:', courseName); // Debugging output
+                            setBadgeCourseId(courseId);
+                            setBadgeCourseName(courseName);
+                        }}
                         className="mt-1 block w-full text-sm text-gray-500 border border-gray-300 rounded-md shadow-sm"
                         required
                     >
                         <option value="">Select a course</option>
                         {courses.map(course => (
-                            <option key={course.id} value={course.id}>
-                                {course.id} - {course.course_name}
+                            <option key={course.id} value={`${course.id}-${course.course_name}`}>
+                                {course.id}-{course.course_name}
                             </option>
                         ))}
                     </select>
