@@ -34,7 +34,10 @@ export default function Badge() {
   useEffect(() => {
     fetch('http://localhost:3000/badge-images')
       .then(response => response.json())
-      .then(data => setBadges(data))
+      .then(data => { 
+        console.log("Fetched badge images: ",data)
+        setBadges(data)
+      })
       .catch(error => setError('Error fetching badges: ' + error.message));
   }, []);
 
@@ -113,42 +116,47 @@ export default function Badge() {
       </form>
       {/* Badge images table */}
       <div className="mt-6">
-        <h3 className="text-lg font-semibold">Badge Images</h3>
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
-              
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {currentBadges.map((badge, index) => (
-              <tr key={index}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <img src={badge.imageUrl} alt="Badge" className="h-10 w-10 rounded-full" />
-                </td>
-                
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <div className="py-4 flex justify-center">
-          <nav className="block">
-            <ul className="flex pl-0 rounded list-none flex-wrap">
-              {Array.from({ length: Math.ceil(badges.length / badgesPerPage) }, (_, i) => (
-                <li key={i + 1}>
-                  <button
-                    onClick={() => paginate(i + 1)}
-                    className={`first:ml-0 text-xs font-semibold flex w-full px-4 py-2 leading-tight bg-white border border-gray-300 rounded-md hover:bg-gray-100 ${currentPage === i + 1 ? 'bg-gray-100' : ''}`}
-                  >
-                    {i + 1}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </div>
-      </div>
+  <h3 className="text-lg font-semibold">Badge Images</h3>
+  <table className="min-w-full divide-y divide-gray-200">
+    <thead className="bg-gray-50">
+      <tr>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
+      </tr>
+    </thead>
+    <tbody className="bg-white divide-y divide-gray-200">
+      {currentBadges.length ? (
+        currentBadges.map((badge, index) => (
+          <tr key={index}>
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              <img src={badge.imageUrl} alt={`Badge ${index}`} className="h-10 w-10 rounded-full" />
+            </td>
+          </tr>
+        ))
+      ) : (
+        <tr>
+          <td colSpan="1" className="px-6 py-4 text-center text-sm text-gray-500">No badges available</td>
+        </tr>
+      )}
+    </tbody>
+  </table>
+  <div className="py-4 flex justify-center">
+    <nav className="block">
+      <ul className="flex pl-0 rounded list-none flex-wrap">
+        {Array.from({ length: Math.ceil(badges.length / badgesPerPage) }, (_, i) => (
+          <li key={i + 1}>
+            <button
+              onClick={() => paginate(i + 1)}
+              className={`first:ml-0 text-xs font-semibold flex w-full px-4 py-2 leading-tight bg-white border border-gray-300 rounded-md hover:bg-gray-100 ${currentPage === i + 1 ? 'bg-gray-100' : ''}`}
+            >
+              {i + 1}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</div>
+
     </div>
   );
 }
