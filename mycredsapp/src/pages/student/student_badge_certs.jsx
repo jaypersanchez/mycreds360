@@ -445,11 +445,11 @@ function StudentBadgeCerts() {
                     <label htmlFor="courseName" className="block text-sm font-medium text-gray-700">Course Name</label>
                     <select
                         id="courseId"
-                        value={badgecourseId}
+                        value={`${badgecourseId} | ${badgeCourseName}`}
                         onChange={(e) => { 
                             const fullValue = e.target.value;
                             console.log('fullValue:', fullValue); // Debugging output
-                            const [courseId, courseName] = fullValue.split('-').map(str => str.trim());
+                            const [courseId, courseName] = fullValue.split('|').map(str => str.trim());
                             console.log('courseId:', courseId); // Debugging output
                             console.log('courseName:', courseName); // Debugging output
                             setBadgeCourseId(courseId);
@@ -460,7 +460,7 @@ function StudentBadgeCerts() {
                     >
                         <option value="">Select a course</option>
                         {courses.map(course => (
-                            <option key={course.id} value={`${course.id}-${course.course_name}`}>
+                            <option key={course.id} value={`${course.id} | ${course.course_name}`}>
                                 {course.id}-{course.course_name}
                             </option>
                         ))}

@@ -63,9 +63,9 @@ const BadgeIssuance = ({
           </label>
           <select
             id="courseId"
-            value={`${badgecourseId} - ${badgeCourseName}`}
+            value={badgecourseId}
             onChange={(e) => {
-              const [courseId, courseName] = e.target.value.split(' - ');
+              const [courseId, courseName] = e.target.value.split('-').map(str => str.trim());
               setBadgeCourseId(courseId);
               setBadgeCourseName(courseName);
             }}
@@ -74,8 +74,8 @@ const BadgeIssuance = ({
           >
             <option value="">Select a course</option>
             {courses.map((course) => (
-              <option key={course.id} value={`${course.id} - ${course.course_name}`}>
-                {course.id} - {course.course_name}
+              <option key={course.id} value={`${course.id}-${course.course_name}`}>
+                {course.id}-{course.course_name}
               </option>
             ))}
           </select>
