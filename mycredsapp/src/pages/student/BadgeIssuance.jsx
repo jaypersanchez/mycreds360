@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 const BadgeIssuance = ({
   students,
   courses,
-  handleSubmitStudentBadge,
   error,
   success,
 }) => {
@@ -12,29 +11,47 @@ const BadgeIssuance = ({
   const [badgeCourseName, setBadgeCourseName] = useState('');
   const [dateCompletion, setDateCompletion] = useState('');
 
-  // This useEffect can be used to handle side effects or reset form states if needed.
-  useEffect(() => {
-    // Example: Reset fields if needed
-    // setBadgeSelectedStudentId('');
-    // setBadgeCourseId('');
-    // setBadgeCourseName('');
-    // setDateCompletion('');
-  }, [students, courses]);
 
-  const handleFormSubmit = (e) => {
+  const handleSubmitStudentBadge = async (e) => {
     e.preventDefault();
-    handleSubmitStudentBadge({
-      studentId: badgeselectedStudentId,
-      courseId: badgecourseId,
-      courseName: badgeCourseName,
-      dateCompletion,
-    });
-  };
+    console.log(badgeselectedStudentId, badgecourseId, badgeCourseName, dateCompletion);
+    try {
+        const response = await fetch('http://localhost:3000/create-student-badge', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                student_id: badgeselectedStudentId, 
+                course_id: badgecourseId,
+                course_name: badgeCourseName,
+                date_completion: dateCompletion,
+            }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            setSuccess('Badge issued successfully!');
+            setError('');
+            // Clear form or reset states if needed
+            setBadgeSelectedStudentId('');
+            setBadgeCourseId('');
+            setDateCompletion('');
+        } else {
+            setSuccess('');
+            setError(data.error || 'Failed to issue badge');
+        }
+    } catch (error) {
+        setSuccess('');
+        setError('An unexpected error occurred.');
+    }
+};
 
   return (
     <div>
       <h3 className="text-lg font-semibold">Badge Details</h3>
-      <form onSubmit={handleFormSubmit} className="mt-4">
+      <form onSubmit={handleSubmitStudentBadge} className="mt-4">
         <div className="mb-4">
           <label htmlFor="studentId" className="block text-sm font-medium text-gray-700">
             Student
