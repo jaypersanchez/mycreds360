@@ -634,9 +634,14 @@ function StudentBadgeCerts() {
                             required
                         >
                             <option value="">Select a Student</option>
-                            {students.map(student => (
-                                <option key={student.id} value={student.id}>{student.first_name} {student.last_name}</option>
-                            ))}
+                            {students
+                                .sort((a, b) => a.last_name.localeCompare(b.last_name)) // Sort by last_name
+                                .map(student => (
+                                <option key={student.id} value={student.id}>
+                                    {student.first_name} {student.last_name}
+                                </option>
+                                ))
+                            }
                         </select>   
                     </div>
                     <div>
@@ -648,7 +653,9 @@ function StudentBadgeCerts() {
                             required
                         >
                             <option value="">Select an Institution</option>
-                            {institutions.map(inst => (
+                            {institutions
+                                .sort((a, b) => a.institution_name.localeCompare(b.institution_name)) // Sort by institution_name
+                                .map(inst => (
                                 <option key={inst.id} value={inst.id}>{inst.id}-{inst.institution_name}</option>
                             ))}
                         </select>
@@ -662,7 +669,9 @@ function StudentBadgeCerts() {
                             required
                         >
                             <option value="">Select a Course</option>
-                            {courses.map(course => (
+                            {courses
+                                .sort((a, b) => a.course_name.localeCompare(b.course_name)) // Sort by course_name
+                                .map(course => (
                                 <option key={course.id} value={course.id}>{course.course_name}</option>
                             ))}
                         </select>
