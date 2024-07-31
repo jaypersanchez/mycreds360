@@ -9,7 +9,7 @@ module.exports = {
         },
         amoy: {
             url: "https://polygon-amoy.g.alchemy.com/v2/zNwC9QKnfrFM0NraJfhrBg8MuuJ3hABG",
-            accounts: ['e47b4da7de6bf4dd0e87e8fa8d3027a76307342adadd8e6cf341a061369acdae'], // Replace with your wallet's private key
+            accounts: ['0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'], // Replace with your wallet's private key
             gasPrice: 1000000000, // 1 Gwei
             gas: 500000 // Example gas limit
           }

@@ -31,6 +31,7 @@ const stripe = require('stripe')('your_stripe_secret_key');
 const ethers = require('ethers');
 const mycredsABI = require('./nft_mycreds360/artifacts/contracts/MyCredsNFT.sol/MyCredsNFT.json').abi;
 const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
+const wallet_address = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
 const privateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' 
 const providerUrl = 'http://127.0.0.1:8545'
 const crypto = require('crypto');
@@ -220,7 +221,7 @@ app.post('/assign-certificate/:student_id', async (req, res) => {
 
         // Serialize certificate badge object
         const badgeDataString = JSON.stringify(certificate_badgev3);
-        //console.log(badgeDataString);
+        console.log(badgeDataString);
         
         // generation of token id to be hashed need to change to the actual format according to Bryant.
         const generatedtokenId = student_id + "-" + institution_id + "-" + course_id + "-" + Math.floor(Math.random() * 1000) + 1;
@@ -231,7 +232,7 @@ app.post('/assign-certificate/:student_id', async (req, res) => {
         // this tokenid is the token id used for NFT.
         const tokenId = BigInt('0x' + hashedtokenId)
         console.log(`hash tokenId ${hashedtokenId, tokenId}`)
-        const tokenURI = `http://localhost:3000/nft-cert/${tokenId}`;
+        /*const tokenURI = `http://localhost:3000/nft-cert/${tokenId}`;
         const transactionHash = await certificatetoNFT(badgeDataString,tokenId,tokenURI)
         const nft_value = {
             tx: transactionHash, 
@@ -262,16 +263,13 @@ app.post('/assign-certificate/:student_id', async (req, res) => {
                 
                 res.json({ message: 'Certificate assigned successfully', results });
             });
-        });
+        });*/
    
 });
 
 // This function mints an NFT using the badge data
 async function certificatetoNFT(badgeDataString, tokenId,tokenURI) {
-    // these are all hardhat values
-    /*const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
-    const privateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' 
-    const providerUrl = 'http://127.0.0.1:8545'*/
+    
     // Initialize a provider
     const provider = new ethers.JsonRpcProvider(providerUrl);
 

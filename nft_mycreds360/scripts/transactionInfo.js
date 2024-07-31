@@ -2,10 +2,11 @@ const { ethers } = require("hardhat");
 
 async function main() {
   // Replace this with your transaction hash
-  const txHash = "0x23531e3174e73f77482709593effec315fe4c9e61ca35989695cb382e038051d";
+  const txHash = "0xb450a31755288f11d7a575fac74b20c4a62705ca56a5ff97333432a52150406c";
 
   // Get the provider
-  const provider = ethers.getDefaultProvider();
+  //const provider = ethers.getDefaultProvider();
+  const provider = new ethers.providers.JsonRpcProvider("http://localhost:8545");
 
   // Fetch the transaction receipt
   const txReceipt = await provider.getTransactionReceipt(txHash);

@@ -708,13 +708,7 @@ function StudentBadgeCerts() {
                     </div>
                 </div>
                 <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700">Assign Certificate</button>
-                <button 
-                    type="button" 
-                    className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-700"
-                    onClick={handleViewTemplate}
-                >
-                    View Template
-                </button>
+                
             </form>
         </div>
                         
