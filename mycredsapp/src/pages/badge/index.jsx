@@ -9,12 +9,12 @@ export default function Badge() {
   const [error, setError] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [badgesPerPage] = useState(10);  // Set how many badges per page
-
+  const apiUrl = `http://localhost:3000`;
   useEffect(() => {
     const user = JSON.parse(sessionStorage.getItem('user'));
     // I need to direct the user back to http://localhost:3000/login if they are not logged in
     if (!user) {
-      window.location.href = 'http://localhost:5173/auth';
+      window.location.href = `http://localhost:5173/auth`;
     }
     // Assuming the user object includes the user's first name and last name  
     //setUser(user);
@@ -25,14 +25,14 @@ export default function Badge() {
   
   // Fetch courses on component mount
   useEffect(() => {
-    fetch('http://localhost:3000/newcourses')
+    fetch(`http://localhost:3000/newcourses`)
       .then(response => response.json())
       .then(data => setCourses(data))
       .catch(error => setError(error.message));
   }, []);
 
   useEffect(() => {
-    fetch('http://localhost:3000/badge-images')
+    fetch(`${apiUrl}/badge-images`)
       .then(response => response.json())
       .then(data => { 
         console.log("Fetched badge images: ",data)
@@ -50,7 +50,7 @@ export default function Badge() {
     formData.append('description', description);
     formData.append('badge', fileImage);
 
-    fetch('http://localhost:3000/createbadge', {
+    fetch(`http://localhost:3000/createbadge`, {
       method: 'POST',
       body: formData,
     })

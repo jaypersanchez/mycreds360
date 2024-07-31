@@ -171,7 +171,7 @@ function StudentBadgeCerts() {
             // Promise to get institution name
             new Promise((resolve) => {
                 const institution = institutions.find(inst => inst.id === institutions[selectedInstitution].institution_name);
-                //console.log('Found Institution:', institutions[selectedInstitution].institution_name);
+                console.log('Found Institution:', institutions[selectedInstitution].institution_name);
                 setInstitutionName(institutions[selectedInstitution].institution_name)
                 resolve(institutionName);
             }),
@@ -434,11 +434,14 @@ function StudentBadgeCerts() {
                             required
                         >
                             <option value="">Select a student</option>
-                            {students.map(student => (
+                            {students
+                                .sort((a, b) => a.last_name.localeCompare(b.last_name)) // Sort by last_name
+                                .map(student => (
                                 <option key={student.id} value={student.id}>
                                     {student.id} - {student.first_name} {student.last_name}
                                 </option>
-                            ))}
+                                ))
+                            }
                         </select>
                     </div>
                 <div className="mb-4">
@@ -459,11 +462,14 @@ function StudentBadgeCerts() {
                         required
                     >
                         <option value="">Select a course</option>
-                        {courses.map(course => (
+                        {courses
+                            .sort((a, b) => a.course_name.localeCompare(b.course_name)) // Sort by course_name
+                            .map(course => (
                             <option key={course.id} value={`${course.id} | ${course.course_name}`}>
-                                {course.id}-{course.course_name}
+                                {course.id} - {course.course_name}
                             </option>
-                        ))}
+                            ))
+                        }
                     </select>
                 </div>
 
@@ -643,7 +649,7 @@ function StudentBadgeCerts() {
                         >
                             <option value="">Select an Institution</option>
                             {institutions.map(inst => (
-                                <option key={inst.id} value={inst.id}>{inst.institution_name}</option>
+                                <option key={inst.id} value={inst.id}>{inst.id}-{inst.institution_name}</option>
                             ))}
                         </select>
                     </div>

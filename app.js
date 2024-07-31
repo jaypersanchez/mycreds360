@@ -31,6 +31,8 @@ const stripe = require('stripe')('your_stripe_secret_key');
 const ethers = require('ethers');
 const mycredsABI = require('./nft_mycreds360/artifacts/contracts/MyCredsNFT.sol/MyCredsNFT.json').abi;
 const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
+const privateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' 
+const providerUrl = 'http://127.0.0.1:8545'
 const crypto = require('crypto');
 
 
@@ -230,7 +232,7 @@ app.post('/assign-certificate/:student_id', async (req, res) => {
         const tokenId = BigInt('0x' + hashedtokenId)
         console.log(`hash tokenId ${hashedtokenId, tokenId}`)
         const tokenURI = `http://localhost:3000/nft-cert/${tokenId}`;
-        const transactionHash = await certificatetoNFT(badgeDataString,tokenId,tokenURI) //certificatetoNFT(badgeDataString);
+        const transactionHash = await certificatetoNFT(badgeDataString,tokenId,tokenURI)
         const nft_value = {
             tx: transactionHash, 
             generatedtokenid: generatedtokenId,
@@ -239,10 +241,12 @@ app.post('/assign-certificate/:student_id', async (req, res) => {
             tokenuri: tokenURI
         };
        
+        console.log(`\n\nnft_value: ${JSON.stringify(nft_value)}\n\n`);
+
         // Insert certificate into the database
         const assigncertificatequery = 
             `insert into assign_certificate (user_id, institution_name, course_name, total_hours, date_completion, json_values, nft_value,tokenURI,txhash,tokenid) values(?,?,?,?,?,?,?,?,?,?)`;
-        console.log(`nft_value ${JSON.stringify(nft_value)}`)
+        console.log(`\n\nnft_value ${JSON.stringify(nft_value)}\n\n`)
 
         db.pool.getConnection((err, connection) => {
             if (err) {
@@ -265,11 +269,11 @@ app.post('/assign-certificate/:student_id', async (req, res) => {
 // This function mints an NFT using the badge data
 async function certificatetoNFT(badgeDataString, tokenId,tokenURI) {
     // these are all hardhat values
-    //const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
+    /*const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
     const privateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' 
-    const providerUrl = 'http://127.0.0.1:8545'
+    const providerUrl = 'http://127.0.0.1:8545'*/
     // Initialize a provider
-    const provider = new ethers.JsonRpcProvider('http://127.0.0.1:8545');
+    const provider = new ethers.JsonRpcProvider(providerUrl);
 
     // Create a wallet instance using the private key and provider
     const wallet = new ethers.Wallet(privateKey, provider);
@@ -461,10 +465,11 @@ app.post('/upload-metadata', async (req, res) => {
 app.get('/nft-cert/:tokenId', async (req, res) => {
     const tokenId = parseInt(req.params.tokenId);
     const bigTokenId = BigInt(tokenId);
-    const privateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' 
+    /*const privateKey = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80' 
     const providerUrl = 'http://127.0.0.1:8545'
+    const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3'*/
     // Initialize a provider
-    const provider = new ethers.JsonRpcProvider('http://localhost:8545');   
+    const provider = new ethers.JsonRpcProvider(providerUrl);   
     // Create a wallet instance using the private key and provider
     const wallet = new ethers.Wallet(privateKey, provider);
     // Create a contract instance connected to your wallet

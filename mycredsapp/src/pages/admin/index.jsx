@@ -16,7 +16,7 @@ export default function Admin() {
     const user = JSON.parse(sessionStorage.getItem('user'));
     // I need to direct the user back to http://localhost:3000/login if they are not logged in
     if (!user) {
-      window.location.href = 'http://localhost:5173/auth';
+      window.location.href = `http://localhost:3000/auth` //'http://localhost:5173/auth';
     }
     // Assuming the user object includes the user's first name and last name  
     //setUser(user);
@@ -26,7 +26,8 @@ export default function Admin() {
   }, []);
 
   useEffect(() => {
-    fetch('http://localhost:3000/users')
+    //fetch('http://localhost:3000/users')
+    fetch(`http://localhost:3000/users`)
       .then(response => response.json())
       .then(data => {
         setUsers(data);
@@ -66,7 +67,7 @@ export default function Admin() {
   const handleNewUser = async (event) => {
       event.preventDefault();
       try {
-          const response = await fetch('http://localhost:3000/account/new', {
+          const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/account/new`, {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json'
