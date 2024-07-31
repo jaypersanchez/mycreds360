@@ -67,7 +67,8 @@ export default function Admin() {
   const handleNewUser = async (event) => {
       event.preventDefault();
       try {
-          const response = await fetch(`${process.env.REACT_APP_SERVER_BASE_URL}/account/new`, {
+          console.log(`New User: ${email}, ${password}, ${roleUser}`);
+          const response = await fetch(`http://localhost:3000/account/new`, {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json'

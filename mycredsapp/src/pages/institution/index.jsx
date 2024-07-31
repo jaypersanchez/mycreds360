@@ -121,7 +121,7 @@ export default function Institution() {
                       Institution Name
                     </th>
                     <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Signature
+                      Institution Website
                     </th>
                   </tr>
                 </thead>
@@ -129,13 +129,13 @@ export default function Institution() {
                   {currentInstitutions.map((institution) => (
                     <tr key={institution.id}>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <img className="h-10 w-10 rounded-full" src={institution.logo} alt="Institution Logo" />
+                        <img className="h-10 w-10 rounded-full" src={institution.logo} alt="Logo" />
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {institution.institution_name}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <img className="h-10 w-auto" src={institution.signature} alt="Institution Signature" />
+                        {institution.institution_url}
                       </td>
                     </tr>
                   ))}

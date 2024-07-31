@@ -1033,6 +1033,7 @@ app.put('/institution/update/:id', (req, res) => {
 // Account endpoints
 app.post('/account/new', (req, res) => {
     const { email, password, role_user } = req.body;
+    console.log(email, password, role_user)
     // Hash the password
     //const hashedPassword = await bcrypt.hash(password, 10);
     let hashedPassword
