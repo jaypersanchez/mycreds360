@@ -35,7 +35,7 @@ export default function Badge() {
     fetch(`${apiUrl}/badge-images`)
       .then(response => response.json())
       .then(data => { 
-        console.log("Fetched badge images: ",data)
+        //console.log("Fetched badge images: ",data)
         setBadges(data)
       })
       .catch(error => setError('Error fetching badges: ' + error.message));
@@ -45,7 +45,7 @@ export default function Badge() {
     e.preventDefault();
 
     const formData = new FormData();
-    console.log(selectedCourse, description, fileImage)
+    //console.log(selectedCourse, description, fileImage)
     formData.append('course_name', selectedCourse);
     formData.append('description', description);
     formData.append('badge', fileImage);

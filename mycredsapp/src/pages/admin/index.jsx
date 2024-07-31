@@ -67,7 +67,7 @@ export default function Admin() {
   const handleNewUser = async (event) => {
       event.preventDefault();
       try {
-          console.log(`New User: ${email}, ${password}, ${roleUser}`);
+          //console.log(`New User: ${email}, ${password}, ${roleUser}`);
           const response = await fetch(`http://localhost:3000/account/new`, {
               method: 'POST',
               headers: {

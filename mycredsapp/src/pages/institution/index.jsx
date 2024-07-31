@@ -44,7 +44,7 @@ export default function Institution() {
   
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(institutionName, institutionUrl, logo )
+    //console.log(institutionName, institutionUrl, logo )
     const formData = new FormData();
     formData.append('institution_name', institutionName);
     formData.append('logo', logo);
@@ -78,7 +78,7 @@ export default function Institution() {
             type="text"
             value={institutionName}
             onChange={(e) => { 
-              console.log(e.target.value)
+              //console.log(e.target.value)
               setInstitutionName(e.target.value)
 
             }}

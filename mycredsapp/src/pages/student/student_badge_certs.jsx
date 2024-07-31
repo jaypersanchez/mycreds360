@@ -91,7 +91,7 @@ function StudentBadgeCerts() {
         fetch('http://localhost:3000/courses')
             .then(response => response.json())
             .then(data => {
-                console.log(`Courses: ${data}`)
+                //console.log(`Courses: ${data}`)
                 setCourses(data)
     })
             .catch(err => console.error('Error fetching courses:', err));
@@ -150,7 +150,7 @@ function StudentBadgeCerts() {
                     if (a.last_name > b.last_name) return 1;
                     return 0;
                 });
-                console.log(`Students: ${sortedStudents}`);
+                //console.log(`Students: ${sortedStudents}`);
                     setStudents(data);
             })
             .catch(err => console.error('Error fetching students:', err));
@@ -171,7 +171,7 @@ function StudentBadgeCerts() {
             // Promise to get institution name
             new Promise((resolve) => {
                 const institution = institutions.find(inst => inst.id === institutions[selectedInstitution].institution_name);
-                console.log('Found Institution:', institutions[selectedInstitution].institution_name);
+                //console.log('Found Institution:', institutions[selectedInstitution].institution_name);
                 setInstitutionName(institutions[selectedInstitution].institution_name)
                 resolve(institutionName);
             }),
@@ -217,7 +217,7 @@ function StudentBadgeCerts() {
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Certificate assigned:', JSON.stringify(data));
+                //console.log('Certificate assigned:', JSON.stringify(data));
                 // Handle success, maybe refresh the list of certifications or navigate away
             })
             .catch(err => {
@@ -230,7 +230,7 @@ function StudentBadgeCerts() {
     
     const handleSubmitStudentBadge = async (e) => {
         e.preventDefault();
-        console.log(badgeselectedStudentId, badgecourseId, badgeCourseName, dateCompletion);
+        //console.log(badgeselectedStudentId, badgecourseId, badgeCourseName, dateCompletion);
         try {
             const response = await fetch('http://localhost:3000/create-student-badge', {
                 method: 'POST',
@@ -377,7 +377,7 @@ function StudentBadgeCerts() {
             //console.log('Selected Course:', course.course_name);
             setCourseName(course.course_name);
         } else {
-            //console.log('Course not found');
+            console.log('Course not found');
             setCourseName('');
         }
     };
@@ -451,10 +451,10 @@ function StudentBadgeCerts() {
                         value={`${badgecourseId} | ${badgeCourseName}`}
                         onChange={(e) => { 
                             const fullValue = e.target.value;
-                            console.log('fullValue:', fullValue); // Debugging output
+                            //console.log('fullValue:', fullValue); // Debugging output
                             const [courseId, courseName] = fullValue.split('|').map(str => str.trim());
-                            console.log('courseId:', courseId); // Debugging output
-                            console.log('courseName:', courseName); // Debugging output
+                            //console.log('courseId:', courseId); // Debugging output
+                            //console.log('courseName:', courseName); // Debugging output
                             setBadgeCourseId(courseId);
                             setBadgeCourseName(courseName);
                         }}
