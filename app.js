@@ -801,7 +801,7 @@ app.get('/institution/index', (req, res) => {
             return res.status(500).json({ error: 'Internal server error' });
         }
         // Use the connection to execute a query
-        connection.query(`SELECT * FROM institution`, (err, results) => {
+        connection.query(`SELECT * FROM institution ORDER BY institution_name`, (err, results) => {
             // Release the connection back to the pool
             connection.release();
     
@@ -887,11 +887,11 @@ app.post('/save-template-positions', (req, res) => {
 *   Need to add capability to save institution's logo image
 *   and a signature image   
 */
-app.post('/institution/create', (req, res) => {
+app.post('/institution/create', upload.single('logo'), (req, res) => {
     
     const { institution_name, institution_url } = req.body;
     const logo = req.file ? req.file.path : ''; // Assuming req.file contains the uploaded file information
-    console.log(`New Instituion ${institution_name}`)
+    console.log(institution_name, logo, institution_url)
     if (!institution_name) {
         return res.status(400).json({ error: 'Institution name is required' });
     }
