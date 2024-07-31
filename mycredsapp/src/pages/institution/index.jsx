@@ -29,6 +29,11 @@ export default function Institution() {
       .catch(err => console.error('Error fetching institutions:', err));
   }, []);
 
+  const getImageUrl = (filename) => {
+    // Assuming your images are served from a directory called 'uploads'
+    return filename ? `http://localhost:3000/uploads/${filename}` : 'default-logo.png'; // Provide a fallback image
+  };
+
   // Calculate current institutions to display
   const indexOfLastInstitution = currentPage * institutionsPerPage;
   const indexOfFirstInstitution = indexOfLastInstitution - institutionsPerPage;
@@ -129,7 +134,15 @@ export default function Institution() {
                   {currentInstitutions.map((institution) => (
                     <tr key={institution.id}>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <img className="h-10 w-10 rounded-full" src={institution.logo} alt="Logo" />
+                      <img
+                  className="h-10 w-10 rounded-full"
+                  src={getImageUrl(institution.logo)}
+                  alt="Logo"
+                  onError={(e) => {
+                    e.target.onerror = null; // Prevent infinite loop in case of broken URL
+                    e.target.src = 'default-logo.png'; // Fallback image
+                  }}
+                />
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {institution.institution_name}

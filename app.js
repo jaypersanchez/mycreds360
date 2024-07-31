@@ -64,6 +64,8 @@ app.use(express.urlencoded({ extended: true }));
 //app.use(upload.single('logo')); 
 app.use('/images', express.static('uploads'));
 app.use('/uploads/badges', express.static(path.join(__dirname, 'uploads', 'badges')));
+// Serve static files from the 'uploads' directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 //helper function to get userprofiles based on user_id
