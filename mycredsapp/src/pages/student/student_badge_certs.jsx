@@ -218,9 +218,12 @@ function StudentBadgeCerts() {
             .then(response => response.json())
             .then(data => {
                 //console.log('Certificate assigned:', JSON.stringify(data));
-                // Handle success, maybe refresh the list of certifications or navigate away
+                setSuccess('Certificate successfully assigned.');
+                setError(''); // Clear any previous error messages
             })
             .catch(err => {
+                setSuccess(''); // Clear any previous success messages
+                setError('Failed to assign certificate: ' + err.message);
                 console.error('Failed to assign certificate:', err);
                 // setError(err.message); // Uncomment or modify this line if you maintain error state
             });
@@ -260,7 +263,7 @@ function StudentBadgeCerts() {
             }
         } catch (error) {
             setSuccess('');
-            setError('An unexpected error occurred.');
+            setError('Failed to issue badge to student');
         }
     };
 
@@ -710,6 +713,8 @@ function StudentBadgeCerts() {
                 <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700">Assign Certificate</button>
                 
             </form>
+            {error && <p className="text-red-500 mt-4">{error}</p>}
+            {success && <p className="text-green-500 mt-4">{success}</p>}
         </div>
                         
             {/* Modal Component should display*/}
