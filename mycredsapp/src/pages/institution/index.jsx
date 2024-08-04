@@ -44,11 +44,12 @@ export default function Institution() {
   
   const handleSubmit = async (event) => {
     event.preventDefault();
-    //console.log(institutionName, institutionUrl, logo )
+    console.log(institutionName, institutionUrl, logo )
     const formData = new FormData();
     formData.append('institution_name', institutionName);
     formData.append('logo', logo);
     formData.append('institution_url', institutionUrl);
+    console.log(formData)
 
     try {
       const response = await fetch('http://localhost:3000/institution/create', {
@@ -90,6 +91,7 @@ export default function Institution() {
           <label className="block text-sm font-medium text-gray-700">Institution URL</label>
           <input
             type="url"
+            placeholder='http://example.com'
             value={institutionUrl}
             onChange={(e) => setInstitutionUrl(e.target.value)}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"

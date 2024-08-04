@@ -234,7 +234,7 @@ app.post('/assign-certificate/:student_id', async (req, res) => {
         // this tokenid is the token id used for NFT.
         const tokenId = BigInt('0x' + hashedtokenId)
         console.log(`hash tokenId ${hashedtokenId, tokenId}`)
-        /*const tokenURI = `http://localhost:3000/nft-cert/${tokenId}`;
+        const tokenURI = `http://localhost:3000/nft-cert/${tokenId}`;
         const transactionHash = await certificatetoNFT(badgeDataString,tokenId,tokenURI)
         const nft_value = {
             tx: transactionHash, 
@@ -265,7 +265,7 @@ app.post('/assign-certificate/:student_id', async (req, res) => {
                 
                 res.json({ message: 'Certificate assigned successfully', results });
             });
-        });*/
+        });
    
 });
 
@@ -889,7 +889,7 @@ app.post('/save-template-positions', (req, res) => {
 *   Need to add capability to save institution's logo image
 *   and a signature image   
 */
-app.post('/institution/create', (req, res) => {
+app.post('/institution/create', upload.single('logo'),(req, res) => {
     
     const { institution_name, institution_url } = req.body;
     const logo = req.file ? req.file.path : ''; // Assuming req.file contains the uploaded file information
