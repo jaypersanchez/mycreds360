@@ -31,7 +31,7 @@ const [shouldNavigate, setShouldNavigate] = useState(false);
   useEffect(() => {
     const user = JSON.parse(sessionStorage.getItem('user'));
     if (user) {
-        console.log(`user exist ${user}`)
+        //console.log(`user exist ${user}`)
         navigate('/dashboard')
     }
   },[shouldNavigate, navigate]);
@@ -74,7 +74,7 @@ const [shouldNavigate, setShouldNavigate] = useState(false);
 
         // Parse the JSON response
         const user = await response.json();
-        console.log(user)
+        //console.log(user)
         if(response.error) {
             alert('Authentication Failed:', response.error)
         }
