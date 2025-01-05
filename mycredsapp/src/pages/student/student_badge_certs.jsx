@@ -3,6 +3,7 @@ import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
 import CertificationModal from './CertificationModal.jsx';
 import BadgeIssuance from './BadgeIssuance.jsx';
 import BadgeDropdown from './BadgeDropDown.jsx';
+import CertificateCanvas from './CertificateCanvas';
 
 function StudentBadgeCerts() {
     const navigate = useNavigate(); // Hook for navigation
@@ -12,7 +13,6 @@ function StudentBadgeCerts() {
     const [certifications, setCertifications] = useState([]);
     const [error, setError] = useState('');
     const [badges, setBadges] = useState([]);
-
     const [selectedBadgeUrl, setSelectedBadgeUrl] = useState('');
 
     //certifications
@@ -47,7 +47,8 @@ function StudentBadgeCerts() {
     const [nftValue, setNftValue] = useState('');
     const [badgeselectedStudentId, setBadgeSelectedStudentId] = useState('');
     const [badgeCourseName, setBadgeCourseName] = useState('');
-    
+    const [loading, setLoading] = useState(true);
+    const [loadingCertificates, setLoadingCertificates] = useState(true); // New loading state for certificates
 
     // Assume user data is stored as a JSON string
     const user = JSON.parse(sessionStorage.getItem('user')) || {};
@@ -104,22 +105,28 @@ function StudentBadgeCerts() {
     // this will fetch the certifications that the student has
     useEffect(() => {
         if (user && user.id) {
+            setLoading(true);
+            setLoadingCertificates(true); // Set loading state to true before fetching
             fetch(`http://localhost:3000/assign-certificate/${user.id}`)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('1 Failed to fetch certification details');
+                        throw new Error('Failed to fetch certification details');
                     }
                     return response.json();
                 })
                 .then(data => {
                     setCertifications(data);
+                    setLoading(false);
+                    setLoadingCertificates(false); // Set loading state to false after fetching
                 })
                 .catch(err => {
                     console.error('Error fetching certification details:', err);
                     setError(err.message);
+                    setLoading(false);
+                    setLoadingCertificates(false); // Set loading state to false on error
                 });
         }
-    }, []);
+    }, [user]);
 
     useEffect(() => {
         if (user && user.id) {
@@ -569,227 +576,19 @@ function StudentBadgeCerts() {
                     
                     <div>
                         {/* Certificate Details */}
-                        {error && <p className="text-red-500">{error}</p>}
-                        <div className="container mx-auto px-4 py-8">
-            <h1 className="text-2xl font-semibold">Certification Details</h1>
-            <form onSubmit={handleSubmit} className="mt-4">
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                <label className="block text-sm font-medium text-gray-700">Select Template</label>
-                <select
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                value={selectedCertTemp}
-                onChange={handleSelectChange}
-                required
-            >
-                <option value="">Select Template</option>
-                {certificates.map(cert => (
-                    <option key={cert.id} value={cert.id}>
-                       {cert.id}:{cert.institution_id} - {cert.image_url}
-                    </option>
-                ))}
-                    </select>
-
-                    {selectedImage && selectedStudent && selectedInstitution && selectedCourse && institutionUrl && totalHours && dateCompletion && (
-                        <div className="relative mt-4">
-                            <img 
-                                src={selectedImage} 
-                                alt="Selected Certificate" 
-                                className="max-w-full h-auto"
-                            />
-                            
-                                <div
-                                    style={{
-                                        position: 'absolute',
-                                        top: '10px', // Adjust as needed
-                                        left: '10px', // Adjust as needed
-                                        color: 'black', // Customize text color if needed
-                                        fontSize: '24px', // Customize text size if needed
-                                        whiteSpace: 'nowrap',
-                                        fontWeight: 'bold',
-                                        backgroundColor: 'rgba(255, 255, 255, 0.6)', // Optional: Semi-transparent background for readability
-                                        padding: '5px', // Optional: Padding for better text visibility
-                                        borderRadius: '5px' // Optional: Rounded corners for the background
-                                    }}
-                                >
-                                    { selectedStudentName }
-                                </div>
-                                <div
-                                    style={{
-                                        position: 'absolute',
-                                        top: '50px', // Adjust as needed
-                                        left: '10px', // Adjust as needed
-                                        color: 'black',
-                                        fontSize: '16px',
-                                        whiteSpace: 'nowrap',
-                                        backgroundColor: 'rgba(255, 255, 255, 0.6)',
-                                        padding: '5px',
-                                        borderRadius: '5px'
-                                    }}
-                                >
-                                {institutionName}
-                                </div>
-                                <div
-                                    style={{
-                                        position: 'absolute',
-                                        top: '90px', // Adjust as needed
-                                        left: '10px', // Adjust as needed
-                                        color: 'black',
-                                        fontSize: '16px',
-                                        whiteSpace: 'nowrap',
-                                        backgroundColor: 'rgba(255, 255, 255, 0.6)',
-                                        padding: '5px',
-                                        borderRadius: '5px'
-                                    }}
-                                >
-                                {courseName}
-                                </div>
-                                <div
-                                    style={{
-                                        position: 'absolute',
-                                        top: '130px', // Adjust as needed
-                                        left: '10px', // Adjust as needed
-                                        color: 'black',
-                                        fontSize: '16px',
-                                        whiteSpace: 'nowrap',
-                                        backgroundColor: 'rgba(255, 255, 255, 0.6)',
-                                        padding: '5px',
-                                        borderRadius: '5px'
-                                    }}
-                                >
-                                    Website: {institutionUrl}
-                                </div>
-                                <div
-                                    style={{
-                                        position: 'absolute',
-                                        top: '170px', // Adjust as needed
-                                        left: '10px', // Adjust as needed
-                                        color: 'black',
-                                        fontSize: '16px',
-                                        whiteSpace: 'nowrap',
-                                        backgroundColor: 'rgba(255, 255, 255, 0.6)',
-                                        padding: '5px',
-                                        borderRadius: '5px'
-                                    }}
-                                >
-                                    Total Hours: {totalHours}
-                                </div>
-                                <div
-                                    style={{
-                                        position: 'absolute',
-                                        top: '210px', // Adjust as needed
-                                        left: '10px', // Adjust as needed
-                                        color: 'black',
-                                        fontSize: '16px',
-                                        whiteSpace: 'nowrap',
-                                        backgroundColor: 'rgba(255, 255, 255, 0.6)',
-                                        padding: '5px',
-                                        borderRadius: '5px'
-                                    }}
-                                >
-                                    Date of Completion: {dateCompletion}
-                                </div>
-                        </div>
-                    )}
-                    </div>
-                    
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Select Student</label>
-                        <select
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            value={selectedStudent}
-                            onChange={handleStudentChange}
-                            required
-                        >
-                            <option value="">Select a Student</option>
-                            {students
-                                .sort((a, b) => a.last_name.localeCompare(b.last_name)) // Sort by last_name
-                                .map(student => (
-                                <option key={student.id} value={student.id}>
-                                    {student.first_name} {student.last_name}
-                                </option>
-                                ))
-                            }
-                        </select>   
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Select Institution</label>
-                        <select
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            value={selectedInstitution}
-                            onChange={handleInstitutionChange}
-                            required
-                        >
-                            <option value="">Select an Institution</option>
-                            {institutions
-                                .sort((a, b) => a.institution_name.localeCompare(b.institution_name)) // Sort by institution_name
-                                .map(inst => (
-                                <option key={inst.id} value={inst.id}>{inst.id}-{inst.institution_name}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Select Course</label>
-                        <select
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            value={selectedCourse}
-                            onChange={handleCourseChange}
-                            required
-                        >
-                            <option value="">Select a Course</option>
-                            {courses
-                                .sort((a, b) => a.course_name.localeCompare(b.course_name)) // Sort by course_name
-                                .map(course => (
-                                <option key={course.id} value={course.id}>{course.course_name}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Website</label>
-                        <input
-                            type="text"
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            value={institutionUrl}
-                            onChange={e => setInstitutionUrl(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Total Hours</label>
-                        <input
-                            type="text"
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            value={totalHours}
-                            onChange={e => setTotalHours(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Date of Completion</label>
-                        <input
-                            type="date"
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            value={dateCompletion}
-                            onChange={e => setDateCompletion(e.target.value)}
-                            required
-                        />
-                    </div>
-                </div>
-                <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700">Assign Certificate</button>
-                
-            </form>
-            {error && <p className="text-red-500 mt-4">{error}</p>}
-            {success && <p className="text-green-500 mt-4">{success}</p>}
-        </div>
-                        
-            {/* Modal Component should display*/}
-            {selectedCertification && (
-                <CertificationModal
-                    certificationId={selectedCertification.id} // Pass the certification ID
-                    userId={userId} // Pass the user ID
-                    onClose={handleModalClose}
-                />
-            )}
+                        {loadingCertificates ? ( // Conditional rendering based on loading state
+                            <p>Loading certificates...</p>
+                        ) : (
+                            <>
+                                {certifications.length === 0 ? (
+                                    <p>No certificates are available.</p>
+                                ) : (
+                                    <div>
+                                        {/* Render certificates here */}
+                                    </div>
+                                )}
+                            </>
+                        )}
                     </div>
                 )}
             </div>
