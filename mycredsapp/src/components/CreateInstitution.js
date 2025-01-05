@@ -40,7 +40,7 @@ const CreateInstitution = () => {
         institution.institution_name.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setSearchResults(results)
-      console.log(`search ${JSON.stringify(results)}`)
+      //console.log(`search ${JSON.stringify(results)}`)
     }
   }, [searchTerm, institutions]);
 

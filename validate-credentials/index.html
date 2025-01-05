@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFT Validator</title>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.6.9/dist/ethers.umd.min.js"></script>
+</head>
+<body>
+    <h1>NFT Validator</h1>
+    <form id="nft-form">
+        <label for="contract-address">Contract Address:</label>
+        <input type="text" id="contract-address" value="0x3cB0c5Ec0A4ffd9993A9F0A0914FAA6206a7b10d" required>
+        <br>
+        <label for="token-id">Token ID:</label>
+        <input type="text" id="token-id" value="82359084196303730567238433862281508335606163246144011695433208978046499416423" required>
+        <br>
+        <button type="submit">Check NFT</button>
+    </form>
+    <div id="nft-details"></div>
+
+    <script>
+        const provider = new ethers.providers.JsonRpcProvider('https://rpcapi.fantom.network'); // Fantom Testnet RPC
+
+        async function getAbi() {
+            const response = await fetch('MyCredsNFT.json');
+            const abi = await response.json();
+            return abi;
+        }
+
+        document.getElementById('nft-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const contractAddress = document.getElementById('contract-address').value;
+            const tokenId = document.getElementById('token-id').value;
+
+            const abi = await getAbi();
+
+            const contract = new ethers.Contract(contractAddress, abi, provider);
+
+            try {
+                const tokenURI = await contract.tokenURI(tokenId);
+                const metadataResponse = await fetch(tokenURI);
+                const metadata = await metadataResponse.json();
+
+                const nftDetails = `
+                    <h2>${await contract.name()} (${await contract.symbol()})</h2>
+                    <img src="${metadata.image}" alt="NFT Image" style="width: 300px; height: 300px;">
+                    <p>Description: ${metadata.description}</p>
+                `;
+
+                document.getElementById('nft-details').innerHTML = nftDetails;
+            } catch (error) {
+                document.getElementById('nft-details').innerHTML = '<p>Error fetching NFT details. Please check the contract address and token ID.</p>';
+            }
+        });
+    </script>
+</body>
+</html>

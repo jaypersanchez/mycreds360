@@ -45,7 +45,7 @@ const CreateAccount = () => {
         user.email.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setSearchResults(filteredUsers);
-      console.log(`search ${JSON.stringify(filteredUsers)}`);
+      //console.log(`search ${JSON.stringify(filteredUsers)}`);
     }
   }, [searchTerm, users]);
   
