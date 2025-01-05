@@ -266,28 +266,30 @@ app.post('/assign-certificate/:student_id', async (req, res) => {
         const tokenId = BigInt('0x' + hashedtokenId)
         console.log(`hash tokenId ${hashedtokenId, tokenId}`)
         const tokenURI = `http://localhost:3000/nft-cert/${tokenId}`;
-        const transactionHash = await certificatetoNFT(badgeDataString,tokenId,tokenURI)
+        /*const transactionHash = await certificatetoNFT(badgeDataString,tokenId,tokenURI)
         const nft_value = {
             tx: transactionHash, 
             generatedtokenid: generatedtokenId,
             tokenid: tokenId.toString(), 
             hashedtokenid:hashedtokenId.toString(), 
             tokenuri: tokenURI
-        };
+        };*/
        
-        console.log(`\n\nnft_value: ${JSON.stringify(nft_value)}\n\n`);
+        //console.log(`\n\nnft_value: ${JSON.stringify(nft_value)}\n\n`);
 
         // Insert certificate into the database
-        const assigncertificatequery = 
+        /*const assigncertificatequery = 
             `insert into assign_certificate (user_id, institution_name, course_name, total_hours, date_completion, json_values, nft_value,tokenURI,txhash,tokenid) values(?,?,?,?,?,?,?,?,?,?)`;
-        console.log(`\n\nnft_value ${JSON.stringify(nft_value)}\n\n`)
-
+        console.log(`\n\nnft_value ${JSON.stringify(nft_value)}\n\n`)*/
+        const assigncertificatequery = 
+            `insert into assign_certificate (user_id, institution_name, course_name, total_hours, date_completion) values(?,?,?,?,?)`;
         db.pool.getConnection((err, connection) => {
             if (err) {
                 console.error('Error getting connection from pool:', err);
                 return res.status(500).json({ error: 'Internal server error' });
             }
-            connection.query(assigncertificatequery, [student_id, institution_name, course_name, total_hours, date_completion, badgeDataString, JSON.stringify(nft_value),tokenURI,transactionHash,tokenId], (err, results) => {
+            //connection.query(assigncertificatequery, [student_id, institution_name, course_name, total_hours, date_completion, badgeDataString, JSON.stringify(nft_value),tokenURI,transactionHash,tokenId], (err, results) => {
+            connection.query(assigncertificatequery, [student_id, institution_name, course_name, total_hours, date_completion], (err, results) => {
                 connection.release();
                 if (err) { 
                     console.error('Error executing query:', err);
